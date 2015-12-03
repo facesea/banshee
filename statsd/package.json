@@ -1,0 +1,18 @@
+{
+  "name": "statsd-banshee",
+  "description": "Backend for github.com/etsy/statsd.",
+  "version": "0.0.1",
+  "author": "Chao Wang <hit9@icloud.com>",
+  "homepage": "https://github.com/eleme/banshee",
+  "bugs": "https://github.com/eleme/banshee/issues",
+  "keywords": ["banshee", "statsd"],
+  "main": "./index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/eleme/banshee.git"
+  },
+  "dependencies": {
+    "minimatch": "3.0.0"
+  },
+  "license": "MIT"
+}
