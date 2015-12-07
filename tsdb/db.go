@@ -1,3 +1,7 @@
+// Copyright (c) 2015 MIT. Eleme, Inc.
+// Package tsdb implements an embededable time-series and hash-table
+// storage based on leveldb.
+
 package tsdb
 
 import (
