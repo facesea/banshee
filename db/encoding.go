@@ -5,6 +5,15 @@ import (
 	"strconv"
 )
 
+// Namespace for different typed keys
+const (
+	prefixTsName   = '1' // the prefix timeseries name starts with
+	prefixTsKey    = '2' // the prefix timeseries key starts with
+	prefixHashName = '3' // the prefix hash-table name starts with
+	prefixHashKey  = '4' // the prefix hash-table key starts with
+)
+
+// Timeseries storage settings
 const (
 	// Further incoming timestamp will be stored as the diff to this horizon.
 	timeStampHorizon uint64 = 1449308016
@@ -44,7 +53,7 @@ func decodeTimeStamp(s string) (uint64, error) {
 // Encode timeseries name and timestamp to db key.
 func encodeTsKey(name string, t uint64) string {
 	s := encodeTimeStamp(t)
-	return fmt.Sprintf("%c%s%s", nsTsKey, name, s)
+	return fmt.Sprintf("%c%s%s", prefixTsKey, name, s)
 }
 
 // Decode timeseries data key into name and timestamp.
@@ -63,7 +72,7 @@ func decodeTsKey(s string) (string, uint64, error) {
 
 // Encode timeseries name to db key.
 func encodeTsName(name string) string {
-	return fmt.Sprintf("%c%s", nsTsName, name)
+	return fmt.Sprintf("%c%s", prefixTsName, name)
 }
 
 // Decode timeseries name from db key.

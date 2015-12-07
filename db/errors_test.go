@@ -1,8 +1,6 @@
 package tsdb
 
-import (
-	"testing"
-)
+import "testing"
 
 func TestIsCorrupted(t *testing.T) {
 	if IsErrCorrupted(ErrNotFound) {
