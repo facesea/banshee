@@ -10,8 +10,9 @@ var (
 	ErrTsLen = NewErrCorruptedWithString("invalid time series length")
 )
 
-// Increment timeseries length by n, if the n is negative, this
-// function will perform decrementing.
+// Increment timeseries length by n, if the n is negative, this function will
+// perform decrementing, if the length after operation is 0, this key will be
+// deleted.
 func (db *DB) incrLen(name string, n int) error {
 	db.tsLenLock.Lock()
 	defer db.tsLenLock.Unlock()
@@ -30,15 +31,23 @@ func (db *DB) incrLen(name string, n int) error {
 	} else {
 		v = n
 	}
-	if n < 0 {
-		return ErrTsLen
+	if v > 0 {
+		s := strconv.Itoa(v)
+		err = db.db.Put([]byte(key), []byte(s), nil)
+		if err != nil {
+			return NewErrCorrupted(err)
+		}
+		return err
+	} else {
+		err := db.db.Delete([]byte(key), nil)
+		if err != nil {
+			return NewErrCorrupted(err)
+		}
+		if v < 0 {
+			return ErrTsLen
+		}
 	}
-	s := strconv.Itoa(v)
-	err = db.db.Put([]byte(key), []byte(s), nil)
-	if err != nil {
-		return NewErrCorrupted(err)
-	}
-	return err
+	return nil
 }
 
 // Put datapoint into db with name, timestamp and value.

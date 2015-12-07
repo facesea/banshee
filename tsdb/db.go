@@ -18,7 +18,9 @@ type DB struct {
 }
 
 // Open a DB for given path, directory will be created if the path dose
-// not exist.
+// not exist. example:
+//	db := OpenFile("mydb", nil)
+//	defer db.Close()
 func OpenFile(fileName string, options *opt.Options) (*DB, error) {
 	ldb, err := leveldb.OpenFile(fileName, options)
 	if err != nil {
