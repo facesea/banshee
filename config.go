@@ -1,3 +1,5 @@
+// Copyright 2015 Eleme Inc. All rights reserved.
+
 package main
 
 import (
@@ -38,6 +40,7 @@ type ConfigAlerter struct {
 	Command string `json:"command"`
 }
 
+// NewConfigWithDefaults creates a Config with default values.
 func NewConfigWithDefaults() *Config {
 	config := new(Config)
 	config.Interval = 10
@@ -57,6 +60,7 @@ func NewConfigWithDefaults() *Config {
 	return config
 }
 
+// NewConfigWithJsonBytes creates a Config with json literal bytes.
 func NewConfigWithJsonBytes(b []byte) (*Config, error) {
 	config := NewConfigWithDefaults()
 	err := json.Unmarshal(b, config)
@@ -66,6 +70,7 @@ func NewConfigWithJsonBytes(b []byte) (*Config, error) {
 	return config, nil
 }
 
+// NewConfigWithJsonFile creates a Config from a json file by fileName.
 func NewConfigWithJsonFile(fileName string) (*Config, error) {
 	b, err := ioutil.ReadFile(fileName)
 	if err != nil {
