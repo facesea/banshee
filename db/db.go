@@ -1,14 +1,16 @@
-// Package tsdb implements an embededable time-series and hash-table
-// storage based on leveldb.
+// Package tsdb implements an embededable time series databas storage based on
+// leveldb.
 
 package tsdb
 
 import (
+	"sync"
+
 	"github.com/syndtr/goleveldb/leveldb"
 	leveldbOpt "github.com/syndtr/goleveldb/leveldb/opt"
 )
 
-// A TimeStamp is auint64 number.
+// A TimeStamp is a uint64 number.
 type TimeStamp uint64
 
 // A Key is a string.
@@ -19,8 +21,8 @@ type Value float64
 
 // DB is a tsdb database.
 type DB struct {
-	// leveldb handle
-	db *leveldb.DB
+	db *leveldb.DB // leveldb handle
+	l  *sync.Mutex // length increment lock
 }
 
 // Open a DB for given path, directory will be created if the path dose
@@ -32,6 +34,7 @@ func (db *DB) OpenFile(fileName string, options leveldbOpt.Options) (*DB, error)
 	}
 	db := new(DB)
 	db.db = ldb
+	db.l = &sync.Mutex{}
 	return db
 }
 
