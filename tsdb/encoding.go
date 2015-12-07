@@ -34,7 +34,8 @@ var (
 // Encode timestamp to 36-hex string format.
 func encodeTimeStamp(t uint64) string {
 	diff := t - timeStampHorizon
-	return strconv.FormatUint(diff, timeStampConvBase)
+	s := strconv.FormatUint(diff, timeStampConvBase)
+	return fmt.Sprintf("%0*s", timeStampSLength, s)
 }
 
 // Decode timestamp from a 36-hex string.
