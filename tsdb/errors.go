@@ -7,7 +7,7 @@ import "errors"
 // is a corruption error.
 var (
 	ErrNotFound = errors.New("tsdb: not found")
-	ErrClosed   = NewErrCorrupted("tsdb: closed")
+	ErrClosed   = NewErrCorruptedWithString("tsdb: closed")
 )
 
 // ErrCorrupted is the type that wraps errors that indicate corruption in

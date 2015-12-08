@@ -1,8 +1,6 @@
 package tsdb
 
 import (
-	"strconv"
-
 	"github.com/syndtr/goleveldb/leveldb"
 )
 
@@ -24,7 +22,5 @@ func NewBatch(db *DB) *Batch {
 
 // Add Put operation to the write batch.
 func (b *Batch) Put(name string, t uint64, v float64) {
-	key := encodeTsKey(name, t)
-	val := encodeTsValue(v)
-	b.lb.Put([]byte(key), []byte(val))
+	//
 }

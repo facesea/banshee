@@ -1,7 +1,8 @@
 package tsdb
 
+// Time series database based on leveldb.
+
 import (
-	"sync"
 	"sync/atomic"
 
 	"github.com/syndtr/goleveldb/leveldb"
@@ -11,7 +12,7 @@ import (
 // DB is a tsdb database.
 type DB struct {
 	// LevelDB
-	lv *leveldb.DB
+	db *leveldb.DB
 	// Close
 	closed uint32
 }
@@ -24,20 +25,17 @@ type DB struct {
 //
 // The DB instance is goroutine-safe.
 func OpenFile(fileName string, options *opt.Options) (*DB, error) {
-	lv, err := leveldb.OpenFile(fileName, options)
+	db, err := leveldb.OpenFile(fileName, options)
 	if err != nil {
 		return nil, NewErrCorrupted(err)
 	}
-	db := new(DB)
-	db.lv = db
-	db.closed = 0
-	return db, nil
+	return &DB{db, 0}, nil
 }
 
 // Close a DB.
 func (db *DB) Close() error {
 	if db.isClosed() {
-		return ErrClosed()
+		return ErrClosed
 	}
 	return db.db.Close()
 }

@@ -1,5 +1,3 @@
-// Copyright 2015 Eleme Inc. All rights reserved.
-
 package tsdb
 
 import (
@@ -7,95 +5,94 @@ import (
 	"strconv"
 )
 
-// Namespace for different typed keys
 const (
-	prefixTsName   = '1' // the prefix timeseries name starts with
-	prefixTsKey    = '2' // the prefix timeseries key starts with
-	prefixHashName = '3' // the prefix hash-table name starts with
-	prefixHashKey  = '4' // the prefix hash-table key starts with
-)
-
-// Timeseries storage settings
-const (
-	// Further incoming timestamp will be stored as the diff to this horizon.
-	timeStampHorizon uint64 = 1449308016
-	// Timestamps will be converted to 36-hex string format before the are put
-	// into db,
-	timeStampConvBase = 36
-	// A timestamp in 36-hex format string with this length is enough for the
-	// further 100 years to use.
-	timeStampSLength = 7
+	// Namespace
+	stampKeyLeader = 'S'
+	nameKeyLeader  = 'N'
+	// Timestamp
+	stampHorizon   uint64 = 1449308016 // further stamps must be larger than this
+	stampConvBase         = 36         // convert to 36-hex string
+	stampStringLen        = 7          // enough for 100 years
 )
 
 var (
-	ErrTimeStampString = NewErrCorruptedWithString("invalid timestamp string")
-	ErrTsKey           = NewErrCorruptedWithString("invalid series key")
-	ErrTsName          = NewErrCorruptedWithString("invalid series name")
+	ErrNameKey    = NewErrCorruptedWithString("invalid series name key")
+	ErrNameValue  = NewErrCorruptedWithString("invalid series name value")
+	ErrStampKey   = NewErrCorruptedWithString("invalid timestamp key")
+	ErrStampValue = NewErrCorruptedWithString("invalid timestamp value")
 )
 
-// Encode timestamp to 36-hex string format.
-func encodeTimeStamp(t uint64) string {
-	diff := t - timeStampHorizon
-	s := strconv.FormatUint(diff, timeStampConvBase)
-	return fmt.Sprintf("%0*s", timeStampSLength, s)
+// Encode series name to leveldb key.
+func encodeNameKey(name string) string {
+	return fmt.Sprintf("%c%s", nameKeyLeader, name)
 }
 
-// Decode timestamp from a 36-hex string.
-func decodeTimeStamp(s string) (uint64, error) {
-	if len(s) != timeStampSLength {
-		return 0, ErrTimeStampString
+// Decode name key to series name.
+func decodeNameKey(key string) (string, error) {
+	if len(key) < 2 {
+		return "", ErrNameKey
 	}
-	// Assume to be a uint64 integer
-	n, err := strconv.ParseUint(s, timeStampConvBase, 64)
+	return key[1:], nil
+}
+
+// Encode name value with trend and stamp.
+func encodeNameValue(trend float64, stamp uint64) string {
+	return fmt.Sprintf("%.3f:%d", trend, stamp)
+}
+
+// Decode name value to trend and stamp.
+func decodeNameValue(s string) (trend float64, stamp uint64, err error) {
+	n, err := fmt.Sscanf(s, "%f:%d", &trend, &stamp)
 	if err != nil {
-		return 0, NewErrCorrupted(err)
+		err = NewErrCorrupted(err)
+		return
 	}
-	return n + timeStampHorizon, nil
+	if n != 2 {
+		err = ErrNameValue
+		return
+	}
+	return
 }
 
-// Encode timeseries name and timestamp to db key.
-func encodeTsKey(name string, t uint64) string {
-	s := encodeTimeStamp(t)
-	return fmt.Sprintf("%c%s%s", prefixTsKey, name, s)
+// Encode stamp to leveldb key with name.
+func encodeStampKey(name string, stamp uint64) string {
+	s := strconv.FormatUint(stamp-stampHorizon, stampConvBase)
+	return fmt.Sprintf("%c%s%0*s", stampKeyLeader, name, stampStringLen, s)
 }
 
-// Decode timeseries data key into name and timestamp.
-func decodeTsKey(s string) (string, uint64, error) {
-	if len(s) <= timeStampSLength {
-		return "", 0, ErrTsKey
+// Decode stamp key to name and stamp.
+func decodeStampKey(key string) (name string, stamp uint64, err error) {
+	if len(key) <= stampStringLen {
+		err = ErrStampKey
+		return
 	}
-	idx := len(s) - timeStampSLength
-	name := s[1:idx]
-	t, err := decodeTimeStamp(s[idx:])
+	i := len(key) - stampStringLen
+	name = key[1:i]
+	// Assume to be a uint64
+	n, err := strconv.ParseUint(key[i:], stampConvBase, 64)
 	if err != nil {
-		return "", 0, NewErrCorrupted(err)
+		err = NewErrCorrupted(err)
+		return
 	}
-	return name, t, nil
+	stamp = n + stampHorizon
+	return
 }
 
-// Encode timeseries name to db key.
-func encodeTsName(name string) string {
-	return fmt.Sprintf("%c%s", prefixTsName, name)
+// Encode stamp value to string with value and score.
+func encodeStampValue(value float64, score float64) string {
+	return fmt.Sprintf("%.3f:%.3f", value, score)
 }
 
-// Decode timeseries name from db key.
-func decodeTsName(s string) (string, error) {
-	if len(s) < 2 {
-		return "", ErrTsName
-	}
-	return s[1:], nil
-}
-
-// Encode timeseries value to db value.
-func encodeTsValue(v float64) string {
-	return fmt.Sprintf("%.3f", v)
-}
-
-// Decode timeseries value from db value.
-func decodeTsValue(s string) (float64, error) {
-	v, err := strconv.ParseFloat(s, 64)
+// Decode stamp value string to value and score.
+func decodeStampValue(s string) (value, score float64, err error) {
+	n, err := fmt.Sscanf(s, "%f:%f", &value, &score)
 	if err != nil {
-		return v, NewErrCorrupted(err)
+		err = NewErrCorrupted(err)
+		return
 	}
-	return v, nil
+	if n != 2 {
+		err = ErrStampValue
+		return
+	}
+	return
 }
