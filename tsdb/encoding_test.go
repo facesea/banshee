@@ -7,94 +7,75 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestEncodingPrefixes(t *testing.T) {
-	s := fmt.Sprintf("%c%c%c%c", prefixTsName, prefixTsKey, prefixHashName, prefixHashKey)
-	for i := 0; i < len(s); i++ {
-		for j := i + 1; j < len(s); j++ {
-			assert.NotEqual(t, s[i], s[j])
-		}
-	}
+func TestKeyLeaders(t *testing.T) {
+	assert.NotEqual(t, nameKeyLeader, stampKeyLeader)
 }
 
-func TestEncodeTimeStamp(t *testing.T) {
-	timeStamp := uint64(1449481973)
-	excepted := "0003q85"
-	actually := encodeTimeStamp(timeStamp)
-	assert.Equal(t, actually, excepted)
+func TestEncodeNameKey(t *testing.T) {
+	name := "abc"
+	excepted := fmt.Sprintf("%c%s", nameKeyLeader, name)
+	actually := encodeNameKey(name)
+	assert.Equal(t, excepted, actually)
 }
 
-func TestDecodeTimeStamp(t *testing.T) {
-	excepted := uint64(1449481973)
-	actually, err := decodeTimeStamp("0003q85")
-	assert.Nil(t, err)
-	assert.Equal(t, actually, excepted)
-}
-
-func TestEnDecodeTimeStamp(t *testing.T) {
-	timeStamp := uint64(1449483044)
-	s := encodeTimeStamp(timeStamp)
-	assert.True(t, len(s) == 7)
-	actually, err := decodeTimeStamp(s)
-	excepted := timeStamp
-	assert.Nil(t, err)
-	assert.Equal(t, actually, excepted)
-}
-
-func TestEncodeTsKey(t *testing.T) {
-	excepted := fmt.Sprintf("%c%s%s", prefixTsKey, "name", "0003q85")
-	actually := encodeTsKey("name", uint64(1449481973))
-	assert.Equal(t, actually, excepted)
-}
-
-func TestDecodeTsKey(t *testing.T) {
-	exceptedName := "name"
-	exceptedTimeStamp := uint64(1449481973)
-	key := fmt.Sprintf("%c%s%s", prefixTsKey, "name", "0003q85")
-	actuallyName, actuallyTimeStamp, err := decodeTsKey(key)
-	assert.Nil(t, err)
-	assert.Equal(t, actuallyName, exceptedName)
-	assert.Equal(t, actuallyTimeStamp, exceptedTimeStamp)
-}
-
-func TestEnDecodeTsKey(t *testing.T) {
-	name := "ts"
-	timeStamp := uint64(1449484137)
-	key := encodeTsKey(name, timeStamp)
-	assert.True(t, len(key) == 1+len(name)+timeStampSLength)
-	exceptedName := name
-	exceptedTimeStamp := timeStamp
-	actuallyName, actuallyTimeStamp, err := decodeTsKey(key)
-	assert.Nil(t, err)
-	assert.Equal(t, actuallyName, exceptedName)
-	assert.Equal(t, actuallyTimeStamp, exceptedTimeStamp)
-}
-
-func TestEncodeTsName(t *testing.T) {
-	name := "testanc"
-	excepted := fmt.Sprintf("%c%s", prefixTsName, name)
-	actually := encodeTsName(name)
-	assert.Equal(t, actually, excepted)
-}
-
-func TestDecodeTsName(t *testing.T) {
+func TestDecodeNameKey(t *testing.T) {
 	name := "abctest"
 	excepted := name
-	actually, err := decodeTsName(encodeTsName(name))
+	actually, err := decodeNameKey(encodeNameKey(name))
 	assert.Nil(t, err)
-	assert.Equal(t, actually, excepted)
+	assert.Equal(t, excepted, actually)
 }
 
-func TestEncodeValue(t *testing.T) {
-	value := 1.28912
-	excepted := "1.289"
-	actually := encodeTsValue(value)
-	assert.Equal(t, actually, excepted)
+func TestEncodeNameValue(t *testing.T) {
+	trend := 1.23934
+	stamp := uint64(1449481979)
+	excepted := "1.239:1449481979"
+	actually := encodeNameValue(trend, stamp)
+	assert.Equal(t, excepted, actually)
 }
 
-func TestDecodeTsValue(t *testing.T) {
-	s := "1.389"
-	excepted := 1.389
-	actually, err := decodeTsValue(s)
+func TestDecodeNameValue(t *testing.T) {
+	exceptedTrend := 1.38
+	exceptedStamp := uint64(1449481993)
+	s := encodeNameValue(exceptedTrend, exceptedStamp)
+	actuallyTrend, actuallyStamp, err := decodeNameValue(s)
 	assert.Nil(t, err)
-	assert.Equal(t, actually, excepted)
+	assert.Equal(t, exceptedTrend, actuallyTrend)
+	assert.Equal(t, exceptedStamp, actuallyStamp)
+}
+
+func TestEncodeStampKey(t *testing.T) {
+	name := "abc"
+	stamp := uint64(1449481973)
+	excepted := fmt.Sprintf("%c%s%s", stampKeyLeader, name, "0003q85")
+	actually := encodeStampKey(name, stamp)
+	assert.Equal(t, excepted, actually)
+}
+
+func TestDecodeStampKey(t *testing.T) {
+	exceptedName := "abc"
+	exceptedStamp := uint64(1449483044)
+	s := encodeStampKey(exceptedName, exceptedStamp)
+	actuallyName, actuallyStamp, err := decodeStampKey(s)
+	assert.Nil(t, err)
+	assert.Equal(t, exceptedName, actuallyName)
+	assert.Equal(t, exceptedStamp, actuallyStamp)
+}
+
+func TestEncodeStampValue(t *testing.T) {
+	value := 12.289
+	score := 1.2
+	excepted := "12.289:1.200"
+	actually := encodeStampValue(value, score)
+	assert.Equal(t, excepted, actually)
+}
+
+func TestDecodeStampValue(t *testing.T) {
+	exceptedValue := 12.389
+	exceptedScore := 0.999
+	s := encodeStampValue(exceptedValue, exceptedScore)
+	actuallyValue, actuallyScore, err := decodeStampValue(s)
+	assert.Nil(t, err)
+	assert.Equal(t, exceptedValue, actuallyValue)
+	assert.Equal(t, exceptedScore, actuallyScore)
 }
