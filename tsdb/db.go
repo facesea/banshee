@@ -1,10 +1,9 @@
-// Package tsdb implements an embededable time series databas storage based on
-// leveldb.
-
 package tsdb
 
+// Time series database based on leveldb.
+
 import (
-	"sync"
+	"sync/atomic"
 
 	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/syndtr/goleveldb/leveldb/opt"
@@ -12,28 +11,49 @@ import (
 
 // DB is a tsdb database.
 type DB struct {
-	db        *leveldb.DB
-	tsLenLock *sync.Mutex
-	hLenLock  *sync.Mutex
+	// LevelDB
+	db *leveldb.DB
+	// Close
+	closed uint32
 }
 
-// Open a DB for given path, directory will be created if the path dose
-// not exist. example:
-//	db := OpenFile("mydb", nil)
-//	defer db.Close()
+// Open a DB for the given path, the DB will be created if not exist. Note
+// that the DB can be opened for only once.
+//
+// OpenFile will return an error with type of ErrCorrupted if corruption
+// detected in the DB.
+//
+// The DB instance is goroutine-safe.
 func OpenFile(fileName string, options *opt.Options) (*DB, error) {
-	ldb, err := leveldb.OpenFile(fileName, options)
+	db, err := leveldb.OpenFile(fileName, options)
 	if err != nil {
 		return nil, NewErrCorrupted(err)
 	}
-	db := new(DB)
-	db.db = ldb
-	db.tsLenLock = &sync.Mutex{}
-	db.hLenLock = &sync.Mutex{}
-	return db, nil
+	return &DB{db, 0}, nil
 }
 
 // Close a DB.
 func (db *DB) Close() error {
+	if db.isClosed() {
+		return ErrClosed
+	}
 	return db.db.Close()
+}
+
+// Check whether DB was closed.
+func (db *DB) isClosed() bool {
+	return atomic.LoadUint32(&db.closed) != 0
+}
+
+// Check whether DB is ok.
+func (db *DB) ok() error {
+	if db.isClosed() {
+		return ErrClosed
+	}
+	return nil
+}
+
+// Batch creates a write batch, which enables write multiple operations once.
+func (db *DB) Batch() *Batch {
+	return NewBatch(db)
 }
