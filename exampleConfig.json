@@ -1,12 +1,14 @@
 {
+  "debug": false,
   "interval": 10,
-  "periodicity": 86400,
-  "storage": {
-    "stats": "stats.db",
-    "rules": "rules.db"
+  "periodicity": [480, 180],
+  "sqlite": {
+    "file": "rules.db"
+  },
+  "leveldb": {
+    "file": "stats.db"
   },
   "detector": {
-    "debug": false,
     "port": 2015,
     "trendFactor": 0.07,
     "strict": true,
@@ -16,7 +18,7 @@
   },
   "webapp": {
     "port": 2016,
-    "auth": "admin:admin"
+    "auth": ["admin", "admin"]
   },
   "alerter": {
     "command": ""
