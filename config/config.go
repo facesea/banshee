@@ -2,27 +2,68 @@
 
 package config
 
+// Configuration for banshee with default values:
+//
+//	Global Options
+//		debug			if on debug mode. [default: false]
+//		interval		incomding metrics time interval (in sec). [default: 10]
+//		periodicity		metrics periodicity (in sec), NumTimeSpans x TimeSpan.
+//						[default: [480, 180]]
+//	SQLite Options
+//		file			file path for sqlite, which maintains admin rules etc.
+//						[default: "rules.db"]
+//	LevelDB Options
+//		file			file path for leveldb, which maintains analyzation
+//						results. [default: "stats.db"]
+//	Detector Options
+//		port			detector tcp port to listen. [default: 2015]
+//		trendFactor		the factor to calculate trending value via weighted
+//						moving average algorithm. [default: 0.07]
+//		strict			if this is set false, detector will passivate latest
+//						metric. [default: true]
+//		whitelist		metrics whitelist, if set empty `[]`, rule patterns
+//						from sqlite will be used. [default: ["*"]]
+//		blacklist		metrics blacklist, detector will allow one metric to
+//						pass only if it matches one pattern in whitelist and
+//						dosent match any pattern in blacklist. [default:
+//						["statsd.*"]]
+//		startSize		detector won't start to detect until the data set is
+//						larger than this size. [default: 32]
+//	WebApp Options
+//		port			webapp http port to listen. [default: 2016]
+//		auth			username and password for admin basic auth. [default:
+//						["admin", "admin"]]
+//	Alerter Options
+//		command			shell command to execute on anomalies detected, leaving
+//						empty means do nothing. [default: ""]
+//
+// See also exampleConfig.json please.
+
 import (
 	"encoding/json"
 	"io/ioutil"
 )
 
 type Config struct {
+	Debug       bool           `json:"debug"`
 	Interval    int            `json:"interval"`
-	Periodicity int            `json:"periodicity"`
-	Storage     ConfigStorage  `json:"storage"`
+	Periodicity [2]int         `json:"periodicity"`
+	SQLite      ConfigSQLite   `json:"sqlite"`
+	LevelDB     ConfigLevelDB  `json:"leveldb"`
 	Detector    ConfigDetector `json:"detector"`
 	Webapp      ConfigWebapp   `json:"webapp"`
 	Alerter     ConfigAlerter  `json:"alerter"`
 }
 
-type ConfigStorage struct {
-	Stats string `json:"stats"`
-	Rules string `json:"rules"`
+type ConfigSQLite struct {
+	file string `json:"file"`
+}
+
+type ConfigLevelDB struct {
+	file string `json:"file"`
 }
 
 type ConfigDetector struct {
-	Debug       bool     `json:"debug"`
 	Port        int      `json:"port"`
 	TrendFactor float64  `json:"trendFactor"`
 	Strict      bool     `json:"strict"`
@@ -32,8 +73,8 @@ type ConfigDetector struct {
 }
 
 type ConfigWebapp struct {
-	Port int    `json:"port"`
-	Auth string `json:"auth"`
+	Port int       `json:"port"`
+	Auth [2]string `json:"auth"`
 }
 
 type ConfigAlerter struct {
@@ -43,11 +84,11 @@ type ConfigAlerter struct {
 // NewConfigWithDefaults creates a Config with default values.
 func NewConfigWithDefaults() *Config {
 	config := new(Config)
+	config.Debug = false
 	config.Interval = 10
-	config.Periodicity = 24 * 60 * 60
-	config.Storage.Stats = "stats.db"
-	config.Storage.Rules = "rules.db"
-	config.Detector.Debug = false
+	config.Periodicity = [2]int{480, 180}
+	config.SQLite.file = "rules.db"
+	config.LevelDB.file = "stats.db"
 	config.Detector.Port = 2015
 	config.Detector.TrendFactor = 0.07
 	config.Detector.Strict = true
@@ -55,7 +96,7 @@ func NewConfigWithDefaults() *Config {
 	config.Detector.BlackList = []string{"statsd.*"}
 	config.Detector.StartSize = 32
 	config.Webapp.Port = 2016
-	config.Webapp.Auth = "admin:admin"
+	config.Webapp.Auth = [2]string{"admin", "admin"}
 	config.Alerter.Command = ""
 	return config
 }
