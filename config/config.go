@@ -1,43 +1,40 @@
 // Copyright 2015 Eleme Inc. All rights reserved.
 
-package config
-
-// Configuration for banshee with default values:
-//
-//	Global Options
-//		debug			if on debug mode. [default: false]
-//		interval		incomding metrics time interval (in sec). [default: 10]
-//		periodicity		metrics periodicity (in sec), NumTimeSpans x TimeSpan.
-//						[default: [480, 180]]
-//	SQLite Options
-//		file			file path for sqlite, which maintains admin rules etc.
-//						[default: "rules.db"]
-//	LevelDB Options
-//		file			file path for leveldb, which maintains analyzation
-//						results. [default: "stats.db"]
-//	Detector Options
-//		port			detector tcp port to listen. [default: 2015]
-//		trendFactor		the factor to calculate trending value via weighted
-//						moving average algorithm. [default: 0.07]
-//		strict			if this is set false, detector will passivate latest
-//						metric. [default: true]
-//		whitelist		metrics whitelist, if set empty `[]`, rule patterns
-//						from sqlite will be used. [default: ["*"]]
-//		blacklist		metrics blacklist, detector will allow one metric to
-//						pass only if it matches one pattern in whitelist and
-//						dosent match any pattern in blacklist. [default:
-//						["statsd.*"]]
-//		startSize		detector won't start to detect until the data set is
-//						larger than this size. [default: 32]
-//	WebApp Options
-//		port			webapp http port to listen. [default: 2016]
-//		auth			username and password for admin basic auth. [default:
-//						["admin", "admin"]]
-//	Alerter Options
-//		command			shell command to execute on anomalies detected, leaving
-//						empty means do nothing. [default: ""]
-//
+// Configuration for banshee with default values.
+//  Global Options
+//    debug            if on debug mode. [default: false]
+//    interval         incomding metrics time interval (in sec). [default: 10]
+//    periodicity      metrics periodicity (in sec), NumTimeSpans x TimeSpan.
+//                     [default: [480, 180]]
+//  SQLite Options
+//    file             file path for sqlite, which maintains admin rules etc.
+//                     [default: "rules.db"]
+//  LevelDB Options
+//    file             file path for leveldb, which maintains analyzation
+//                     results. [default: "stats.db"]
+//  Detector Options
+//    port             detector tcp port to listen. [default: 2015]
+//    trendFactor      the factor to calculate trending value via weighted
+//                     moving average algorithm. [default: 0.07]
+//    strict           if this is set false, detector will passivate latest
+//                     metric. [default: true]
+//    whitelist        metrics whitelist, if set empty `[]`, rule patterns from
+//                     sqlite will be used. [default: ["*"]]
+//    blacklist        metrics blacklist, detector will allow one metric to pass
+//                     only if it matches one pattern in whitelist and dosent
+//                     match any pattern in blacklist. [default: ["statsd.*"]]
+//    startSize        detector won't start to detect until the data set is
+//                     larger than this size. [default: 32]
+//  WebApp Options
+//    port             webapp http port to listen. [default: 2016]
+//    auth             username and password for admin basic auth. [default:
+//                     ["admin", "admin"]]
+//  Alerter Options
+//    command          shell command to execute on anomalies detected, leaving
+//                     empty means do nothing. [default: ""]
 // See also exampleConfig.json please.
+//
+package config
 
 import (
 	"encoding/json"
