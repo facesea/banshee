@@ -1,11 +1,7 @@
 // Copyright 2015 Eleme Inc. All rights reserved.
 package util
 
-import (
-	"testing"
-
-	// "github.com/stretchr/testify/assert"
-)
+import "testing"
 
 func TestLogger(t *testing.T) {
 	l := NewLogger("example")
