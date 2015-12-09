@@ -10,7 +10,7 @@ import (
 
 func TestParseMetric(t *testing.T) {
 	line := "foo 1449655769 3.14"
-	m, err := ParseMetric(line)
+	m, err := parseMetric(line)
 	assert.Nil(t, err)
 	assert.Equal(t, m.Name, "foo")
 	assert.Equal(t, m.Stamp, uint64(1449655769))

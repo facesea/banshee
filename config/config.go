@@ -53,11 +53,11 @@ type Config struct {
 }
 
 type ConfigSQLite struct {
-	file string `json:"file"`
+	File string `json:"file"`
 }
 
 type ConfigLevelDB struct {
-	file string `json:"file"`
+	File string `json:"file"`
 }
 
 type ConfigDetector struct {
@@ -84,8 +84,8 @@ func NewConfigWithDefaults() *Config {
 	config.Debug = false
 	config.Interval = 10
 	config.Periodicity = [2]int{480, 180}
-	config.SQLite.file = "rules.db"
-	config.LevelDB.file = "stats.db"
+	config.SQLite.File = "rules.db"
+	config.LevelDB.File = "stats.db"
 	config.Detector.Port = 2015
 	config.Detector.TrendFactor = 0.07
 	config.Detector.Strict = true

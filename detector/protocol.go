@@ -10,8 +10,8 @@ import (
 	"github.com/eleme/banshee/metric"
 )
 
-// ParseMetric parses protocal line string into Metric.
-func ParseMetric(line string) (*metric.Metric, error) {
+// Function parseMetric parses protocol line string into Metric.
+func parseMetric(line string) (*metric.Metric, error) {
 	line = strings.TrimSpace(line)
 	words := strings.Fields(line)
 	if len(words) != 3 {
