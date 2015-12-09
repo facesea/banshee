@@ -22,12 +22,12 @@ func ewma(wf, avgOld, v float64) float64 {
 
 // An exponential weighted moving standard deviation is the exactly same with
 // ewma, for a series Y it can be calculated recursively:
-//  D[0] = Y[0]
+//  D[0] = 0
 //  D[i] = Sqrt((1-F)*D[i-1]*D[i-1] + F*(Y[i]-S[i-1])*(Y[i]-S[i]))
 // Where the D is the moving standard deviation and S is the moving average.
 //
 // Function ewms implements the recurrence formula of this algorithm.
-func ewms(wf, stdOld, avgOld, avgNew, v float64) float64 {
+func ewms(wf, avgOld, avgNew, stdOld, v float64) float64 {
 	return math.Sqrt((1-wf)*stdOld*stdOld + wf*(v-avgOld)*(v-avgNew))
 }
 
@@ -43,6 +43,29 @@ func ewms(wf, stdOld, avgOld, avgNew, v float64) float64 {
 //
 // Function div3sigma implements this rule and returns the divison result, which
 // is named as metric score here.
+//
+// If the score is larger than 1, the trending is anomalously raising up.
+// If the score is smaller than -1, the trending is anomalously reducing
+// down.
 func div3sigma(avg, std, v float64) float64 {
-	return math.Abs(v-avg) / (3 * std)
+	return (v - avg) / (3 * std)
+}
+
+// Get the 3-sigma score, which can help to test whether the latest element of
+// a series is an anomaly. If the score is larger than 1, the latest element is
+// anomalously large, otherwise if it is smaller than -1, it is anomalously
+// small.
+//
+// Note that we don't use this function in our detector, instead, we use the
+// recurrence functions and thus the detection complexity is only O(1).
+func sigs(wf float64, series []float64) float64 {
+	avg := series[0]
+	std := 0.0
+	for i := 0; i < len(series); i++ {
+		v := series[i]
+		avgOld := avg
+		avg = ewma(wf, avgOld, v)
+		std = ewms(wf, avgOld, avg, std, v)
+	}
+	return div3sigma(avg, std, series[len(series)-1])
 }
