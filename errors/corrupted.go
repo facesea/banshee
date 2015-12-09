@@ -13,19 +13,19 @@ func (err *ErrCorrupted) Error() string {
 	return err.Error()
 }
 
-// NewErrCorrupted creates new ErrCorrupted error.
+// NewCorrupted creates new ErrCorrupted error.
 func NewErrCorrupted(err error) error {
 	return &ErrCorrupted{err}
 }
 
-// NewErrCorrupted creates new ErrCorrupted error.
+// NewCorrupted creates new ErrCorrupted error.
 func NewErrCorruptedWithString(s string) error {
 	return NewErrCorrupted(errors.New(s))
 }
 
-// IsErrCorrupted returns a boolean indicating whether the error is indicating
+// IsCorrupted returns a boolean indicating whether the error is indicating
 // a corruption.
-func IsErrCorrupted(err error) bool {
+func IsCorrupted(err error) bool {
 	_, ok := err.(*ErrCorrupted)
 	return ok
 }

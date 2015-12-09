@@ -9,6 +9,6 @@ import (
 )
 
 func TestIsCorrupted(t *testing.T) {
-	assert.False(t, IsErrCorrupted(errors.New("something wrong")))
-	assert.True(t, IsErrCorrupted(NewErrCorruptedWithString("something wrong")))
+	assert.False(t, IsCorrupted(errors.New("something wrong")))
+	assert.True(t, IsCorrupted(NewErrCorruptedWithString("something wrong")))
 }
