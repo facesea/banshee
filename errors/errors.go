@@ -8,4 +8,7 @@ func New(text string) error {
 	return errors.New(text)
 }
 
-var ()
+var (
+	// Detector
+	ErrProtocol = New("detector: invalid protocol input")
+)
