@@ -13,6 +13,6 @@ func TestParseMetric(t *testing.T) {
 	m, err := parseMetric(line)
 	assert.Nil(t, err)
 	assert.Equal(t, m.Name, "foo")
-	assert.Equal(t, m.Stamp, uint64(1449655769))
+	assert.Equal(t, m.Stamp, uint32(1449655769))
 	assert.Equal(t, m.Value, 3.14)
 }

@@ -5,7 +5,7 @@ package metric
 // Metric with name and value
 type Metric struct {
 	Name   string  // metric name
-	Stamp  uint64  // metric timestamp
+	Stamp  uint32  // metric timestamp (able to use for 90 years from now)
 	Value  float64 // metric value
 	Score  float64 // metric anomaly score
 	AvgOld float64 // previous average value

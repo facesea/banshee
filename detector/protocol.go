@@ -23,10 +23,11 @@ func parseMetric(line string) (*metric.Metric, error) {
 	var err error
 	m := metric.New()
 	m.Name = words[0]
-	m.Stamp, err = strconv.ParseUint(words[1], 10, 64)
+	num, err := strconv.ParseUint(words[1], 10, 32)
 	if err != nil {
 		return nil, err
 	}
+	m.Stamp = uint32(num)
 	m.Value, err = strconv.ParseFloat(words[2], 64)
 	if err != nil {
 		return nil, err
