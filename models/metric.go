@@ -1,6 +1,6 @@
 // Copyright 2015 Eleme Inc. All rights reserved.
 
-package metric
+package models
 
 // Metric with name and value
 type Metric struct {
@@ -20,12 +20,4 @@ type Metric struct {
 	AvgOld float64
 	// Current datapoints count
 	Count uint32
-}
-
-// New creates a Metric.
-func New() *Metric {
-	m := new(Metric)
-	m.Stamp = 0
-	m.Score = 0
-	return m
 }
