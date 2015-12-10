@@ -2,17 +2,13 @@
   "debug": false,
   "interval": 10,
   "periodicity": [480, 180],
-  "sqlite": {
-    "file": "rules.db"
-  },
-  "leveldb": {
-    "file": "stats.db"
+  "storage": {
+    "path": "storage/"
   },
   "detector": {
     "port": 2015,
     "trendFactor": 0.07,
     "strict": true,
-    "whitelist": ["*"],
     "blacklist": ["statsd.*"],
     "startSize": 32
   },

@@ -6,23 +6,18 @@
 //    interval         incomding metrics time interval (in sec). [default: 10]
 //    periodicity      metrics periodicity (in sec), NumTimeSpans x TimeSpan.
 //                     [default: [480, 180]]
-//  SQLite Options
-//    file             file path for sqlite, which maintains admin rules etc.
-//                     [default: "rules.db"]
-//  LevelDB Options
-//    file             file path for leveldb, which maintains analyzation
-//                     results. [default: "stats.db"]
+//  Storage Options
+//    path             path for leveldb, which maintains analyzation
+//                     results. [default: "storage/"]
 //  Detector Options
 //    port             detector tcp port to listen. [default: 2015]
 //    trendFactor      the factor to calculate trending value via weighted
 //                     moving average algorithm. [default: 0.07]
 //    strict           if this is set false, detector will passivate latest
 //                     metric. [default: true]
-//    whitelist        metrics whitelist, if set empty `[]`, rule patterns from
-//                     sqlite will be used. [default: ["*"]]
 //    blacklist        metrics blacklist, detector will allow one metric to pass
-//                     only if it matches one pattern in whitelist and dosent
-//                     match any pattern in blacklist. [default: ["statsd.*"]]
+//                     only if it matches one pattern in rules and dosent match
+//                     any pattern in blacklist. [default: ["statsd.*"]]
 //    startSize        detector won't start to detect until the data set is
 //                     larger than this size. [default: 32]
 //  WebApp Options
@@ -45,26 +40,20 @@ type Config struct {
 	Debug       bool           `json:"debug"`
 	Interval    int            `json:"interval"`
 	Periodicity [2]int         `json:"periodicity"`
-	SQLite      ConfigSQLite   `json:"sqlite"`
-	LevelDB     ConfigLevelDB  `json:"leveldb"`
+	Storage     ConfigStorage  `json:"storage"`
 	Detector    ConfigDetector `json:"detector"`
 	Webapp      ConfigWebapp   `json:"webapp"`
 	Alerter     ConfigAlerter  `json:"alerter"`
 }
 
-type ConfigSQLite struct {
-	File string `json:"file"`
-}
-
-type ConfigLevelDB struct {
-	File string `json:"file"`
+type ConfigStorage struct {
+	Path string `json:"path"`
 }
 
 type ConfigDetector struct {
 	Port        int      `json:"port"`
 	TrendFactor float64  `json:"trendFactor"`
 	Strict      bool     `json:"strict"`
-	WhiteList   []string `json:"whitelist"`
 	BlackList   []string `json:"blackList"`
 	StartSize   int      `json:"startSize"`
 }
@@ -84,12 +73,10 @@ func NewConfigWithDefaults() *Config {
 	config.Debug = false
 	config.Interval = 10
 	config.Periodicity = [2]int{480, 180}
-	config.SQLite.File = "rules.db"
-	config.LevelDB.File = "stats.db"
+	config.Storage.Path = "storage/"
 	config.Detector.Port = 2015
 	config.Detector.TrendFactor = 0.07
 	config.Detector.Strict = true
-	config.Detector.WhiteList = []string{"*"}
 	config.Detector.BlackList = []string{"statsd.*"}
 	config.Detector.StartSize = 32
 	config.Webapp.Port = 2016
