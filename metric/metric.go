@@ -4,12 +4,22 @@ package metric
 
 // Metric with name and value
 type Metric struct {
-	Name   string  // metric name
-	Stamp  uint32  // metric timestamp (able to use for 90 years from now)
-	Value  float64 // metric value
-	Score  float64 // metric anomaly score
-	AvgOld float64 // previous average value
-	AvgNew float64 // current average value
+	// Name
+	Name string
+	// Timestamp in seconds, able to use for 90 years from now.
+	Stamp uint32
+	// Current value
+	Value float64 // metric value
+	// Current anomaly score
+	Score float64
+	// Current standard deviation
+	Std float64
+	// Current average
+	Avg float64
+	// Previous average
+	AvgOld float64
+	// Current datapoints count
+	Count uint32
 }
 
 // New creates a Metric.
