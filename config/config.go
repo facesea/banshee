@@ -6,12 +6,9 @@
 //    interval         incomding metrics time interval (in sec). [default: 10]
 //    periodicity      metrics periodicity (in sec), NumTimeSpans x TimeSpan.
 //                     [default: [480, 180]]
-//  SQLite Options
-//    file             file path for sqlite, which maintains admin rules etc.
-//                     [default: "rules.db"]
-//  LevelDB Options
-//    file             file path for leveldb, which maintains analyzation
-//                     results. [default: "stats.db"]
+//  Storage Options
+//    path             path for leveldb, which maintains analyzation
+//                     results. [default: "storage/"]
 //  Detector Options
 //    port             detector tcp port to listen. [default: 2015]
 //    trendFactor      the factor to calculate trending value via weighted
@@ -43,19 +40,14 @@ type Config struct {
 	Debug       bool           `json:"debug"`
 	Interval    int            `json:"interval"`
 	Periodicity [2]int         `json:"periodicity"`
-	SQLite      ConfigSQLite   `json:"sqlite"`
-	LevelDB     ConfigLevelDB  `json:"leveldb"`
+	Storage     ConfigStorage  `json:"storage"`
 	Detector    ConfigDetector `json:"detector"`
 	Webapp      ConfigWebapp   `json:"webapp"`
 	Alerter     ConfigAlerter  `json:"alerter"`
 }
 
-type ConfigSQLite struct {
-	File string `json:"file"`
-}
-
-type ConfigLevelDB struct {
-	File string `json:"file"`
+type ConfigStorage struct {
+	Path string `json:"path"`
 }
 
 type ConfigDetector struct {
@@ -81,8 +73,7 @@ func NewConfigWithDefaults() *Config {
 	config.Debug = false
 	config.Interval = 10
 	config.Periodicity = [2]int{480, 180}
-	config.SQLite.File = "rules.db"
-	config.LevelDB.File = "stats.db"
+	config.Storage.Path = "storage/"
 	config.Detector.Port = 2015
 	config.Detector.TrendFactor = 0.07
 	config.Detector.Strict = true
