@@ -11,6 +11,9 @@ import (
 )
 
 // Function parseMetric parses protocol line string into Metric.
+//   NAME  TIMESTAMP  VALUE \n
+//   foo   1449481993 3.145 \n
+//
 func parseMetric(line string) (*metric.Metric, error) {
 	line = strings.TrimSpace(line)
 	words := strings.Fields(line)
