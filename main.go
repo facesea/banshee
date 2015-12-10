@@ -4,10 +4,10 @@ package main
 
 import (
 	"flag"
-	"log"
 	"os"
 
 	"github.com/eleme/banshee/config"
+	"github.com/eleme/banshee/util"
 )
 
 func main() {
@@ -17,8 +17,10 @@ func main() {
 		flag.PrintDefaults()
 		os.Exit(1)
 	}
+	logger := util.NewLogger("banshee")
+	logger.Runtime(nil)
 	_, err := config.NewConfigWithJsonFile(*fileName)
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal("%s", err)
 	}
 }

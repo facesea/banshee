@@ -86,9 +86,9 @@ func (l *Logger) Fatal(format string, a ...interface{}) {
 
 // Log current running env
 func (l *Logger) Runtime(extra map[string]interface{}) {
-	fmt.Fprintf(l.w, "Runtime Info\n")
-	fmt.Fprintf(l.w, "  Go version: %s\n", runtime.Version())
-	fmt.Fprintf(l.w, "  Max number of cpus: %d\n", runtime.GOMAXPROCS(0))
+	fmt.Fprintf(l.w, "%s runtime info\n", l.name)
+	fmt.Fprintf(l.w, "  go version: %s\n", runtime.Version())
+	fmt.Fprintf(l.w, "  max number of cpus: %d\n", runtime.GOMAXPROCS(0))
 	for key, val := range extra {
 		fmt.Fprintf(l.w, "  %s: %v\n", key, val)
 	}
