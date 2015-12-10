@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"runtime"
 	"time"
 )
 
@@ -53,7 +54,7 @@ func (l *Logger) doLog(level int, format string, a ...interface{}) {
 		now := time.Now().String()[:23]
 		pid := os.Getpid()
 		s := fmt.Sprintf("%s %s %s[%d]: %s", now, logLevelNames[l.level], l.name, pid, msg)
-		fmt.Fprintln(os.Stderr, s)
+		fmt.Fprintln(l.w, s)
 	}
 }
 
@@ -81,4 +82,14 @@ func (l *Logger) Error(format string, a ...interface{}) {
 func (l *Logger) Fatal(format string, a ...interface{}) {
 	l.doLog(LOG_ERROR, format, a...)
 	os.Exit(1)
+}
+
+// Log current running env
+func (l *Logger) Runtime(extra map[string]interface{}) {
+	fmt.Fprintf(l.w, "Runtime Info\n")
+	fmt.Fprintf(l.w, "  Go version: %s\n", runtime.Version())
+	fmt.Fprintf(l.w, "  Max number of cpus: %d\n", runtime.GOMAXPROCS(0))
+	for key, val := range extra {
+		fmt.Fprintf(l.w, "  %s: %v\n", key, val)
+	}
 }
