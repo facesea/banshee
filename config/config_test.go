@@ -19,7 +19,6 @@ func TestExampleConfigParsing(t *testing.T) {
 	assert.Equal(t, config.Detector.Port, defaultC.Detector.Port)
 	assert.Equal(t, config.Detector.TrendFactor, defaultC.Detector.TrendFactor)
 	assert.Equal(t, config.Detector.Strict, defaultC.Detector.Strict)
-	assert.Equal(t, config.Detector.WhiteList, defaultC.Detector.WhiteList)
 	assert.Equal(t, config.Detector.BlackList, defaultC.Detector.BlackList)
 	assert.Equal(t, config.Detector.StartSize, defaultC.Detector.StartSize)
 	assert.Equal(t, config.Webapp.Port, defaultC.Webapp.Port)
