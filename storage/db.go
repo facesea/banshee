@@ -14,7 +14,6 @@ import (
 	"fmt"
 	"os"
 	"path"
-	"sync"
 
 	"github.com/eleme/banshee/config"
 	"github.com/syndtr/goleveldb/leveldb"
@@ -27,8 +26,7 @@ const filemode = 0755
 // A DB is a database.
 type DB struct {
 	// Detection
-	d  *leveldb.DB
-	dl *sync.Mutex
+	d *leveldb.DB
 	// Rules
 	r *leveldb.DB
 	// Config
@@ -46,10 +44,11 @@ type DB struct {
 //
 func Open(cfg *config.Config) (*DB, error) {
 	p := cfg.Storage.Path
-	// Try to make directory
-	err := os.Mkdir(p, filemode)
-	if err != nil && !os.IsExist(err) {
-		return nil, err
+	if _, err := os.Stat(p); os.IsNotExist(err) {
+		err = os.Mkdir(p, filemode)
+		if err != nil {
+			return nil, err
+		}
 	}
 	s := fmt.Sprintf("%dx%d", cfg.Periodicity[0], cfg.Periodicity[1])
 	d, err := leveldb.OpenFile(path.Join(p, s), nil)
@@ -63,7 +62,6 @@ func Open(cfg *config.Config) (*DB, error) {
 	db := new(DB)
 	db.d = d
 	db.r = r
-	db.dl = &sync.Mutex{}
 	db.cfg = cfg
 	return db, nil
 }
