@@ -5,11 +5,11 @@ package storage
 import (
 	"fmt"
 	"github.com/eleme/banshee/errors"
-	"github.com/eleme/banshee/metric"
+	"github.com/eleme/banshee/models"
 )
 
 // Get a metric from db inplace. example:
-//   m := &metric.Metric{Name: "foo", Stamp: 1449740827, Value: 1.43}
+//   m := &models.Metric{Name: "foo", Stamp: 1449740827, Value: 1.43}
 //   err := db.GetMetric(m)
 //   if err != nil {
 //     if errors.IsFatal(err) {
@@ -18,7 +18,7 @@ import (
 //       log.Error("failed to get metric: %v", err)
 //   }
 //
-func (db *DB) GetMetric(m *metric.Metric) error {
+func (db *DB) GetMetric(m *models.Metric) error {
 	key := db.packMetricKey(m)
 	val, err := db.d.Get(key, nil)
 	if err != nil {
@@ -39,7 +39,7 @@ func (db *DB) GetMetric(m *metric.Metric) error {
 //       log.Error("failed to put metric: %v", err)
 //   }
 //
-func (db *DB) PutMetric(m *metric.Metric) error {
+func (db *DB) PutMetric(m *models.Metric) error {
 	key := db.packMetricKey(m)
 	val := db.packMetric(m)
 	err := db.d.Put(key, val, nil)
@@ -53,7 +53,7 @@ func (db *DB) PutMetric(m *metric.Metric) error {
 }
 
 // Pack metric key into bytes.
-func (db *DB) packMetricKey(m *metric.Metric) []byte {
+func (db *DB) packMetricKey(m *models.Metric) []byte {
 	numGrid := db.cfg.Periodicity[0]
 	grid := db.cfg.Periodicity[1]
 	periodicity := numGrid * grid
@@ -62,13 +62,13 @@ func (db *DB) packMetricKey(m *metric.Metric) []byte {
 }
 
 // Pack metric db value from metric.
-func (db *DB) packMetric(m *metric.Metric) []byte {
+func (db *DB) packMetric(m *models.Metric) []byte {
 	return []byte(fmt.Sprintf("%.3f:%.3f:%d", m.Avg, m.Std, m.Count))
 }
 
 // Unpack metric from bytes in place, this will fill in metric average,
 // standard deviation and count into the metric.
-func (db *DB) unpackMetric(v []byte, m *metric.Metric) error {
+func (db *DB) unpackMetric(v []byte, m *models.Metric) error {
 	n, err := fmt.Sscanf(string(v), "%f:%f:%d", m.Avg, m.Std, m.Count)
 	if err != nil {
 		return err
