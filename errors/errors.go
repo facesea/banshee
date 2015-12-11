@@ -1,4 +1,5 @@
 // Copyright 2015 Eleme Inc. All rights reserved.
+
 package errors
 
 import "errors"
@@ -7,8 +8,3 @@ import "errors"
 func New(text string) error {
 	return errors.New(text)
 }
-
-var (
-	// Detector
-	ErrProtocol = New("detector: invalid protocol input")
-)
