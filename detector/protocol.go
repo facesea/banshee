@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/eleme/banshee/errors"
 	"github.com/eleme/banshee/models"
 )
 
@@ -18,7 +17,7 @@ func parseMetric(line string) (*models.Metric, error) {
 	line = strings.TrimSpace(line)
 	words := strings.Fields(line)
 	if len(words) != 3 {
-		return nil, errors.ErrProtocol
+		return nil, ErrProtocol
 	}
 	var err error
 	m := &models.Metric{}

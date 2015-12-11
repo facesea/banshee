@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/eleme/banshee/errors"
 	"github.com/eleme/banshee/models"
+	"github.com/syndtr/goleveldb/leveldb"
 )
 
 // Get a metric from db inplace. example:
@@ -24,6 +25,9 @@ func (db *DB) GetMetric(m *models.Metric) error {
 	if err != nil {
 		if db.IsCorrupted(err) {
 			return errors.NewErrFatal(err)
+		}
+		if err == leveldb.ErrNotFound {
+			return ErrNotFound
 		}
 		return err
 	}
@@ -69,7 +73,7 @@ func (db *DB) packMetric(m *models.Metric) []byte {
 // Unpack metric from bytes in place, this will fill in metric average,
 // standard deviation and count into the metric.
 func (db *DB) unpackMetric(v []byte, m *models.Metric) error {
-	n, err := fmt.Sscanf(string(v), "%f:%f:%d", m.Avg, m.Std, m.Count)
+	n, err := fmt.Sscanf(string(v), "%f:%f:%d", &m.Avg, &m.Std, &m.Count)
 	if err != nil {
 		return err
 	}
