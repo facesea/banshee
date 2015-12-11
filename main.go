@@ -11,12 +11,14 @@ import (
 )
 
 func main() {
+	// Argv parsing
 	fileName := flag.String("c", "config.json", "config file")
 	flag.Parse()
 	if flag.NFlag() != 1 {
 		flag.PrintDefaults()
 		os.Exit(1)
 	}
+	// Config
 	logger := util.NewLogger("banshee")
 	logger.Runtime(nil)
 	_, err := config.NewConfigWithJsonFile(*fileName)

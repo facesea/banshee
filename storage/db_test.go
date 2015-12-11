@@ -4,24 +4,23 @@ package storage
 
 import (
 	"fmt"
+	"github.com/eleme/banshee/config"
+	"github.com/eleme/banshee/util"
 	"os"
 	"path"
 	"testing"
-
-	"github.com/eleme/banshee/config"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestOpen(t *testing.T) {
 	cfg := config.NewConfigWithDefaults()
 	cfg.Storage.Path = "storage_test/"
 	db, err := Open(cfg)
-	assert.Nil(t, err)
+	util.Assert(t, err == nil)
 	defer db.Close()
 	_, err = os.Stat(path.Join(cfg.Storage.Path, "rules"))
-	assert.Nil(t, err)
+	util.Assert(t, err == nil)
 	s := fmt.Sprintf("%dx%d", cfg.Periodicity[0], cfg.Periodicity[1])
 	_, err = os.Stat(path.Join(cfg.Storage.Path, s))
-	assert.Nil(t, err)
-	assert.Nil(t, os.RemoveAll(cfg.Storage.Path))
+	util.Assert(t, err == nil)
+	util.Assert(t, os.RemoveAll(cfg.Storage.Path) == nil)
 }

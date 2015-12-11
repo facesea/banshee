@@ -3,12 +3,11 @@ package errors
 
 import (
 	"errors"
+	"github.com/eleme/banshee/util"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestIsFatal(t *testing.T) {
-	assert.False(t, IsFatal(errors.New("something wrong")))
-	assert.True(t, IsFatal(NewErrFatalWithString("something wrong")))
+	util.Assert(t, !IsFatal(errors.New("something wrong")))
+	util.Assert(t, IsFatal(NewErrFatalWithString("something wrong")))
 }
