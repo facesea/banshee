@@ -5,5 +5,6 @@ package storage
 import "github.com/eleme/banshee/errors"
 
 var (
-	ErrNotFound = errors.New("db: not found")
+	ErrNotFound  = errors.New("db: not found")
+	ErrCorrupted = errors.New("db: corrupted data found")
 )

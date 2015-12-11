@@ -2,7 +2,7 @@
 
 // Package storage implements a database for rules and detection states
 // storage, based on leveldb.
-//   db, err := Open(cfg)
+//   db, err := Open("mydb", 480, 180)
 //   if err != nil {
 //       logger.Fatal("failed to open db: %v", err)
 //   }
@@ -15,9 +15,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/eleme/banshee/config"
-	"github.com/syndtr/goleveldb/leveldb"
-	leveldbErrors "github.com/syndtr/goleveldb/leveldb/errors"
+	"github.com/syndtr/goleveldb/leveldb/errors"
 )
 
 // DB file mode
@@ -25,12 +23,8 @@ const filemode = 0755
 
 // A DB is a database.
 type DB struct {
-	// Detection
-	d *leveldb.DB
-	// Rules
-	r *leveldb.DB
-	// Config
-	cfg *config.Config
+	s *statesDB
+	r *rulesDB
 }
 
 // Open a DB instance from config. If the storage.path dosen't exist, it will
@@ -42,37 +36,41 @@ type DB struct {
 //     |- rules
 //     |- mxn
 //
-func Open(cfg *config.Config) (*DB, error) {
-	p := cfg.Storage.Path
-	if _, err := os.Stat(p); os.IsNotExist(err) {
-		err = os.Mkdir(p, filemode)
+func Open(fileName string, numGrids, gridLen int) (*DB, error) {
+	if _, err := os.Stat(fileName); os.IsNotExist(err) {
+		err = os.Mkdir(fileName, filemode)
 		if err != nil {
 			return nil, err
 		}
 	}
-	s := fmt.Sprintf("%dx%d", cfg.Periodicity[0], cfg.Periodicity[1])
-	d, err := leveldb.OpenFile(path.Join(p, s), nil)
+	name := path.Join(fileName, fmt.Sprintf("%dx%d", numGrids, gridLen))
+	s, err := openStatesDB(name, numGrids, gridLen)
 	if err != nil {
 		return nil, err
 	}
-	r, err := leveldb.OpenFile(path.Join(p, "rules"), nil)
+	name = path.Join(fileName, rulesFileName)
+	r, err := openRulesDB(name)
 	if err != nil {
+		s.close()
 		return nil, err
 	}
-	db := new(DB)
-	db.d = d
-	db.r = r
-	db.cfg = cfg
-	return db, nil
+	return &DB{s: s, r: r}, nil
 }
 
 // Close a DB instance, this will close the rules db and metrics db.
-func (db *DB) Close() {
-	db.d.Close()
-	db.r.Close()
+func (db *DB) Close() error {
+	err := db.s.close()
+	if err != nil {
+		return err
+	}
+	err = db.r.close()
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // Help to test if the current error indicates the db corrupted.
-func (db *DB) IsCorrupted(err error) bool {
-	return leveldbErrors.IsCorrupted(err)
+func isCorrupted(err error) bool {
+	return errors.IsCorrupted(err)
 }
