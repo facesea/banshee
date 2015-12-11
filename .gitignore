@@ -1,3 +1,5 @@
 .*sw[opn]
 banshee
 Godeps/_workspace
+storage/rules/
+storage/*x*
