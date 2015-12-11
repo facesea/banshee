@@ -3,16 +3,15 @@
 package detector
 
 import (
+	"github.com/eleme/banshee/util"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestParseMetric(t *testing.T) {
 	line := "foo 1449655769 3.14"
 	m, err := parseMetric(line)
-	assert.Nil(t, err)
-	assert.Equal(t, m.Name, "foo")
-	assert.Equal(t, m.Stamp, uint32(1449655769))
-	assert.Equal(t, m.Value, 3.14)
+	util.Assert(t, err == nil)
+	util.Assert(t, m.Name == "foo")
+	util.Assert(t, m.Stamp == uint32(1449655769))
+	util.Assert(t, m.Value == 3.14)
 }

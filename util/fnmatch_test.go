@@ -4,13 +4,11 @@ package util
 
 import (
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestFnMatch(t *testing.T) {
-	assert.True(t, FnMatch("abcdefg", "a*cd*fg"))
-	assert.False(t, FnMatch("cbcdefg", "a*cd*fg"))
-	assert.False(t, FnMatch("abcdef", "a*cd*fg"))
-	assert.False(t, FnMatch("abxdef", "a*cd*fg"))
+	Assert(t, FnMatch("abcdefg", "a*cd*fg"))
+	Assert(t, !FnMatch("cbcdefg", "a*cd*fg"))
+	Assert(t, !FnMatch("abcdef", "a*cd*fg"))
+	Assert(t, !FnMatch("abxdef", "a*cd*fg"))
 }
