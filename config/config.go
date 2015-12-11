@@ -39,7 +39,7 @@ import (
 type Config struct {
 	Debug       bool           `json:"debug"`
 	Interval    int            `json:"interval"`
-	Periodicity [2]uint32      `json:"periodicity"`
+	Periodicity [2]int         `json:"periodicity"`
 	Storage     ConfigStorage  `json:"storage"`
 	Detector    ConfigDetector `json:"detector"`
 	Webapp      ConfigWebapp   `json:"webapp"`
@@ -72,7 +72,7 @@ func NewWithDefaults() *Config {
 	config := new(Config)
 	config.Debug = false
 	config.Interval = 10
-	config.Periodicity = [2]uint32{480, 180}
+	config.Periodicity = [2]int{480, 180}
 	config.Storage.Path = "storage/"
 	config.Detector.Port = 2015
 	config.Detector.TrendFactor = 0.07

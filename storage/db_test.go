@@ -4,7 +4,6 @@ package storage
 
 import (
 	"fmt"
-	"github.com/eleme/banshee/config"
 	"github.com/eleme/banshee/util"
 	"os"
 	"path"
@@ -12,15 +11,15 @@ import (
 )
 
 func TestOpen(t *testing.T) {
-	cfg := config.NewWithDefaults()
-	cfg.Storage.Path = "storage_test/"
-	db, err := Open(cfg)
+	fileName := "./storage_test"
+	numGrids, gridLen := 480, 180
+	db, err := Open(fileName, numGrids, gridLen)
 	util.Assert(t, err == nil)
 	defer db.Close()
-	_, err = os.Stat(path.Join(cfg.Storage.Path, "rules"))
+	_, err = os.Stat(path.Join(fileName, "rules"))
 	util.Assert(t, err == nil)
-	s := fmt.Sprintf("%dx%d", cfg.Periodicity[0], cfg.Periodicity[1])
-	_, err = os.Stat(path.Join(cfg.Storage.Path, s))
+	s := fmt.Sprintf("%dx%d", numGrids, gridLen)
+	_, err = os.Stat(path.Join(fileName, s))
 	util.Assert(t, err == nil)
-	util.Assert(t, os.RemoveAll(cfg.Storage.Path) == nil)
+	util.Assert(t, os.RemoveAll(fileName) == nil)
 }

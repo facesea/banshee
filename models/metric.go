@@ -2,22 +2,14 @@
 
 package models
 
-// Metric with name and value
+// Metric is a data container for time series datapoint.
 type Metric struct {
 	// Name
 	Name string
-	// Timestamp in seconds, able to use for 90 years from now.
+	// Metric unix time stamp
 	Stamp uint32
-	// Current value
-	Value float64 // metric value
-	// Current anomaly score
+	// Metric value
+	Value float64
+	// Anomaly score
 	Score float64
-	// Current standard deviation
-	Std float64
-	// Current average
-	Avg float64
-	// Previous average
-	AvgOld float64
-	// Current datapoints count
-	Count uint32
 }

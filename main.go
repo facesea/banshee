@@ -29,7 +29,8 @@ func main() {
 		logger.Warn("no config file specified, using default..")
 	}
 	// Storage
-	db, err := storage.Open(cfg)
+	numGrids, gridLen := cfg.Periodicity[0], cfg.Periodicity[1]
+	db, err := storage.Open(cfg.Storage.Path, numGrids, gridLen)
 	if err != nil {
 		logger.Fatal("failed to open %s: %v", cfg.Storage.Path, err)
 	}
