@@ -4,7 +4,6 @@ package main
 
 import (
 	"flag"
-	"os"
 
 	"github.com/eleme/banshee/config"
 	"github.com/eleme/banshee/detector"
@@ -16,16 +15,18 @@ func main() {
 	// Argv parsing
 	fileName := flag.String("c", "config.json", "config file")
 	flag.Parse()
-	if flag.NFlag() != 1 {
-		flag.PrintDefaults()
-		os.Exit(1)
-	}
-	// Config
+	// Logging
 	logger := util.NewLogger("banshee")
-	logger.Runtime(nil)
-	cfg, err := config.NewConfigWithJsonFile(*fileName)
-	if err != nil {
-		logger.Fatal("%s", err)
+	logger.Runtime()
+	// Config
+	cfg := config.NewWithDefaults()
+	if flag.NFlag() != 0 {
+		err := cfg.UpdateFromJsonFile(*fileName)
+		if err != nil {
+			logger.Fatal("%s", err)
+		}
+	} else {
+		logger.Warn("no config file specified, using default..")
 	}
 	// Storage
 	db, err := storage.Open(cfg)
