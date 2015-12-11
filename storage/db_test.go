@@ -12,7 +12,7 @@ import (
 )
 
 func TestOpen(t *testing.T) {
-	cfg := config.NewConfigWithDefaults()
+	cfg := config.NewWithDefaults()
 	cfg.Storage.Path = "storage_test/"
 	db, err := Open(cfg)
 	util.Assert(t, err == nil)
