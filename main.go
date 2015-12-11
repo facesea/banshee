@@ -7,6 +7,8 @@ import (
 	"os"
 
 	"github.com/eleme/banshee/config"
+	"github.com/eleme/banshee/detector"
+	"github.com/eleme/banshee/storage"
 	"github.com/eleme/banshee/util"
 )
 
@@ -21,8 +23,16 @@ func main() {
 	// Config
 	logger := util.NewLogger("banshee")
 	logger.Runtime(nil)
-	_, err := config.NewConfigWithJsonFile(*fileName)
+	cfg, err := config.NewConfigWithJsonFile(*fileName)
 	if err != nil {
 		logger.Fatal("%s", err)
 	}
+	// Storage
+	db, err := storage.Open(cfg)
+	if err != nil {
+		logger.Fatal("failed to open %s: %v", cfg.Storage.Path, err)
+	}
+	// Detector
+	detector := detector.New(cfg, db)
+	detector.Start()
 }
