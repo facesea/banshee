@@ -25,7 +25,7 @@ type Detector struct {
 	db *storage.DB
 	// Rules
 	rules      []string
-	rulesCache map[string]bool
+	rulesCache *util.SafeMap
 	rulesNames map[string][]string
 }
 
@@ -36,7 +36,7 @@ func New(cfg *config.Config, db *storage.DB) *Detector {
 	detector := new(Detector)
 	detector.cfg = cfg
 	detector.db = db
-	detector.rulesCache = map[string]bool{}
+	detector.rulesCache = util.NewSafeMap()
 	detector.rulesNames = map[string][]string{}
 	// FIXME: rules
 	return detector
@@ -59,6 +59,8 @@ func (detector *Detector) Start() {
 	}
 }
 
+// Handle a connection, it will filter the mertics by rules and detect whether
+// the metrics are anomalies.
 func (detector *Detector) handle(conn net.Conn) {
 	addr := conn.RemoteAddr()
 	defer func() {
@@ -87,7 +89,8 @@ func (detector *Detector) handle(conn net.Conn) {
 }
 
 func (detector *Detector) match(metric *models.Metric) bool {
-	b, ok := detector.rulesCache[metric.Name]
+	v, ok := detector.rulesCache.Get(metric.Name)
+	b := v.(bool)
 	if b && ok {
 		return true
 	}
@@ -98,11 +101,11 @@ func (detector *Detector) match(metric *models.Metric) bool {
 			return false
 		}
 	}
-
+	// FIXME: get rules from db
 	for _, pattern := range detector.rules {
 		matched := util.FnMatch(pattern, metric.Name)
 		if matched {
-			detector.rulesCache[metric.Name] = true
+			detector.rulesCache.Set(metric.Name, true)
 			slice, exists := detector.rulesNames[pattern]
 			if exists {
 				detector.rulesNames[pattern] = append(slice, metric.Name)
