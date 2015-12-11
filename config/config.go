@@ -67,8 +67,8 @@ type ConfigAlerter struct {
 	Command string `json:"command"`
 }
 
-// NewConfigWithDefaults creates a Config with default values.
-func NewConfigWithDefaults() *Config {
+// NewWithDefaults creates a Config with default values.
+func NewWithDefaults() *Config {
 	config := new(Config)
 	config.Debug = false
 	config.Interval = 10
@@ -85,9 +85,9 @@ func NewConfigWithDefaults() *Config {
 	return config
 }
 
-// NewConfigWithJsonBytes creates a Config with json literal bytes.
-func NewConfigWithJsonBytes(b []byte) (*Config, error) {
-	config := NewConfigWithDefaults()
+// NewWithJsonBytes creates a Config with json literal bytes.
+func NewWithJsonBytes(b []byte) (*Config, error) {
+	config := NewWithDefaults()
 	err := json.Unmarshal(b, config)
 	if err != nil {
 		return nil, err
@@ -95,11 +95,24 @@ func NewConfigWithJsonBytes(b []byte) (*Config, error) {
 	return config, nil
 }
 
-// NewConfigWithJsonFile creates a Config from a json file by fileName.
-func NewConfigWithJsonFile(fileName string) (*Config, error) {
+// NewWithJsonFile creates a Config from a json file by fileName.
+func NewWithJsonFile(fileName string) (*Config, error) {
 	b, err := ioutil.ReadFile(fileName)
 	if err != nil {
 		return nil, err
 	}
-	return NewConfigWithJsonBytes(b)
+	return NewWithJsonBytes(b)
+}
+
+// Update config from json file.
+func (config *Config) UpdateFromJsonFile(fileName string) error {
+	b, err := ioutil.ReadFile(fileName)
+	if err != nil {
+		return err
+	}
+	err = json.Unmarshal(b, config)
+	if err != nil {
+		return err
+	}
+	return err
 }
