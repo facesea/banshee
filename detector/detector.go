@@ -1,5 +1,8 @@
 // Copyright 2015 Eleme Inc. All rights reserved.
 
+// Detector is a tcp server to detect anomalies.
+//   detector := New(cfg, db)
+//   detector.Start()
 //
 package detector
 
@@ -10,78 +13,82 @@ import (
 
 	"github.com/eleme/banshee/config"
 	"github.com/eleme/banshee/models"
-	"github.com/eleme/banshee/util"
 	"github.com/eleme/banshee/storage"
+	"github.com/eleme/banshee/util"
 )
 
+// Detector is a tcp server to detect anomalies.
 type Detector struct {
-	cfg        *config.Config
-	db    *storage.DB
+	// Config
+	cfg *config.Config
+	// Storage
+	db *storage.DB
+	// Rules
 	rules      []string
 	rulesCache map[string]bool
 	rulesNames map[string][]string
 }
+
 var logger = util.NewLogger("detector")
-//Init new Detector
-func New(cfg *config.Config) *Detector {
-	db, err := storage.Open(cfg)
-	if err != nil {
-		logger.Fatal("failed to open %s: %v", cfg.Storage.Path, err)
-	}
+
+// Init new Detector.
+func New(cfg *config.Config, db *storage.DB) *Detector {
 	detector := new(Detector)
 	detector.cfg = cfg
 	detector.db = db
-	detector.rulesCache = map[string]bool{};
-	detector.rulesNames = map[string][]string{};
-	//todo get rules
+	detector.rulesCache = map[string]bool{}
+	detector.rulesNames = map[string][]string{}
+	// FIXME: rules
 	return detector
 }
 
-//Start detector
+// Start detector
 func (detector *Detector) Start() {
 	addr := fmt.Sprintf("0.0.0.0:%d", detector.cfg.Detector.Port)
 	ln, err := net.Listen("tcp", addr)
 	if err != nil {
-		logger.Fatal("failed to bind %s: %v", addr, err)
+		logger.Fatal("failed to bind tcp://%s: %v", addr, err)
 	}
-	logger.Info("listening on %s..", addr)
+	logger.Info("listening on tcp://%s..", addr)
 	for {
 		conn, err := ln.Accept()
 		if err != nil {
 			logger.Fatal("failed to accept new conn: %v", err)
 		}
-		go detector.Handle(conn)
+		go detector.handle(conn)
 	}
 }
 
-func (detector *Detector) Handle(conn net.Conn) {
+func (detector *Detector) handle(conn net.Conn) {
 	addr := conn.RemoteAddr()
 	defer func() {
 		conn.Close()
 		logger.Info("conn %s disconnected", addr)
 	}()
 	scanner := bufio.NewScanner(conn)
-	if scanner.Scan() {
+	for scanner.Scan() {
 		if err := scanner.Err(); err != nil {
 			logger.Info("failed to read conn: %v, closing it..", err)
-			return
+			break
 		}
-		s := scanner.Text()
-		metric, err := parseMetric(s);
+		line := scanner.Text()
+		metric, err := parseMetric(line)
 		if err != nil {
-			logger.Fatal("failed to parse metric: %s", s)
-			return
+			if len(line) > 10 {
+				line = line[:10]
+			}
+			logger.Error("failed to parse '%s': %v, skipping..", line, err)
+			continue
 		}
-		if detector.Match(metric) {
-			detector.Detect(metric)
+		if detector.match(metric) {
+			detector.detect(metric)
 		}
-
 	}
 }
 
-func (detector *Detector) Match(metric *models.Metric) bool {
-	bool, exists := detector.rulesCache[metric.Name]
-	if bool && exists {
+func (detector *Detector) match(metric *models.Metric) bool {
+	b, ok := detector.rulesCache[metric.Name]
+	if b && ok {
 		return true
 	}
 
@@ -99,7 +106,7 @@ func (detector *Detector) Match(metric *models.Metric) bool {
 			slice, exists := detector.rulesNames[pattern]
 			if exists {
 				detector.rulesNames[pattern] = append(slice, metric.Name)
-			}else {
+			} else {
 				detector.rulesNames[pattern] = []string{metric.Name}
 			}
 			return true
@@ -108,17 +115,7 @@ func (detector *Detector) Match(metric *models.Metric) bool {
 	return false
 }
 
-func (detector *Detector) Detect(metric *models.Metric) error {
-	//todo
-	return nil
-}
-
-func (detector *Detector) GetDBData(name string) (avg float64, std float64, num int, err error) {
-	//todo
-	return
-}
-
-func (detector *Detector) PutDBData(key string, avg float64, std float64, num int) error {
-	//todo
+func (detector *Detector) detect(metric *models.Metric) error {
+	// TODO
 	return nil
 }
