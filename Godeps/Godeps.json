@@ -1,0 +1,17 @@
+{
+	"ImportPath": "github.com/eleme/banshee",
+	"GoVersion": "go1.5.1",
+	"Packages": [
+		"./..."
+	],
+	"Deps": [
+		{
+			"ImportPath": "github.com/golang/snappy",
+			"Rev": "723cc1e459b8eea2dea4583200fd60757d40097a"
+		},
+		{
+			"ImportPath": "github.com/syndtr/goleveldb/leveldb",
+			"Rev": "5acacf6e72d3aeaf26dd3d3f163c635d3ef1e6e6"
+		}
+	]
+}
