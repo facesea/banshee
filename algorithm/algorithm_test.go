@@ -1,6 +1,6 @@
 // Copyright 2015 Eleme Inc. All rights reserved.
 
-package detector
+package algorithm
 
 import (
 	"github.com/eleme/banshee/util"
