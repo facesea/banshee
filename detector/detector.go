@@ -1,6 +1,7 @@
 // Copyright 2015 Eleme Inc. All rights reserved.
 
 // Detector is a tcp server to detect anomalies.
+//
 //   detector := New(cfg, db)
 //   detector.Start()
 //
@@ -74,7 +75,7 @@ func (detector *Detector) handle(conn net.Conn) {
 			break
 		}
 		line := scanner.Text()
-		metric, err := parseMetric(line)
+		m, err := parseMetric(line)
 		if err != nil {
 			if len(line) > 10 {
 				line = line[:10]
@@ -82,35 +83,42 @@ func (detector *Detector) handle(conn net.Conn) {
 			logger.Error("failed to parse '%s': %v, skipping..", line, err)
 			continue
 		}
-		if detector.match(metric) {
-			detector.detect(metric)
+		if detector.match(m) {
+			err = detector.detect(m)
+			if err != nil {
+				logger.Error("failed to detect metric: %v, skipping..", err)
+				continue
+			}
+			logger.Info("%s %.3f", m.Name, m.Score)
 		}
 	}
 }
 
-func (detector *Detector) match(metric *models.Metric) bool {
-	v, ok := detector.rulesCache.Get(metric.Name)
-	b := v.(bool)
-	if b && ok {
-		return true
-	}
+func (detector *Detector) match(m *models.Metric) bool {
+	// FIXME
+	// v, ok := detector.rulesCache.Get(m.Name)
+	// b := v.(bool)
+	// if b && ok {
+	// 	return true
+	// }
 
 	for _, pattern := range detector.cfg.Detector.BlackList {
-		matched := util.FnMatch(pattern, metric.Name)
+		matched := util.FnMatch(pattern, m.Name)
 		if matched {
 			return false
 		}
 	}
+	return true // FIXME: return true tempory
 	// FIXME: get rules from db
 	for _, pattern := range detector.rules {
-		matched := util.FnMatch(pattern, metric.Name)
+		matched := util.FnMatch(pattern, m.Name)
 		if matched {
-			detector.rulesCache.Set(metric.Name, true)
+			detector.rulesCache.Set(m.Name, true)
 			slice, exists := detector.rulesNames[pattern]
 			if exists {
-				detector.rulesNames[pattern] = append(slice, metric.Name)
+				detector.rulesNames[pattern] = append(slice, m.Name)
 			} else {
-				detector.rulesNames[pattern] = []string{metric.Name}
+				detector.rulesNames[pattern] = []string{m.Name}
 			}
 			return true
 		}
@@ -118,7 +126,8 @@ func (detector *Detector) match(metric *models.Metric) bool {
 	return false
 }
 
-func (detector *Detector) detect(metric *models.Metric) error {
+// Detect incoming metric with 3-sigma rule and fill the metric.Score.
+func (detector *Detector) detect(m *models.Metric) error {
 	// TODO
 	return nil
 }

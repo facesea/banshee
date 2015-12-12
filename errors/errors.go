@@ -1,5 +1,6 @@
 // Copyright 2015 Eleme Inc. All rights reserved.
 
+// Export errors and error related methods.
 package errors
 
 import "errors"
