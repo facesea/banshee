@@ -6,6 +6,9 @@ package models
 type State struct {
 	// Detection won't start if the current analyzation suite is too small,
 	// Count is to record the count of metrics hit the current grid.
+	// It won't be updated until it is greater than startSize.
+	// And there is no need to use a lock or sync.Mutex for it since incoming
+	// metrics at the same time never be duplicate.
 	Count uint32
 	// Current moving average value for this metric at this grid.
 	Average float64
