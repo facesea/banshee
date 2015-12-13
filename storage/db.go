@@ -14,8 +14,6 @@ import (
 	"fmt"
 	"os"
 	"path"
-
-	"github.com/syndtr/goleveldb/leveldb/errors"
 )
 
 // DB file mode
@@ -68,9 +66,4 @@ func (db *DB) Close() error {
 		return err
 	}
 	return nil
-}
-
-// Help to test if the current error indicates the db corrupted.
-func isCorrupted(err error) bool {
-	return errors.IsCorrupted(err)
 }

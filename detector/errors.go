@@ -2,7 +2,7 @@
 
 package detector
 
-import "github.com/eleme/banshee/errors"
+import "errors"
 
 var (
 	// Protocol
