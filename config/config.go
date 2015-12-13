@@ -2,7 +2,6 @@
 
 // Configuration for banshee with default values.
 //  Global Options
-//    debug            if on debug mode. [default: false]
 //    interval         incomding metrics time interval (in sec). [default: 10]
 //    periodicity      metrics periodicity (in sec), NumTimeGrids x TimeGridLen.
 //                     [default: [480, 1800], aka 480x0.5h]
