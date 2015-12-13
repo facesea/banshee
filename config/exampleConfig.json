@@ -1,7 +1,6 @@
 {
-  "debug": false,
   "interval": 10,
-  "periodicity": [480, 180],
+  "periodicity": [480, 1800],
   "storage": {
     "path": "storage/"
   },
@@ -10,7 +9,7 @@
     "trendFactor": 0.07,
     "strict": true,
     "blacklist": ["statsd.*"],
-    "startSize": 32
+    "startSize": 30
   },
   "webapp": {
     "port": 2016,
