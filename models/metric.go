@@ -12,6 +12,8 @@ type Metric struct {
 	Value float64
 	// Anomaly score
 	Score float64
+	// Average old
+	Average float64
 }
 
 // Return true if current metric behaves anomalous.

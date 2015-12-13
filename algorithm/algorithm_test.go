@@ -1,6 +1,6 @@
 // Copyright 2015 Eleme Inc. All rights reserved.
 
-package detector
+package algorithm
 
 import (
 	"github.com/eleme/banshee/util"
@@ -8,16 +8,22 @@ import (
 	"testing"
 )
 
-func TestDiv3sigma(t *testing.T) {
+func generateData() []float64 {
 	l := make([]float64, 0)
 	n := 100
 	min := 100.0
 	max := 120.0
 	rangeN := int(max - min)
-	wf := 0.07
 	for i := 0; i < n; i++ {
 		l = append(l, min+float64(rand.Intn(rangeN))+rand.Float64())
 	}
+	return l
+}
+
+func TestDiv3sigmaBasic(t *testing.T) {
+	wf := 0.07
+	l := generateData()
+	n := len(l)
 	// The latest element should be normal in this series
 	score := sigs(wf, l)
 	util.Assert(t, score < 1)
@@ -39,4 +45,16 @@ func TestDiv3sigma(t *testing.T) {
 	l[n] = 75
 	score = sigs(wf, l)
 	util.Assert(t, score < -1)
+}
+
+func TestDiv3sigmaFactor(t *testing.T) {
+	// The smaller the trend factor is, the more sensitive the detection will
+	// be.
+	l := generateData()
+	l = append(l, 130.0)
+	l = append(l, 140.0)
+	l = append(l, 150.0)
+	l = append(l, 160.0)
+	util.Assert(t, sigs(0.03, l) > 1)
+	util.Assert(t, sigs(0.09, l) < 1)
 }

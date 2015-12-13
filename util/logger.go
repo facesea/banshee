@@ -38,6 +38,11 @@ func NewLogger(name string) *Logger {
 	return l
 }
 
+// SetName sets the name for a logger.
+func (l *Logger) SetName(name string) {
+	l.name = name
+}
+
 // SetLevel sets the level for a logger.
 func (l *Logger) SetLevel(level int) {
 	l.level = level % len(logLevelNames)
@@ -53,7 +58,7 @@ func (l *Logger) doLog(level int, format string, a ...interface{}) {
 		msg := fmt.Sprintf(format, a...)
 		now := time.Now().String()[:23]
 		pid := os.Getpid()
-		s := fmt.Sprintf("%s %s %s[%d]: %s", now, logLevelNames[l.level], l.name, pid, msg)
+		s := fmt.Sprintf("%s %s %s[%d]: %s", now, logLevelNames[level], l.name, pid, msg)
 		fmt.Fprintln(l.w, s)
 	}
 }
@@ -87,4 +92,12 @@ func (l *Logger) Fatal(format string, a ...interface{}) {
 // Log current running env
 func (l *Logger) Runtime() {
 	l.doLog(LOG_INFO, "runtime info: using %s, up to %d cpus..", runtime.Version(), runtime.GOMAXPROCS(0))
+}
+
+// The global logger
+var logger = NewLogger("util")
+
+// Get the root logger.
+func GetRootLogger() *Logger {
+	return logger
 }

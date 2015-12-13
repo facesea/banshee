@@ -5,7 +5,7 @@
 // The algorithm is based on exponential weighted moving average,
 // exponential moving standard deviation and the 3-sigma rule.
 //
-package detector
+package algorithm
 
 import "math"
 
@@ -53,6 +53,9 @@ func Ewms(wf, avgOld, avgNew, stdOld, v float64) float64 {
 // If the score is smaller than -1, the trending is anomalously reducing
 // down.
 func Div3Sigma(avg, std, v float64) float64 {
+	if std == 0 {
+		return 0
+	}
 	return (v - avg) / (3 * std)
 }
 

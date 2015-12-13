@@ -4,8 +4,8 @@
 //  Global Options
 //    debug            if on debug mode. [default: false]
 //    interval         incomding metrics time interval (in sec). [default: 10]
-//    periodicity      metrics periodicity (in sec), NumTimeSpans x TimeSpan.
-//                     [default: [480, 180]]
+//    periodicity      metrics periodicity (in sec), NumTimeGrids x TimeGridLen.
+//                     [default: [480, 1800], aka 480x0.5h]
 //  Storage Options
 //    path             path for leveldb, which maintains analyzation
 //                     results. [default: "storage/"]
@@ -19,7 +19,7 @@
 //                     only if it matches one pattern in rules and dosent match
 //                     any pattern in blacklist. [default: ["statsd.*"]]
 //    startSize        detector won't start to detect until the data set is
-//                     larger than this size. [default: 32]
+//                     larger than this size. [default: 30, aka 5min]
 //  WebApp Options
 //    port             webapp http port to listen. [default: 2016]
 //    auth             username and password for admin basic auth. [default:
@@ -37,7 +37,6 @@ import (
 )
 
 type Config struct {
-	Debug       bool           `json:"debug"`
 	Interval    int            `json:"interval"`
 	Periodicity [2]int         `json:"periodicity"`
 	Storage     ConfigStorage  `json:"storage"`
@@ -55,7 +54,7 @@ type ConfigDetector struct {
 	TrendFactor float64  `json:"trendFactor"`
 	Strict      bool     `json:"strict"`
 	BlackList   []string `json:"blackList"`
-	StartSize   int      `json:"startSize"`
+	StartSize   uint32   `json:"startSize"`
 }
 
 type ConfigWebapp struct {
@@ -70,15 +69,14 @@ type ConfigAlerter struct {
 // NewWithDefaults creates a Config with default values.
 func NewWithDefaults() *Config {
 	config := new(Config)
-	config.Debug = false
 	config.Interval = 10
-	config.Periodicity = [2]int{480, 180}
+	config.Periodicity = [2]int{480, 1800}
 	config.Storage.Path = "storage/"
 	config.Detector.Port = 2015
 	config.Detector.TrendFactor = 0.07
 	config.Detector.Strict = true
 	config.Detector.BlackList = []string{"statsd.*"}
-	config.Detector.StartSize = 32
+	config.Detector.StartSize = uint32(30)
 	config.Webapp.Port = 2016
 	config.Webapp.Auth = [2]string{"admin", "admin"}
 	config.Alerter.Command = ""
@@ -105,7 +103,7 @@ func NewWithJsonFile(fileName string) (*Config, error) {
 }
 
 // Update config from json file.
-func (config *Config) UpdateFromJsonFile(fileName string) error {
+func (config *Config) UpdateWithJsonFile(fileName string) error {
 	b, err := ioutil.ReadFile(fileName)
 	if err != nil {
 		return err
