@@ -5,7 +5,6 @@ package alerter
 
 import (
 	"github.com/eleme/banshee/config"
-	"github.com/eleme/banshee/consts"
 	"github.com/eleme/banshee/models"
 	"github.com/eleme/banshee/util"
 )
@@ -31,10 +30,11 @@ func New(debug bool, cfg *config.Config, in chan *models.Metric) *Alerter {
 		a.logger.SetLevel(util.LOG_DEBUG)
 	}
 	a.in = in
+	return a
 }
 
 func (a *Alerter) Start() {
-	for i := 0; i < cfg.Alerter.workers; i++ {
+	for i := 0; i < a.cfg.Alerter.Workers; i++ {
 		// go
 	}
 }
