@@ -11,6 +11,6 @@ import (
 func Assert(t *testing.T, b bool) {
 	if !b {
 		_, fileName, line, _ := runtime.Caller(1)
-		t.Errorf("\n => %s:%d", fileName, line)
+		t.Errorf("\nAssertion failure => %s:%d", fileName, line)
 	}
 }
