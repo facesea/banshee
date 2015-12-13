@@ -19,13 +19,14 @@
 //                     any pattern in blacklist. [default: ["statsd.*"]]
 //    startSize        detector won't start to detect until the data set is
 //                     larger than this size. [default: 18, aka 3min]
-//    alertCommand     the command to execute on anomalies detected. [default:
-//                     "", empty string for do nothing.]
-//    alertNumWorkers  the number of workers to alert. [default: 4]
 //  WebApp Options
 //    port             webapp http port to listen. [default: 2016]
 //    auth             username and password for admin basic auth. [default:
 //                     ["admin", "admin"]]
+//  Alerter Options
+//    command          the command to execute on anomalies detected. [default:
+//                     "", empty string for do nothing.]
+//    workers          the number of workers to alert. [default: 4]
 // See also exampleConfig.json please.
 //
 package config
@@ -41,6 +42,7 @@ type Config struct {
 	Storage     ConfigStorage  `json:"storage"`
 	Detector    ConfigDetector `json:"detector"`
 	Webapp      ConfigWebapp   `json:"webapp"`
+	Alerter     ConfigAlerter  `json:"alerter"`
 }
 
 type ConfigStorage struct {
@@ -48,18 +50,21 @@ type ConfigStorage struct {
 }
 
 type ConfigDetector struct {
-	Port            int      `json:"port"`
-	TrendFactor     float64  `json:"trendFactor"`
-	Strict          bool     `json:"strict"`
-	BlackList       []string `json:"blackList"`
-	StartSize       uint32   `json:"startSize"`
-	AlertCommand    string   `json:"alertCommand"`
-	AlertNumWorkers int      `json:"alertNumWorkers"`
+	Port        int      `json:"port"`
+	TrendFactor float64  `json:"trendFactor"`
+	Strict      bool     `json:"strict"`
+	BlackList   []string `json:"blackList"`
+	StartSize   uint32   `json:"startSize"`
 }
 
 type ConfigWebapp struct {
 	Port int       `json:"port"`
 	Auth [2]string `json:"auth"`
+}
+
+type ConfigAlerter struct {
+	Command string `json:"command"`
+	Workers int    `json:"workers"`
 }
 
 // NewWithDefaults creates a Config with default values.
@@ -73,10 +78,10 @@ func NewWithDefaults() *Config {
 	config.Detector.Strict = true
 	config.Detector.BlackList = []string{"statsd.*"}
 	config.Detector.StartSize = uint32(18)
-	config.Detector.AlertCommand = ""
-	config.Detector.AlertNumWorkers = 4
 	config.Webapp.Port = 2016
 	config.Webapp.Auth = [2]string{"admin", "admin"}
+	config.Alerter.Command = ""
+	config.Alerter.Workers = 4
 	return config
 }
 

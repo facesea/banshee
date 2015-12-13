@@ -9,12 +9,14 @@
     "trendFactor": 0.05,
     "strict": true,
     "blacklist": ["statsd.*"],
-    "startSize": 18,
-    "alertCommand": "",
-    "alertNumWorkers": 4
+    "startSize": 18
   },
   "webapp": {
     "port": 2016,
     "auth": ["admin", "admin"]
+  },
+  "alerter": {
+    "command": "",
+    "workers": 4
   }
 }
