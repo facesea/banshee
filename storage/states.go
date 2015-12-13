@@ -4,7 +4,6 @@ package storage
 
 import (
 	"fmt"
-	"github.com/eleme/banshee/errors"
 	"github.com/eleme/banshee/models"
 	"github.com/syndtr/goleveldb/leveldb"
 )
@@ -76,9 +75,6 @@ func (db *DB) GetState(m *models.Metric) (*models.State, error) {
 	key := db.s.keyOf(m)
 	val, err := db.s.db.Get(key, nil)
 	if err != nil {
-		if isCorrupted(err) {
-			return nil, errors.NewErrFatal(err)
-		}
 		if err == leveldb.ErrNotFound {
 			return nil, ErrNotFound
 		}
@@ -98,9 +94,6 @@ func (db *DB) PutState(m *models.Metric, s *models.State) error {
 	val := db.s.valOf(s)
 	err := db.s.db.Put(key, val, nil)
 	if err != nil {
-		if isCorrupted(err) {
-			return errors.NewErrFatal(err)
-		}
 		return err
 	}
 	return nil

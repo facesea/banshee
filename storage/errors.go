@@ -2,7 +2,7 @@
 
 package storage
 
-import "github.com/eleme/banshee/errors"
+import "errors"
 
 var (
 	ErrNotFound  = errors.New("db: not found")
