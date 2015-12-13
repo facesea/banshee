@@ -139,30 +139,34 @@ func (d *Detector) detect(m *models.Metric) error {
 	wf := d.cfg.Detector.TrendFactor
 	startSize := d.cfg.Detector.StartSize
 	state, err := d.db.GetState(m)
+	// Unexcepted error
 	if err != nil && err != storage.ErrNotFound {
 		return err
 	}
-	stateNext := &models.State{}
+	stateN := &models.State{}
 	if err == storage.ErrNotFound {
+		// Not found, initialize as first
 		m.Average = m.Value
-		stateNext.Average = m.Value
-		stateNext.StdDev = 0
-		stateNext.Count = 1
+		stateN.Average = m.Value
+		stateN.StdDev = 0
+		stateN.Count = 1
 	} else {
+		// Found, move to next
 		m.Average = state.Average
-		stateNext.Average = algorithm.Ewma(wf, state.Average, m.Value)
-		stateNext.StdDev = algorithm.Ewms(wf, state.Average, stateNext.Average, state.StdDev, m.Value)
+		stateN.Average = algorithm.Ewma(wf, state.Average, m.Value)
+		stateN.StdDev = algorithm.Ewms(wf, state.Average, stateN.Average, state.StdDev, m.Value)
 		if state.Count < startSize {
-			stateNext.Count = state.Count + 1
+			stateN.Count = state.Count + 1
 		} else {
-			stateNext.Count = state.Count
+			stateN.Count = state.Count
 		}
 	}
-	if stateNext.Count >= startSize {
-		m.Score = algorithm.Div3Sigma(stateNext.Average, stateNext.StdDev, m.Value)
+	// Don't calculate the score if current count is not enough.
+	if stateN.Count >= startSize {
+		m.Score = algorithm.Div3Sigma(stateN.Average, stateN.StdDev, m.Value)
 	} else {
 		m.Score = 0
 	}
-	err = d.db.PutState(m, stateNext)
+	err = d.db.PutState(m, stateN)
 	return err
 }
