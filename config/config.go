@@ -55,7 +55,7 @@ type ConfigDetector struct {
 	TrendFactor float64  `json:"trendFactor"`
 	Strict      bool     `json:"strict"`
 	BlackList   []string `json:"blackList"`
-	StartSize   int      `json:"startSize"`
+	StartSize   uint32   `json:"startSize"`
 }
 
 type ConfigWebapp struct {
@@ -78,7 +78,7 @@ func NewWithDefaults() *Config {
 	config.Detector.TrendFactor = 0.07
 	config.Detector.Strict = true
 	config.Detector.BlackList = []string{"statsd.*"}
-	config.Detector.StartSize = 32
+	config.Detector.StartSize = uint32(20)
 	config.Webapp.Port = 2016
 	config.Webapp.Auth = [2]string{"admin", "admin"}
 	config.Alerter.Command = ""
