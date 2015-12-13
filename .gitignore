@@ -4,4 +4,4 @@ Godeps/_workspace
 storage/rules/
 storage/*x*
 test-config.json
-tets-storage/
+test-storage/

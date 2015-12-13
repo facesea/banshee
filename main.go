@@ -14,16 +14,20 @@ import (
 func main() {
 	// Argv parsing
 	fileName := flag.String("c", "config.json", "config file")
+	debug := flag.Bool("d", false, "debug mode")
 	flag.Parse()
 	// Logging
 	logger := util.NewLogger("banshee")
+	if *debug {
+		logger.SetLevel(util.LOG_DEBUG)
+	}
 	logger.Runtime()
 	// Config
 	cfg := config.NewWithDefaults()
-	if flag.NFlag() != 0 {
-		err := cfg.UpdateFromJsonFile(*fileName)
+	if flag.NFlag() == 1 && *debug == false {
+		err := cfg.UpdateWithJsonFile(*fileName)
 		if err != nil {
-			logger.Fatal("%s", err)
+			logger.Fatal("failed to open %s: %s", *fileName, err)
 		}
 	} else {
 		logger.Warn("no config file specified, using default..")
@@ -35,6 +39,6 @@ func main() {
 		logger.Fatal("failed to open %s: %v", cfg.Storage.Path, err)
 	}
 	// Detector
-	detector := detector.New(cfg, db)
+	detector := detector.New(*debug, cfg, db)
 	detector.Start()
 }
