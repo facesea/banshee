@@ -13,7 +13,6 @@ import (
 	"net"
 	"time"
 
-	"github.com/eleme/banshee/algorithm"
 	"github.com/eleme/banshee/config"
 	"github.com/eleme/banshee/models"
 	"github.com/eleme/banshee/storage"
@@ -160,8 +159,8 @@ func (d *Detector) detect(m *models.Metric) error {
 	} else {
 		// Found, move to next
 		m.Average = state.Average
-		stateN.Average = algorithm.Ewma(wf, state.Average, m.Value)
-		stateN.StdDev = algorithm.Ewms(wf, state.Average, stateN.Average, state.StdDev, m.Value)
+		stateN.Average = ewma(wf, state.Average, m.Value)
+		stateN.StdDev = ewms(wf, state.Average, stateN.Average, state.StdDev, m.Value)
 		if state.Count < startSize {
 			stateN.Count = state.Count + 1
 		} else {
@@ -170,7 +169,7 @@ func (d *Detector) detect(m *models.Metric) error {
 	}
 	// Don't calculate the score if current count is not enough.
 	if stateN.Count >= startSize {
-		m.Score = algorithm.Div3Sigma(stateN.Average, stateN.StdDev, m.Value)
+		m.Score = div3Sigma(stateN.Average, stateN.StdDev, m.Value)
 	} else {
 		m.Score = 0
 	}
