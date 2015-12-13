@@ -11,6 +11,7 @@ import (
 	"bufio"
 	"fmt"
 	"net"
+	"time"
 
 	"github.com/eleme/banshee/algorithm"
 	"github.com/eleme/banshee/config"
@@ -29,6 +30,8 @@ type Detector struct {
 	logger *util.Logger
 	// Storage
 	db *storage.DB
+	// Output
+	out chan *models.Metric
 	// Rules
 	rules      []string
 	rulesCache *util.SafeMap
@@ -36,7 +39,7 @@ type Detector struct {
 }
 
 // Init new Detector.
-func New(debug bool, cfg *config.Config, db *storage.DB) *Detector {
+func New(debug bool, cfg *config.Config, db *storage.DB, out chan *models.Metric) *Detector {
 	d := new(Detector)
 	d.debug = debug
 	d.cfg = cfg
@@ -45,6 +48,7 @@ func New(debug bool, cfg *config.Config, db *storage.DB) *Detector {
 		d.logger.SetLevel(util.LOG_DEBUG)
 	}
 	d.db = db
+	d.out = out
 	d.rulesCache = util.NewSafeMap()
 	d.rulesNames = map[string][]string{}
 	// FIXME: rules
@@ -82,6 +86,7 @@ func (d *Detector) handle(conn net.Conn) {
 			d.logger.Info("failed to read conn: %v, closing it..", err)
 			break
 		}
+		startAt := time.Now()
 		line := scanner.Text()
 		m, err := parseMetric(line)
 		if err != nil {
@@ -97,7 +102,9 @@ func (d *Detector) handle(conn net.Conn) {
 				d.logger.Error("failed to detect metric: %v, skipping..", err)
 				continue
 			}
-			d.logger.Debug("detected %s => average %.3f, socre %.3f", m.Name, m.Average, m.Score)
+			elapsed := time.Since(startAt)
+			d.logger.Debug("detected %s cost=%dμs", m.String(), elapsed.Nanoseconds()/1000)
+			d.out <- m
 		}
 	}
 }

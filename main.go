@@ -6,7 +6,9 @@ import (
 	"flag"
 
 	"github.com/eleme/banshee/config"
+	"github.com/eleme/banshee/consts"
 	"github.com/eleme/banshee/detector"
+	"github.com/eleme/banshee/models"
 	"github.com/eleme/banshee/storage"
 	"github.com/eleme/banshee/util"
 )
@@ -39,6 +41,7 @@ func main() {
 		logger.Fatal("failed to open %s: %v", cfg.Storage.Path, err)
 	}
 	// Detector
-	detector := detector.New(*debug, cfg, db)
+	ch := make(chan *models.Metric, consts.DetectorOutBufferSizeMax)
+	detector := detector.New(*debug, cfg, db, ch)
 	detector.Start()
 }
