@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"runtime"
 	"time"
 )
 
@@ -87,11 +86,6 @@ func (l *Logger) Error(format string, a ...interface{}) {
 func (l *Logger) Fatal(format string, a ...interface{}) {
 	l.doLog(LOG_ERROR, format, a...)
 	os.Exit(1)
-}
-
-// Log current running env
-func (l *Logger) Runtime() {
-	l.doLog(LOG_INFO, "runtime info: using %s, up to %d cpus..", runtime.Version(), runtime.GOMAXPROCS(0))
 }
 
 // The global logger
