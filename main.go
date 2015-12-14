@@ -4,11 +4,10 @@ package main
 
 import (
 	"flag"
+	"runtime"
 
 	"github.com/eleme/banshee/config"
-	"github.com/eleme/banshee/consts"
 	"github.com/eleme/banshee/detector"
-	"github.com/eleme/banshee/models"
 	"github.com/eleme/banshee/storage"
 	"github.com/eleme/banshee/util"
 )
@@ -23,9 +22,9 @@ func main() {
 	if *debug {
 		logger.SetLevel(util.LOG_DEBUG)
 	}
-	logger.Runtime()
+	logger.Debug("using %s and max number of cpus is %d", runtime.Version(), runtime.GOMAXPROCS(-1))
 	// Config
-	cfg := config.NewWithDefaults()
+	cfg := config.New()
 	if flag.NFlag() == 1 && *debug == false {
 		err := cfg.UpdateWithJsonFile(*fileName)
 		if err != nil {
@@ -35,13 +34,12 @@ func main() {
 		logger.Warn("no config file specified, using default..")
 	}
 	// Storage
-	numGrids, gridLen := cfg.Periodicity[0], cfg.Periodicity[1]
+	numGrids, gridLen := cfg.Period[0], cfg.Period[1]
 	db, err := storage.Open(cfg.Storage.Path, numGrids, gridLen)
 	if err != nil {
 		logger.Fatal("failed to open %s: %v", cfg.Storage.Path, err)
 	}
 	// Detector
-	ch := make(chan *models.Metric, consts.DetectorOutBufferSizeMax)
-	detector := detector.New(*debug, cfg, db, ch)
+	detector := detector.New(*debug, cfg, db)
 	detector.Start()
 }

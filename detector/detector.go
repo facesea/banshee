@@ -19,18 +19,21 @@ import (
 	"github.com/eleme/banshee/util"
 )
 
+// Further alertings will be dropped if this limit is reached.
+const bufferedDetectedMetricsLimit = 10 * 1024
+
+var logger = util.NewLogger("detector")
+
 // Detector is a tcp server to detect anomalies.
 type Detector struct {
 	// Debug
 	debug bool
 	// Config
 	cfg *config.Config
-	// Logger
-	logger *util.Logger
 	// Storage
 	db *storage.DB
-	// Output
-	out chan *models.Metric
+	// Results
+	rc chan *models.Metric
 	// Rules
 	rules      []string
 	rulesCache *util.SafeMap
@@ -38,16 +41,15 @@ type Detector struct {
 }
 
 // Init new Detector.
-func New(debug bool, cfg *config.Config, db *storage.DB, out chan *models.Metric) *Detector {
+func New(debug bool, cfg *config.Config, db *storage.DB) *Detector {
 	d := new(Detector)
 	d.debug = debug
 	d.cfg = cfg
-	d.logger = util.NewLogger("banshee.detector")
 	if d.debug {
-		d.logger.SetLevel(util.LOG_DEBUG)
+		logger.SetLevel(util.LOG_DEBUG)
 	}
 	d.db = db
-	d.out = out
+	d.rc = make(chan *models.Metric, bufferedDetectedMetricsLimit)
 	d.rulesCache = util.NewSafeMap()
 	d.rulesNames = map[string][]string{}
 	// FIXME: rules
@@ -59,13 +61,13 @@ func (d *Detector) Start() {
 	addr := fmt.Sprintf("0.0.0.0:%d", d.cfg.Detector.Port)
 	ln, err := net.Listen("tcp", addr)
 	if err != nil {
-		d.logger.Fatal("failed to bind tcp://%s: %v", addr, err)
+		logger.Fatal("failed to bind tcp://%s: %v", addr, err)
 	}
-	d.logger.Info("listening on tcp://%s..", addr)
+	logger.Info("listening on tcp://%s..", addr)
 	for {
 		conn, err := ln.Accept()
 		if err != nil {
-			d.logger.Fatal("failed to accept new conn: %v", err)
+			logger.Fatal("failed to accept new conn: %v", err)
 		}
 		go d.handle(conn)
 	}
@@ -77,12 +79,12 @@ func (d *Detector) handle(conn net.Conn) {
 	addr := conn.RemoteAddr()
 	defer func() {
 		conn.Close()
-		d.logger.Info("conn %s disconnected", addr)
+		logger.Info("conn %s disconnected", addr)
 	}()
 	scanner := bufio.NewScanner(conn)
 	for scanner.Scan() {
 		if err := scanner.Err(); err != nil {
-			d.logger.Info("failed to read conn: %v, closing it..", err)
+			logger.Info("failed to read conn: %v, closing it..", err)
 			break
 		}
 		startAt := time.Now()
@@ -92,18 +94,18 @@ func (d *Detector) handle(conn net.Conn) {
 			if len(line) > 10 {
 				line = line[:10]
 			}
-			d.logger.Error("failed to parse '%s': %v, skipping..", line, err)
+			logger.Error("failed to parse '%s': %v, skipping..", line, err)
 			continue
 		}
 		if d.match(m) {
 			err = d.detect(m)
 			if err != nil {
-				d.logger.Error("failed to detect metric: %v, skipping..", err)
+				logger.Error("failed to detect metric: %v, skipping..", err)
 				continue
 			}
 			elapsed := time.Since(startAt)
-			d.logger.Debug("detected %s cost=%dμs", m.String(), elapsed.Nanoseconds()/1000)
-			d.out <- m
+			logger.Debug("detected %s cost=%dμs", m.String(), elapsed.Nanoseconds()/1000)
+			d.rc <- m
 		}
 	}
 }
@@ -142,7 +144,7 @@ func (d *Detector) match(m *models.Metric) bool {
 
 // Detect incoming metric with 3-sigma rule and fill the metric.Score.
 func (d *Detector) detect(m *models.Metric) error {
-	wf := d.cfg.Detector.TrendFactor
+	wf := d.cfg.Detector.Factor
 	startSize := d.cfg.Detector.StartSize
 	state, err := d.db.GetState(m)
 	// Unexcepted error

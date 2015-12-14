@@ -7,8 +7,9 @@ import (
 )
 
 func TestExampleConfigParsing(t *testing.T) {
-	config, err := NewWithJsonFile("./exampleConfig.json")
+	config := New()
+	err := config.UpdateWithJsonFile("./exampleConfig.json")
 	util.Assert(t, err == nil)
-	defaults := NewWithDefaults()
+	defaults := New()
 	util.Assert(t, reflect.DeepEqual(config, defaults))
 }
