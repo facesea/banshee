@@ -6,17 +6,14 @@ import (
 	"github.com/eleme/banshee/util"
 )
 
-// Conditions 	000001 = 0x1 	000010 = 0x2	000100 = 0x4
-//				001000 = 0x8	010000 = 0x10	100000 = 0x20
+// Conditions
 const (
-	WhenAnomalousTrendUp   = 0x1
-	WhenAnomalousTrendDown = 0x2
-	//When anomalous greater than thresholdMax AND trend up
-	WhenAnomalousTrendUpTo = 0x4
-	//When anomalous less than thresholdMin AND trend Down
-	WhenAnomalousTrendDownTo = 0x8
-	WhenValueGreaterThan     = 0x10
-	WhenValueLessThan        = 0x20
+	WhenTrendUp             = 0x1  // 0b000001
+	WhenTrendDown           = 0x2  // 0b000010
+	WhenValueGt             = 0x4  // 0b000100
+	WhenValueLt             = 0x8  // 0b001000
+	WhenTrendUpAndValueGt   = 0x10 // 0b010000
+	WhenTrendDownAndValueLt = 0x20 // 0b100000
 )
 
 // Rule is a type to describe alerting rule.
@@ -24,43 +21,47 @@ type Rule struct {
 	// Pattern is a wildcard string
 	Pattern string
 	// Condition
-	//When = sum (conditions const) , for example :
-	//0x15 when WhenAnomalousTrendUp OR WhenAnomalousTrendUpTo OR WhenValueGreaterThan
-	When         int
+	// When = condition1 | condition2, example:
+	//   0x3 = WhenTrendUp | WhenTrendDown
+	When int
+	// Additional
 	ThresholdMax float64
 	ThresholdMin float64
+	// Never alert for values below this line.
+	TrustLine float64
 }
 
-// Test Metric with Rule.
+// Return true if the metric is against this rule.
 func (rule *Rule) Test(m *Metric) bool {
 	if !util.FnMatch(m.Name, rule.Pattern) {
 		return false
 	}
-	test := false
-	tmp := rule.When
-	for k := 0x20; k >= 0x1; k = k / 2 {
-		if tmp >= k {
-			tmp = tmp - k
-			switch k {
-			case WhenAnomalousTrendUp:
-				test = test || m.IsAnomalousTrendUp()
-			case WhenAnomalousTrendDown:
-				test = test || m.IsAnomalousTrendDown()
-			case WhenValueGreaterThan:
-				test = test || m.Value >= rule.ThresholdMax
-			case WhenValueLessThan:
-				test = test || m.Value <= rule.ThresholdMin
-			case WhenAnomalousTrendUpTo:
-				test = test || (m.IsAnomalousTrendUp() && m.Value >= rule.ThresholdMax)
-			case WhenAnomalousTrendDownTo:
-				test = test || (m.IsAnomalousTrendDown() && m.Value <= rule.ThresholdMin)
-			}
-		}
-		if test {
-			return test
-		}
+	// Ignore it if it's value small enough to be trust
+	if m.Value < rule.TrustLine {
+		return false
 	}
-	return test
+
+	ok := false
+
+	if !ok && (rule.When&WhenTrendUp != 0) {
+		ok = m.Score >= 1
+	}
+	if !ok && (rule.When&WhenTrendDown != 0) {
+		ok = m.Score <= -1
+	}
+	if !ok && (rule.When&WhenValueGt != 0) {
+		ok = m.Value >= rule.ThresholdMax
+	}
+	if !ok && (rule.When&WhenValueLt != 0) {
+		ok = m.Value <= rule.ThresholdMin
+	}
+	if !ok && (rule.When&WhenTrendUpAndValueGt != 0) {
+		ok = m.Score >= 1 && m.Value >= rule.ThresholdMax
+	}
+	if !ok && (rule.When&WhenTrendDownAndValueLt != 0) {
+		ok = m.Score <= -1 && m.Value <= rule.ThresholdMin
+	}
+	return ok
 }
 
 // Validate rule.When
