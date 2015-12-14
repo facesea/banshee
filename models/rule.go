@@ -8,17 +8,12 @@ import (
 
 // Conditions
 const (
-	WhenAnomalousTrend                  = 0x0
-	WhenAnomalousTrendUp                = 0x1
-	WhenAnomalousTrendDown              = 0x2
-	WhenAnomalousTrendUpTo              = 0x3
-	WhenAnomalousTrendDownTo            = 0x4
-	WhenAnomalousTrendUpToOrTrendDown   = 0x5
-	WhenAnomalousTrendDownToOrTrendUp   = 0x6
-	WhenAnomalousTrendUpToOrTrendDownTo = 0x7
-	WhenValueGreaterThan                = 0x8
-	WhenValueLessThan                   = 0x9
-	WhenValueGreaterThanOrLessThan      = 0xa
+	WhenTrendUp             = 0x1  // 0b000001
+	WhenTrendDown           = 0x2  // 0b000010
+	WhenValueGt             = 0x4  // 0b000100
+	WhenValueLt             = 0x8  // 0b001000
+	WhenTrendUpAndValueGt   = 0x10 // 0b010000
+	WhenTrendDownAndValueLt = 0x20 // 0b100000
 )
 
 // Rule is a type to describe alerting rule.
@@ -26,44 +21,50 @@ type Rule struct {
 	// Pattern is a wildcard string
 	Pattern string
 	// Condition
-	When         int
+	// When = condition1 | condition2, example:
+	//   0x3 = WhenTrendUp | WhenTrendDown
+	When int
+	// Additional
 	ThresholdMax float64
 	ThresholdMin float64
+	// Never alert for values below this line.
+	TrustLine float64
 }
 
-// Test Metric with Rule.
+// Return true if the metric is against this rule.
 func (rule *Rule) Test(m *Metric) bool {
 	if !util.FnMatch(m.Name, rule.Pattern) {
 		return false
 	}
-	switch rule.When {
-	case WhenAnomalousTrend:
-		return m.IsAnomalous()
-	case WhenAnomalousTrendUp:
-		return m.IsAnomalousTrendUp()
-	case WhenAnomalousTrendDown:
-		return m.IsAnomalousTrendDown()
-	case WhenAnomalousTrendUpTo:
-		return m.IsAnomalousTrendUp() && m.Value >= rule.ThresholdMin
-	case WhenAnomalousTrendDownTo:
-		return m.IsAnomalousTrendDown() && m.Value <= rule.ThresholdMax
-	case WhenAnomalousTrendUpToOrTrendDown:
-		return (m.IsAnomalousTrendUp() && m.Value >= rule.ThresholdMin) || m.IsAnomalousTrendDown()
-	case WhenAnomalousTrendDownToOrTrendUp:
-		return (m.IsAnomalousTrendDown() && m.Value <= rule.ThresholdMax) || m.IsAnomalousTrendUp()
-	case WhenAnomalousTrendUpToOrTrendDownTo:
-		return (m.IsAnomalousTrendUp() && m.Value >= rule.ThresholdMin) || (m.IsAnomalousTrendDown() && m.Value <= rule.ThresholdMax)
-	case WhenValueGreaterThan:
-		return m.Value >= rule.ThresholdMin
-	case WhenValueLessThan:
-		return m.Value <= rule.ThresholdMax
-	case WhenValueGreaterThanOrLessThan:
-		return m.Value <= rule.ThresholdMax || m.Value >= rule.ThresholdMin
+	// Ignore it if it's value small enough to be trust
+	if m.Value < rule.TrustLine {
+		return false
 	}
-	return false
+
+	ok := false
+
+	if !ok && (rule.When&WhenTrendUp != 0) {
+		ok = m.Score >= 1
+	}
+	if !ok && (rule.When&WhenTrendDown != 0) {
+		ok = m.Score <= -1
+	}
+	if !ok && (rule.When&WhenValueGt != 0) {
+		ok = m.Value >= rule.ThresholdMax
+	}
+	if !ok && (rule.When&WhenValueLt != 0) {
+		ok = m.Value <= rule.ThresholdMin
+	}
+	if !ok && (rule.When&WhenTrendUpAndValueGt != 0) {
+		ok = m.Score >= 1 && m.Value >= rule.ThresholdMax
+	}
+	if !ok && (rule.When&WhenTrendDownAndValueLt != 0) {
+		ok = m.Score <= -1 && m.Value <= rule.ThresholdMin
+	}
+	return ok
 }
 
 // Validate rule.When
 func (rule *Rule) IsValid() bool {
-	return rule.When >= 0x0 && rule.When <= 0xa
+	return rule.When >= 0x1 && rule.When <= 0x3F
 }
