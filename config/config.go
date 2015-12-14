@@ -1,34 +1,5 @@
 // Copyright 2015 Eleme Inc. All rights reserved.
 
-// Configuration for banshee with default values.
-//  Global Options
-//    interval         incomding metrics time interval (in sec). [default: 10]
-//    periodicity      metrics periodicity (in sec), NumTimeGrids x TimeGridLen.
-//                     [default: [288, 300], aka 288x5min]
-//  Storage Options
-//    path             path for leveldb, which maintains analyzation
-//                     results. [default: "storage/"]
-//  Detector Options
-//    port             detector tcp port to listen. [default: 2015]
-//    trendFactor      the factor to calculate trending value via weighted
-//                     moving average algorithm. [default: 0.05]
-//    strict           if this is set false, detector will passivate latest
-//                     metric. [default: true]
-//    blacklist        metrics blacklist, detector will allow one metric to pass
-//                     only if it matches one pattern in rules and dosent match
-//                     any pattern in blacklist. [default: ["statsd.*"]]
-//    startSize        detector won't start to detect until the data set is
-//                     larger than this size. [default: 18, aka 3min]
-//  WebApp Options
-//    port             webapp http port to listen. [default: 2016]
-//    auth             username and password for admin basic auth. [default:
-//                     ["admin", "admin"]]
-//  Alerter Options
-//    command          the command to execute on anomalies detected. [default:
-//                     "", empty string for do nothing.]
-//    workers          the number of workers to alert. [default: 4]
-// See also exampleConfig.json please.
-//
 package config
 
 import (
@@ -36,13 +7,22 @@ import (
 	"io/ioutil"
 )
 
+// Defaults
+const (
+	DefaultInterval     int     = 10
+	DefaultNumGrids     int     = 288
+	DefaultGridLen      int     = 300
+	DefaultWeightFactor float64 = 0.05
+	DefaultStartSize    int     = 18
+)
+
 type Config struct {
-	Interval    int            `json:"interval"`
-	Periodicity [2]int         `json:"periodicity"`
-	Storage     ConfigStorage  `json:"storage"`
-	Detector    ConfigDetector `json:"detector"`
-	Webapp      ConfigWebapp   `json:"webapp"`
-	Alerter     ConfigAlerter  `json:"alerter"`
+	Interval int            `json:"interval"`
+	Period   [2]int         `json:"period"`
+	Storage  ConfigStorage  `json:"storage"`
+	Detector ConfigDetector `json:"detector"`
+	Webapp   ConfigWebapp   `json:"webapp"`
+	Alerter  ConfigAlerter  `json:"alerter"`
 }
 
 type ConfigStorage struct {
@@ -50,11 +30,10 @@ type ConfigStorage struct {
 }
 
 type ConfigDetector struct {
-	Port        int      `json:"port"`
-	TrendFactor float64  `json:"trendFactor"`
-	Strict      bool     `json:"strict"`
-	BlackList   []string `json:"blackList"`
-	StartSize   uint32   `json:"startSize"`
+	Port      int      `json:"port"`
+	Factor    float64  `json:"factor"`
+	BlackList []string `json:"blackList"`
+	StartSize int      `json:"startSize"`
 }
 
 type ConfigWebapp struct {
@@ -67,17 +46,16 @@ type ConfigAlerter struct {
 	Workers int    `json:"workers"`
 }
 
-// NewWithDefaults creates a Config with default values.
-func NewWithDefaults() *Config {
+// New creates a Config with default values.
+func New() *Config {
 	config := new(Config)
-	config.Interval = 10
-	config.Periodicity = [2]int{288, 300}
+	config.Interval = DefaultInterval
+	config.Period = [2]int{DefaultNumGrids, DefaultGridLen}
 	config.Storage.Path = "storage/"
 	config.Detector.Port = 2015
-	config.Detector.TrendFactor = 0.05
-	config.Detector.Strict = true
-	config.Detector.BlackList = []string{"statsd.*"}
-	config.Detector.StartSize = uint32(18)
+	config.Detector.Factor = DefaultWeightFactor
+	config.Detector.BlackList = []string{}
+	config.Detector.StartSize = DefaultStartSize
 	config.Webapp.Port = 2016
 	config.Webapp.Auth = [2]string{"admin", "admin"}
 	config.Alerter.Command = ""
@@ -85,26 +63,7 @@ func NewWithDefaults() *Config {
 	return config
 }
 
-// NewWithJsonBytes creates a Config with json literal bytes.
-func NewWithJsonBytes(b []byte) (*Config, error) {
-	config := NewWithDefaults()
-	err := json.Unmarshal(b, config)
-	if err != nil {
-		return nil, err
-	}
-	return config, nil
-}
-
-// NewWithJsonFile creates a Config from a json file by fileName.
-func NewWithJsonFile(fileName string) (*Config, error) {
-	b, err := ioutil.ReadFile(fileName)
-	if err != nil {
-		return nil, err
-	}
-	return NewWithJsonBytes(b)
-}
-
-// Update config from json file.
+// Update config with json file.
 func (config *Config) UpdateWithJsonFile(fileName string) error {
 	b, err := ioutil.ReadFile(fileName)
 	if err != nil {
