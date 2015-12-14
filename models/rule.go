@@ -66,5 +66,5 @@ func (rule *Rule) Test(m *Metric) bool {
 
 // Validate rule.When
 func (rule *Rule) IsValid() bool {
-	return rule.When > 0x1 && rule.When <= 0x3F
+	return rule.When >= 0x1 && rule.When <= 0x3F
 }
