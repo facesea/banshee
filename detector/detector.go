@@ -1,10 +1,7 @@
 // Copyright 2015 Eleme Inc. All rights reserved.
 
-// Detector is a tcp server to detect anomalies.
-//
-//   detector := New(cfg, db)
-//   detector.Start()
-//
+// Detector is a tcp server which detects whether incoming metrics are
+// anomalies and send alertings on anomalies found.
 package detector
 
 import (
@@ -22,8 +19,9 @@ import (
 	"github.com/eleme/banshee/util/safemap"
 )
 
-// Further alertings will be dropped if this limit is reached.
-const bufferedDetectedMetricsLimit = 10 * 1024
+// Limit for buffered detected metric results, further results will be dropped
+// if this limit is reached.
+const bufferedMetricResultsLimit = 10 * 1024
 
 // Detector is a tcp server to detect anomalies.
 type Detector struct {
@@ -33,25 +31,21 @@ type Detector struct {
 	db *storage.DB
 	// Results
 	rc chan *models.Metric
-	// Rules
-	rules      []string
-	rulesCache *safemap.SafeMap
-	rulesNames map[string][]string
+	// Filter
+	matched *safemap.SafeMap
 }
 
-// Init new Detector.
+// Create a detector.
 func New(cfg *config.Config, db *storage.DB) *Detector {
 	d := new(Detector)
 	d.cfg = cfg
 	d.db = db
-	d.rc = make(chan *models.Metric, bufferedDetectedMetricsLimit)
-	d.rulesCache = safemap.New()
-	d.rulesNames = map[string][]string{}
-	// FIXME: rules
+	d.rc = make(chan *models.Metric, bufferedMetricResultsLimit)
+	d.matched = safemap.New()
 	return d
 }
 
-// Start detector
+// Start detector.
 func (d *Detector) Start() {
 	addr := fmt.Sprintf("0.0.0.0:%d", d.cfg.Detector.Port)
 	ln, err := net.Listen("tcp", addr)
@@ -76,10 +70,12 @@ func (d *Detector) handle(conn net.Conn) {
 		conn.Close()
 		log.Info("conn %s disconnected", addr)
 	}()
+	log.Info("conn %s established", addr)
+	// Scan line by line.
 	scanner := bufio.NewScanner(conn)
 	for scanner.Scan() {
 		if err := scanner.Err(); err != nil {
-			log.Info("failed to read conn: %v, closing it..", err)
+			log.Info("read conn: %v, closing it..", err)
 			break
 		}
 		startAt := time.Now()
@@ -89,87 +85,90 @@ func (d *Detector) handle(conn net.Conn) {
 			if len(line) > 10 {
 				line = line[:10]
 			}
-			log.Error("failed to parse '%s': %v, skipping..", line, err)
+			log.Error("parse '%s': %v, skipping..", line, err)
 			continue
 		}
 		if d.match(m) {
 			err = d.detect(m)
 			if err != nil {
-				log.Error("failed to detect metric: %v, skipping..", err)
+				log.Error("detect: %v, skipping..", err)
 				continue
 			}
 			elapsed := time.Since(startAt)
-			log.Debug("detected %s cost=%dμs", m.String(), elapsed.Nanoseconds()/1000)
+			log.Debug("name=%s average=%.3f score=%.3f cost=%dμs", m.Name, m.Average, m.Score, elapsed.Nanoseconds()/1000)
 			d.rc <- m
 		}
 	}
 }
 
+// Test whether a metric matches the rules.
 func (d *Detector) match(m *models.Metric) bool {
-	// FIXME
-	// v, ok := d.rulesCache.Get(m.Name)
-	// b := v.(bool)
-	// if b && ok {
-	// 	return true
-	// }
-
+	// Check cache first.
+	v, ok := d.matched.Get(m.Name)
+	if ok {
+		return v.(bool)
+	}
+	// Check blacklist.
 	for _, pattern := range d.cfg.Detector.BlackList {
-		matched := util.Match(pattern, m.Name)
-		if matched {
+		if util.Match(m.Name, pattern) {
+			d.matched.Set(m.Name, false)
+			log.Debug("%s hit black pattern %s", m.Name, pattern)
 			return false
 		}
 	}
-	return true // FIXME: return true tempory
-	// FIXME: get rules from db
-	for _, pattern := range d.rules {
-		matched := util.Match(pattern, m.Name)
-		if matched {
-			d.rulesCache.Set(m.Name, true)
-			slice, exists := d.rulesNames[pattern]
-			if exists {
-				d.rulesNames[pattern] = append(slice, m.Name)
-			} else {
-				d.rulesNames[pattern] = []string{m.Name}
-			}
+	// Check rules.
+	rules := d.db.UsingA().GetRules()
+	for _, rule := range rules {
+		if util.Match(m.Name, rule.Pattern) {
+			d.matched.Set(m.Name, true)
 			return true
 		}
 	}
+	// No rules was hit.
+	log.Debug("%s hit no rules", m.Name)
 	return false
 }
 
 // Detect incoming metric with 3-sigma rule and fill the metric.Score.
 func (d *Detector) detect(m *models.Metric) error {
+	// Arguments
 	wf := d.cfg.Detector.Factor
 	startSize := d.cfg.Detector.StartSize
-	state, err := d.db.UsingS().Get(m)
-	// Unexcepted error
+	// Get pervious state.
+	s, err := d.db.UsingS().Get(m)
 	if err != nil && err != sdb.ErrNotFound {
 		return err
 	}
-	stateN := &models.State{}
+	// Next state.
+	next := &models.State{}
 	if err == sdb.ErrNotFound {
 		// Not found, initialize as first
 		m.Average = m.Value
-		stateN.Average = m.Value
-		stateN.StdDev = 0
-		stateN.Count = 1
+		next.Average = m.Value
+		next.StdDev = 0
+		next.Count = 1
 	} else {
 		// Found, move to next
-		m.Average = state.Average
-		stateN.Average = ewma(wf, state.Average, m.Value)
-		stateN.StdDev = ewms(wf, state.Average, stateN.Average, state.StdDev, m.Value)
-		if state.Count < startSize {
-			stateN.Count = state.Count + 1
+		m.Average = s.Average
+		next.Average = ewma(wf, s.Average, m.Value)
+		next.StdDev = ewms(wf, s.Average, next.Average, s.StdDev, m.Value)
+		if s.Count < startSize {
+			next.Count = s.Count + 1
 		} else {
-			stateN.Count = state.Count
+			next.Count = s.Count
 		}
 	}
 	// Don't calculate the score if current count is not enough.
-	if stateN.Count >= startSize {
-		m.Score = div3Sigma(stateN.Average, stateN.StdDev, m.Value)
+	if next.Count >= startSize {
+		m.Score = div3Sigma(next.Average, next.StdDev, m.Value)
 	} else {
 		m.Score = 0
 	}
-	err = d.db.UsingS().Put(m, stateN)
-	return err
+	// Don't move forward the standard deviation if the current metric is
+	// anomalous.
+	if m.IsAnomalous() {
+		next.StdDev = s.StdDev
+	}
+	// Put the next state to db.
+	return d.db.UsingS().Put(m, next)
 }

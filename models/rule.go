@@ -44,10 +44,10 @@ func (rule *Rule) Test(m *Metric) bool {
 	ok := false
 
 	if !ok && (rule.When&WhenTrendUp != 0) {
-		ok = m.Score >= 1
+		ok = m.IsAnomalousTrendUp()
 	}
 	if !ok && (rule.When&WhenTrendDown != 0) {
-		ok = m.Score <= -1
+		ok = m.IsAnomalousTrendDown()
 	}
 	if !ok && (rule.When&WhenValueGt != 0) {
 		ok = m.Value >= rule.ThresholdMax
@@ -56,10 +56,10 @@ func (rule *Rule) Test(m *Metric) bool {
 		ok = m.Value <= rule.ThresholdMin
 	}
 	if !ok && (rule.When&WhenTrendUpAndValueGt != 0) {
-		ok = m.Score >= 1 && m.Value >= rule.ThresholdMax
+		ok = m.IsAnomalousTrendUp() && m.Value >= rule.ThresholdMax
 	}
 	if !ok && (rule.When&WhenTrendDownAndValueLt != 0) {
-		ok = m.Score <= -1 && m.Value <= rule.ThresholdMin
+		ok = m.IsAnomalousTrendDown() && m.Value <= rule.ThresholdMin
 	}
 	return ok
 }
