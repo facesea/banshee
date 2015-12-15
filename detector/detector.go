@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/eleme/banshee/config"
+	"github.com/eleme/banshee/detector/cursor"
 	"github.com/eleme/banshee/models"
 	"github.com/eleme/banshee/storage"
 	"github.com/eleme/banshee/storage/sdb"
@@ -33,6 +34,8 @@ type Detector struct {
 	rc chan *models.Metric
 	// Filter
 	matched *safemap.SafeMap
+	// Cursor
+	cursor *cursor.Cursor
 }
 
 // Create a detector.
@@ -42,6 +45,7 @@ func New(cfg *config.Config, db *storage.DB) *Detector {
 	d.db = db
 	d.rc = make(chan *models.Metric, bufferedMetricResultsLimit)
 	d.matched = safemap.New()
+	d.cursor = cursor.New(cfg.Detector.Factor, cfg.LeastC())
 	return d
 }
 
@@ -131,44 +135,18 @@ func (d *Detector) match(m *models.Metric) bool {
 
 // Detect incoming metric with 3-sigma rule and fill the metric.Score.
 func (d *Detector) detect(m *models.Metric) error {
-	// Arguments
-	wf := d.cfg.Detector.Factor
-	startSize := d.cfg.Detector.StartSize
 	// Get pervious state.
 	s, err := d.db.UsingS().Get(m)
 	if err != nil && err != sdb.ErrNotFound {
 		return err
 	}
-	// Next state.
-	next := &models.State{}
+	// Move state next.
+	var n *models.State
 	if err == sdb.ErrNotFound {
-		// Not found, initialize as first
-		m.Average = m.Value
-		next.Average = m.Value
-		next.StdDev = 0
-		next.Count = 1
+		n = d.cursor.Next(nil, m)
 	} else {
-		// Found, move to next
-		m.Average = s.Average
-		next.Average = ewma(wf, s.Average, m.Value)
-		next.StdDev = ewms(wf, s.Average, next.Average, s.StdDev, m.Value)
-		if s.Count < startSize {
-			next.Count = s.Count + 1
-		} else {
-			next.Count = s.Count
-		}
-	}
-	// Don't calculate the score if current count is not enough.
-	if next.Count >= startSize {
-		m.Score = div3Sigma(next.Average, next.StdDev, m.Value)
-	} else {
-		m.Score = 0
-	}
-	// Don't move forward the standard deviation if the current metric is
-	// anomalous.
-	if m.IsAnomalous() {
-		next.StdDev = s.StdDev
+		n = d.cursor.Next(s, m)
 	}
 	// Put the next state to db.
-	return d.db.UsingS().Put(m, next)
+	return d.db.UsingS().Put(m, n)
 }
