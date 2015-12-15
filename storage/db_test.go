@@ -5,21 +5,22 @@ package storage
 import (
 	"fmt"
 	"github.com/eleme/banshee/util"
+	"github.com/eleme/banshee/util/assert"
 	"os"
 	"path"
 	"testing"
 )
 
 func TestOpen(t *testing.T) {
-	fileName := "./storage_test"
-	numGrids, gridLen := 480, 180
-	db, err := Open(fileName, numGrids, gridLen)
-	util.Assert(t, err == nil)
+	fileName := "storage_test"
+	options := &Options{NumGrid: 288, GridLen: 300}
+	db, err := Open(fileName, options)
+	assert.Ok(t, err == nil)
+	assert.Ok(t, db != nil)
 	defer db.Close()
-	_, err = os.Stat(path.Join(fileName, "rules"))
-	util.Assert(t, err == nil)
-	s := fmt.Sprintf("%dx%d", numGrids, gridLen)
-	_, err = os.Stat(path.Join(fileName, s))
-	util.Assert(t, err == nil)
-	util.Assert(t, os.RemoveAll(fileName) == nil)
+	defer os.RemoveAll(fileName)
+	assert.Ok(t, util.IsFileExist(path.Join(fileName, adbFileName)))
+	assert.Ok(t, util.IsFileExist(path.Join(fileName, mdbFileName)))
+	sFileName := fmt.Sprintf("%s-%dx%d", sdbFileName, options.NumGrid, options.GridLen)
+	assert.Ok(t, util.IsFileExist(path.Join(fileName, sFileName)))
 }
