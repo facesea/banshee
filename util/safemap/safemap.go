@@ -1,18 +1,19 @@
 // Copyright 2015 Eleme Inc. All rights reserved.
 
-package util
+// Package safemap implements a map like container with rw lock to keep
+// groutine safety.
+package safemap
 
 import "sync"
 
-// SafeMap is a map like container with read/write lock to keep goroutine
-// safety.
+// SafeMap
 type SafeMap struct {
 	lock *sync.RWMutex
 	m    map[interface{}]interface{}
 }
 
-// NewSafeMap creates a SafeMap.
-func NewSafeMap() *SafeMap {
+// New creates a SafeMap.
+func New() *SafeMap {
 	return &SafeMap{
 		lock: &sync.RWMutex{},
 		m:    make(map[interface{}]interface{}),
