@@ -2,8 +2,6 @@
 
 package models
 
-import "fmt"
-
 // Metric is a data container for time series datapoint.
 type Metric struct {
 	// Name
@@ -18,8 +16,27 @@ type Metric struct {
 	Average float64
 }
 
-// String presentation for a metric.
-func (m *Metric) String() string {
-	return fmt.Sprintf("name=%s stamp=%d value=%.3f score=%.3f average=%.3f",
-		m.Name, m.Stamp, m.Value, m.Score, m.Average)
+// Is the metric anomalous?
+func (m *Metric) IsAnomalous() bool {
+	return m.IsAnomalousTrendUp() || m.IsAnomalousTrendDown()
+}
+
+// Is the metric trending up?
+func (m *Metric) IsTrendUp() bool {
+	return m.Score > 0
+}
+
+// Is the metric trending down?
+func (m *Metric) IsTrendDown() bool {
+	return m.Score < 0
+}
+
+// Is the metric trending up anomaously?
+func (m *Metric) IsAnomalousTrendUp() bool {
+	return m.Score > 1
+}
+
+// Is the metric trending down anomaously?
+func (m *Metric) IsAnomalousTrendDown() bool {
+	return m.Score < -1
 }

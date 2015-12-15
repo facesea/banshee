@@ -52,7 +52,7 @@ func log(l int, format string, a ...interface{}) {
 		msg := fmt.Sprintf(format, a...)
 		now := time.Now().String()[:23]
 		pid := os.Getpid()
-		s := fmt.Sprintf("%s %-5s %s[%d]<%s:%d>: %s", now, levelNames[l], name, pid, loc, line, msg)
+		s := fmt.Sprintf("%s %-5s %s[%d] <%s:%d>: %s", now, levelNames[l], name, pid, loc, line, msg)
 		fmt.Fprintln(w, s)
 	}
 }

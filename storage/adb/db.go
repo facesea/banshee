@@ -3,7 +3,10 @@
 // Package db handles the administration storage.
 package adb
 
-import "github.com/syndtr/goleveldb/leveldb"
+import (
+	"github.com/eleme/banshee/models"
+	"github.com/syndtr/goleveldb/leveldb"
+)
 
 // DB handles the administration storage including rules, users etc.
 type DB struct {
@@ -23,4 +26,17 @@ func Open(fileName string) (*DB, error) {
 // Close the DB.
 func (db *DB) Close() error {
 	return db.db.Close()
+}
+
+// Operations
+
+// Get all rules from memory.
+func (db *DB) GetRules() []models.Rule {
+	// FIXME
+	return []models.Rule{
+		models.Rule{
+			Pattern: "*",
+			When:    models.WhenTrendUp | models.WhenTrendDown,
+		},
+	}
 }

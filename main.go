@@ -27,7 +27,7 @@ func main() {
 	if flag.NFlag() == 1 && *debug == false {
 		err := cfg.UpdateWithJsonFile(*fileName)
 		if err != nil {
-			log.Fatal("failed to open %s: %s", *fileName, err)
+			log.Fatal("failed to load %s: %s", *fileName, err)
 		}
 	} else {
 		log.Warn("no config file specified, using default..")
