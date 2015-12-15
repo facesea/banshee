@@ -16,18 +16,17 @@ import (
 	"github.com/eleme/banshee/config"
 	"github.com/eleme/banshee/models"
 	"github.com/eleme/banshee/storage"
+	"github.com/eleme/banshee/storage/sdb"
 	"github.com/eleme/banshee/util"
+	"github.com/eleme/banshee/util/log"
+	"github.com/eleme/banshee/util/safemap"
 )
 
 // Further alertings will be dropped if this limit is reached.
 const bufferedDetectedMetricsLimit = 10 * 1024
 
-var logger = util.NewLogger("detector")
-
 // Detector is a tcp server to detect anomalies.
 type Detector struct {
-	// Debug
-	debug bool
 	// Config
 	cfg *config.Config
 	// Storage
@@ -36,21 +35,17 @@ type Detector struct {
 	rc chan *models.Metric
 	// Rules
 	rules      []string
-	rulesCache *util.SafeMap
+	rulesCache *safemap.SafeMap
 	rulesNames map[string][]string
 }
 
 // Init new Detector.
-func New(debug bool, cfg *config.Config, db *storage.DB) *Detector {
+func New(cfg *config.Config, db *storage.DB) *Detector {
 	d := new(Detector)
-	d.debug = debug
 	d.cfg = cfg
-	if d.debug {
-		logger.SetLevel(util.LOG_DEBUG)
-	}
 	d.db = db
 	d.rc = make(chan *models.Metric, bufferedDetectedMetricsLimit)
-	d.rulesCache = util.NewSafeMap()
+	d.rulesCache = safemap.New()
 	d.rulesNames = map[string][]string{}
 	// FIXME: rules
 	return d
@@ -61,13 +56,13 @@ func (d *Detector) Start() {
 	addr := fmt.Sprintf("0.0.0.0:%d", d.cfg.Detector.Port)
 	ln, err := net.Listen("tcp", addr)
 	if err != nil {
-		logger.Fatal("failed to bind tcp://%s: %v", addr, err)
+		log.Fatal("failed to bind tcp://%s: %v", addr, err)
 	}
-	logger.Info("listening on tcp://%s..", addr)
+	log.Info("listening on tcp://%s..", addr)
 	for {
 		conn, err := ln.Accept()
 		if err != nil {
-			logger.Fatal("failed to accept new conn: %v", err)
+			log.Fatal("failed to accept new conn: %v", err)
 		}
 		go d.handle(conn)
 	}
@@ -79,12 +74,12 @@ func (d *Detector) handle(conn net.Conn) {
 	addr := conn.RemoteAddr()
 	defer func() {
 		conn.Close()
-		logger.Info("conn %s disconnected", addr)
+		log.Info("conn %s disconnected", addr)
 	}()
 	scanner := bufio.NewScanner(conn)
 	for scanner.Scan() {
 		if err := scanner.Err(); err != nil {
-			logger.Info("failed to read conn: %v, closing it..", err)
+			log.Info("failed to read conn: %v, closing it..", err)
 			break
 		}
 		startAt := time.Now()
@@ -94,17 +89,17 @@ func (d *Detector) handle(conn net.Conn) {
 			if len(line) > 10 {
 				line = line[:10]
 			}
-			logger.Error("failed to parse '%s': %v, skipping..", line, err)
+			log.Error("failed to parse '%s': %v, skipping..", line, err)
 			continue
 		}
 		if d.match(m) {
 			err = d.detect(m)
 			if err != nil {
-				logger.Error("failed to detect metric: %v, skipping..", err)
+				log.Error("failed to detect metric: %v, skipping..", err)
 				continue
 			}
 			elapsed := time.Since(startAt)
-			logger.Debug("detected %s cost=%dμs", m.String(), elapsed.Nanoseconds()/1000)
+			log.Debug("detected %s cost=%dμs", m.String(), elapsed.Nanoseconds()/1000)
 			d.rc <- m
 		}
 	}
@@ -119,7 +114,7 @@ func (d *Detector) match(m *models.Metric) bool {
 	// }
 
 	for _, pattern := range d.cfg.Detector.BlackList {
-		matched := util.FnMatch(pattern, m.Name)
+		matched := util.Match(pattern, m.Name)
 		if matched {
 			return false
 		}
@@ -127,7 +122,7 @@ func (d *Detector) match(m *models.Metric) bool {
 	return true // FIXME: return true tempory
 	// FIXME: get rules from db
 	for _, pattern := range d.rules {
-		matched := util.FnMatch(pattern, m.Name)
+		matched := util.Match(pattern, m.Name)
 		if matched {
 			d.rulesCache.Set(m.Name, true)
 			slice, exists := d.rulesNames[pattern]
@@ -146,13 +141,13 @@ func (d *Detector) match(m *models.Metric) bool {
 func (d *Detector) detect(m *models.Metric) error {
 	wf := d.cfg.Detector.Factor
 	startSize := d.cfg.Detector.StartSize
-	state, err := d.db.GetState(m)
+	state, err := d.db.UsingS().Get(m)
 	// Unexcepted error
-	if err != nil && err != storage.ErrNotFound {
+	if err != nil && err != sdb.ErrNotFound {
 		return err
 	}
 	stateN := &models.State{}
-	if err == storage.ErrNotFound {
+	if err == sdb.ErrNotFound {
 		// Not found, initialize as first
 		m.Average = m.Value
 		stateN.Average = m.Value
@@ -175,6 +170,6 @@ func (d *Detector) detect(m *models.Metric) error {
 	} else {
 		m.Score = 0
 	}
-	err = d.db.PutState(m, stateN)
+	err = d.db.UsingS().Put(m, stateN)
 	return err
 }

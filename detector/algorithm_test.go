@@ -3,7 +3,7 @@
 package detector
 
 import (
-	"github.com/eleme/banshee/util"
+	"github.com/eleme/banshee/util/assert"
 	"math/rand"
 	"testing"
 )
@@ -26,25 +26,25 @@ func TestDiv3sigmaBasic(t *testing.T) {
 	n := len(l)
 	// The latest element should be normal in this series
 	score := sigs(wf, l)
-	util.Assert(t, score < 1)
-	util.Assert(t, score > -1)
+	assert.Ok(t, score < 1)
+	assert.Ok(t, score > -1)
 	// The latest element should be a greater one in this series
 	l = append(l, 130.0)
 	score = sigs(wf, l)
-	util.Assert(t, score > 0)
+	assert.Ok(t, score > 0)
 	// The latest element should be a smaller one in this series
 	l[n] = 90.0
 	score = sigs(wf, l)
-	util.Assert(t, score < 0)
+	assert.Ok(t, score < 0)
 	// The latest element should be anomaly one in this series
 	l[n] = 140
 	score = sigs(wf, l)
-	util.Assert(t, score > 1)
+	assert.Ok(t, score > 1)
 	// The latest element should be anomaly one in this series
 	// The latest element should be anomaly one in this series
 	l[n] = 75
 	score = sigs(wf, l)
-	util.Assert(t, score < -1)
+	assert.Ok(t, score < -1)
 }
 
 func TestDiv3sigmaFactor(t *testing.T) {
@@ -55,6 +55,6 @@ func TestDiv3sigmaFactor(t *testing.T) {
 	l = append(l, 140.0)
 	l = append(l, 150.0)
 	l = append(l, 160.0)
-	util.Assert(t, sigs(0.03, l) > 1)
-	util.Assert(t, sigs(0.09, l) < 1)
+	assert.Ok(t, sigs(0.03, l) > 1)
+	assert.Ok(t, sigs(0.09, l) < 1)
 }

@@ -1,7 +1,9 @@
 .*sw[opn]
 banshee
 Godeps/_workspace
-storage/rules/
+storage/storage_test/
 storage/*x*
+storage/metrics
 test-config.json
-test-storage/
+test-storage
+storage/admin
