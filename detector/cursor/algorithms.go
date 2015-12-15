@@ -1,11 +1,6 @@
 // Copyright 2015 Eleme Inc. All rights reserved.
 
-// Anomalies detection algorithm.
-//
-// The algorithm is based on exponential weighted moving average,
-// exponential moving standard deviation and the 3-sigma rule.
-//
-package detector
+package cursor
 
 import "math"
 
@@ -57,23 +52,4 @@ func div3Sigma(avg, std, v float64) float64 {
 		return 0
 	}
 	return (v - avg) / (3 * std)
-}
-
-// Get the 3-sigma score, which can help to test whether the latest element of
-// a series is an anomaly. If the score is larger than 1, the latest element is
-// anomalously large, otherwise if it is smaller than -1, it is anomalously
-// small.
-//
-// Note that we don't use this function in our detector, instead, we use the
-// recurrence functions and thus the detection complexity is only O(1).
-func sigs(wf float64, series []float64) float64 {
-	avg := series[0]
-	std := 0.0
-	for i := 0; i < len(series); i++ {
-		v := series[i]
-		avgOld := avg
-		avg = ewma(wf, avgOld, v)
-		std = ewms(wf, avgOld, avg, std, v)
-	}
-	return div3Sigma(avg, std, series[len(series)-1])
 }

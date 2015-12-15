@@ -13,7 +13,14 @@ const (
 	DefaultNumGrid      int     = 288
 	DefaultGridLen      int     = 300
 	DefaultWeightFactor float64 = 0.05
-	DefaultStartSize    int     = 18
+)
+
+// Least count.
+const (
+	// Percentage the leastC in one grid.
+	leastCountGridPercent float64 = 0.6
+	// leastC must be greater than this
+	leastCountMin int = 18
 )
 
 type Config struct {
@@ -33,7 +40,6 @@ type ConfigDetector struct {
 	Port      int      `json:"port"`
 	Factor    float64  `json:"factor"`
 	BlackList []string `json:"blackList"`
-	StartSize int      `json:"startSize"`
 }
 
 type ConfigWebapp struct {
@@ -55,7 +61,6 @@ func New() *Config {
 	config.Detector.Port = 2015
 	config.Detector.Factor = DefaultWeightFactor
 	config.Detector.BlackList = []string{}
-	config.Detector.StartSize = DefaultStartSize
 	config.Webapp.Port = 2016
 	config.Webapp.Auth = [2]string{"admin", "admin"}
 	config.Alerter.Command = ""
@@ -74,4 +79,14 @@ func (config *Config) UpdateWithJsonFile(fileName string) error {
 		return err
 	}
 	return err
+}
+
+// Get leastC, detector won't start detect a metric until its count
+// reaches this value.
+func (config *Config) LeastC() int {
+	c := int((float64(config.Period[1]) / float64(config.Interval)) * leastCountGridPercent)
+	if c > leastCountMin {
+		return c
+	}
+	return leastCountMin
 }
