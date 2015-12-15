@@ -10,7 +10,7 @@ import (
 // Defaults
 const (
 	DefaultInterval     int     = 10
-	DefaultNumGrids     int     = 288
+	DefaultNumGrid      int     = 288
 	DefaultGridLen      int     = 300
 	DefaultWeightFactor float64 = 0.05
 	DefaultStartSize    int     = 18
@@ -50,7 +50,7 @@ type ConfigAlerter struct {
 func New() *Config {
 	config := new(Config)
 	config.Interval = DefaultInterval
-	config.Period = [2]int{DefaultNumGrids, DefaultGridLen}
+	config.Period = [2]int{DefaultNumGrid, DefaultGridLen}
 	config.Storage.Path = "storage/"
 	config.Detector.Port = 2015
 	config.Detector.Factor = DefaultWeightFactor
