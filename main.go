@@ -9,37 +9,39 @@ import (
 	"github.com/eleme/banshee/config"
 	"github.com/eleme/banshee/detector"
 	"github.com/eleme/banshee/storage"
-	"github.com/eleme/banshee/util"
+	"github.com/eleme/banshee/util/log"
 )
 
 func main() {
-	// Argv parsing
+	// Arguments
 	fileName := flag.String("c", "config.json", "config file")
 	debug := flag.Bool("d", false, "debug mode")
 	flag.Parse()
 	// Logging
-	logger := util.NewLogger("banshee")
 	if *debug {
-		logger.SetLevel(util.LOG_DEBUG)
+		log.SetLevel(log.DEBUG)
 	}
-	logger.Debug("using %s and max number of cpus is %d", runtime.Version(), runtime.GOMAXPROCS(-1))
+	log.Debug("using %s, max cpus: %d", runtime.Version(), runtime.GOMAXPROCS(-1))
 	// Config
 	cfg := config.New()
 	if flag.NFlag() == 1 && *debug == false {
 		err := cfg.UpdateWithJsonFile(*fileName)
 		if err != nil {
-			logger.Fatal("failed to open %s: %s", *fileName, err)
+			log.Fatal("failed to open %s: %s", *fileName, err)
 		}
 	} else {
-		logger.Warn("no config file specified, using default..")
+		log.Warn("no config file specified, using default..")
 	}
 	// Storage
-	numGrids, gridLen := cfg.Period[0], cfg.Period[1]
-	db, err := storage.Open(cfg.Storage.Path, numGrids, gridLen)
+	options := &storage.Options{
+		NumGrid: cfg.Period[0],
+		GridLen: cfg.Period[1],
+	}
+	db, err := storage.Open(cfg.Storage.Path, options)
 	if err != nil {
-		logger.Fatal("failed to open %s: %v", cfg.Storage.Path, err)
+		log.Fatal("failed to open %s: %v", cfg.Storage.Path, err)
 	}
 	// Detector
-	detector := detector.New(*debug, cfg, db)
+	detector := detector.New(cfg, db)
 	detector.Start()
 }
