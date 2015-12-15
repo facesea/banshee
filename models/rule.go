@@ -33,7 +33,7 @@ type Rule struct {
 
 // Return true if the metric is against this rule.
 func (rule *Rule) Test(m *Metric) bool {
-	if !util.FnMatch(m.Name, rule.Pattern) {
+	if !util.Match(m.Name, rule.Pattern) {
 		return false
 	}
 	// Ignore it if it's value small enough to be trust
