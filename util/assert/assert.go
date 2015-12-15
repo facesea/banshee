@@ -4,6 +4,8 @@
 package assert
 
 import (
+	"os"
+	"path/filepath"
 	"runtime"
 	"testing"
 )
@@ -12,6 +14,14 @@ import (
 func Ok(t *testing.T, b bool) {
 	if !b {
 		_, fileName, line, _ := runtime.Caller(1)
-		t.Errorf("\nassertion failed:%s:%d", fileName, line)
+		cwd, err := os.Getwd()
+		if err != nil {
+			t.Errorf("unexcepted:%v", err)
+		}
+		fileName, err = filepath.Rel(cwd, fileName)
+		if err != nil {
+			t.Errorf("unexcepted:%v", err)
+		}
+		t.Errorf("\nassertion failed: %s:%d", fileName, line)
 	}
 }
