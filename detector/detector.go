@@ -43,8 +43,7 @@ func New(cfg *config.Config, db *storage.DB) *Detector {
 	d.cfg = cfg
 	d.db = db
 	d.rc = make(chan *models.Metric, bufferedMetricResultsLimit)
-	//FIXME use rules
-	d.hitCache = newCache(nil)
+	d.hitCache = newCache()
 	d.cursor = cursor.New(cfg.Detector.Factor, cfg.LeastC())
 	return d
 }
