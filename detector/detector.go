@@ -17,7 +17,6 @@ import (
 	"github.com/eleme/banshee/storage/sdb"
 	"github.com/eleme/banshee/util"
 	"github.com/eleme/banshee/util/log"
-	"github.com/eleme/banshee/util/safemap"
 )
 
 // Limit for buffered detected metric results, further results will be dropped
@@ -33,7 +32,7 @@ type Detector struct {
 	// Results
 	rc chan *models.Metric
 	// Filter
-	matched *safemap.SafeMap
+	hitCache *cache
 	// Cursor
 	cursor *cursor.Cursor
 }
@@ -44,7 +43,8 @@ func New(cfg *config.Config, db *storage.DB) *Detector {
 	d.cfg = cfg
 	d.db = db
 	d.rc = make(chan *models.Metric, bufferedMetricResultsLimit)
-	d.matched = safemap.New()
+	//FIXME use rules
+	d.hitCache = newCache(nil)
 	d.cursor = cursor.New(cfg.Detector.Factor, cfg.LeastC())
 	return d
 }
@@ -112,23 +112,25 @@ func (d *Detector) handle(conn net.Conn) {
 // Test whether a metric matches the rules.
 func (d *Detector) match(m *models.Metric) bool {
 	// Check cache first.
-	v, ok := d.matched.Get(m.Name)
-	if ok {
-		return v.(bool)
+	hit,v:=d.hitCache.hitWhiteListCache(m)
+	if hit {
+		return v
 	}
 	// Check blacklist.
 	for _, pattern := range d.cfg.Detector.BlackList {
 		if util.Match(m.Name, pattern) {
-			d.matched.Set(m.Name, false)
+			d.hitCache.setWLC(m,nil,false)
 			log.Debug("%s hit black pattern %s", m.Name, pattern)
 			return false
 		}
 	}
 	// Check rules.
 	rules := d.db.UsingA().GetRules()
+	d.hitCache.updateRules(rules)
+
 	for _, rule := range rules {
 		if util.Match(m.Name, rule.Pattern) {
-			d.matched.Set(m.Name, true)
+			d.hitCache.setWLC(m,rule,true)
 			return true
 		}
 	}

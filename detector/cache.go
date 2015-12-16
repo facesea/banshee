@@ -5,7 +5,7 @@ import (
 	"sync"
 )
 
-// Cache is two map contain hitCache for Detector with read/write lock
+// cache is two map contain hitCache for Detector with read/write lock
 // to keep goroutine safety
 type cache struct {
 	lockForWLC     *sync.RWMutex
@@ -14,9 +14,10 @@ type cache struct {
 	rulesHitCache  map[string]map[string]bool
 }
 
-// NewCache creates a new hitCache
-func newCache(rules []string) *cache {
-	//FIXME
+
+// newCache creates a new hitCache
+func newCache(rules *[]string) *cache {
+	//FIXME use rules
 	return &cache{
 		lockForWLC:     &sync.RWMutex{},
 		lockForRHC:     &sync.RWMutex{},
@@ -26,29 +27,32 @@ func newCache(rules []string) *cache {
 
 }
 
-// Check if a metric hit the hitCache--'whiteListCache'
-func (c *cache) hitWhiteListCache(m models.Metric) bool {
+// hitWhiteListCache - Check if a metric hit the hitCache--'whiteListCache'
+func (c *cache) hitWhiteListCache(m models.Metric) (hit bool,cache bool) {
 	c.lockForWLC.RLock()
 	defer c.lockForWLC.RUnlock()
 	v, e := c.whiteListCache[m.Name]
-	if e && v {
-		return true
+	if e {
+		if v {
+			return true,true
+		}
+		return true,false
 	}
-	return false
+	return false,false
 }
 
-// Find the rule match metric from Cache when the nil rule param
+// findRule - Find the rule match metric from Cache when the nil rule param
 // send to the other func
 func (c *cache) findRule(m *models.Metric) (rulePattern string) {
+	//FIXME
 	return nil
 }
 
-// Put a white list hitCache into cache , add it to rulesHitCache also
+// setWLC - Put a white list hitCache into cache , add it to rulesHitCache also
 // rule can be nil , when it's nil use O(n) algorithm find rule from rulesHitCache
-func (c *cache) putWLC(m *models.Metric, rule *models.Rule) {
+func (c *cache) setWLC(m *models.Metric, rule *models.Rule,pass bool) {
 	if rule == nil {
 		//FIXME
-
 	}
 	c.lockForWLC.Lock()
 	defer c.lockForWLC.Unlock()
@@ -56,33 +60,14 @@ func (c *cache) putWLC(m *models.Metric, rule *models.Rule) {
 	defer c.lockForRHC.Unlock()
 	_, exists := c.rulesHitCache[rule.Pattern]
 	if exists {
-		c.rulesHitCache[rule.Pattern][m.Name] = true
+		c.rulesHitCache[rule.Pattern][m.Name] = pass
 	} else {
-		c.rulesHitCache[rule.Pattern] = map[string]bool{m.Name: true}
+		c.rulesHitCache[rule.Pattern] = map[string]bool{m.Name: pass}
 	}
-	c.whiteListCache[m.Name] = true
+	c.whiteListCache[m.Name] = pass
 }
 
-// Delete a white list hitCache from cache , del it from rulesHitCache also
-// rule can be nil , when it's nil use O(n) algorithm find rule from rulesHitCache
-func (c *cache) delWLC(m *models.Metric, rule *models.Rule) {
-	if rule == nil {
-		//FIXME
-	}
-	c.lockForWLC.Lock()
-	defer c.lockForWLC.Unlock()
-	c.lockForRHC.Lock()
-	defer c.lockForRHC.Unlock()
-	delete(c.whiteListCache, m.Name)
-	_, exists := c.rulesHitCache[rule.Pattern]
-	if exists {
-		if _, e := c.rulesHitCache[rule.Pattern][m.Name]; e {
-			delete(c.rulesHitCache[rule.Pattern], m.Name)
-		}
-	}
-	delete(c.whiteListCache, m.Name)
-}
 
 func (c *cache) updateRules(rules []models.Rule) {
-
+	//FIXME
 }
