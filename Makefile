@@ -4,10 +4,10 @@ lint:
 	golint ./...
 
 test: lint
-	go test ./...
+	godep go test ./...
 
 build:
-	go build
+	godep go build
 
 linux:
-	GOOS=linux GOARCH=amd64 go build
+	GOOS=linux GOARCH=amd64 godep go build

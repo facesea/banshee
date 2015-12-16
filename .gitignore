@@ -1,6 +1,5 @@
 .*sw[opn]
 banshee
-Godeps/_workspace
 storage/storage_test/
 storage/*x*
 storage/metrics
