@@ -25,7 +25,7 @@ func main() {
 	// Config
 	cfg := config.New()
 	if flag.NFlag() == 1 && *debug == false {
-		err := cfg.UpdateWithJsonFile(*fileName)
+		err := cfg.UpdateWithJSONFile(*fileName)
 		if err != nil {
 			log.Fatal("failed to load %s: %s", *fileName, err)
 		}

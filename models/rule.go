@@ -31,7 +31,7 @@ type Rule struct {
 	TrustLine float64
 }
 
-// Return true if the metric is against this rule.
+// Test returns true if the metric is against this rule.
 func (rule *Rule) Test(m *Metric) bool {
 	if !util.Match(m.Name, rule.Pattern) {
 		return false
@@ -64,7 +64,7 @@ func (rule *Rule) Test(m *Metric) bool {
 	return ok
 }
 
-// Validate rule.When
+// IsValid returns true if rule.When is valid.
 func (rule *Rule) IsValid() bool {
 	return rule.When >= 0x1 && rule.When <= 0x3F
 }

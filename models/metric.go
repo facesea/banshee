@@ -16,27 +16,27 @@ type Metric struct {
 	Average float64
 }
 
-// Is the metric anomalous?
+// IsAnomalous test whether the metric is anomalous.
 func (m *Metric) IsAnomalous() bool {
 	return m.IsAnomalousTrendUp() || m.IsAnomalousTrendDown()
 }
 
-// Is the metric trending up?
+// IsTrendUp test whether the metric is trending up.
 func (m *Metric) IsTrendUp() bool {
 	return m.Score > 0
 }
 
-// Is the metric trending down?
+// IsTrendDown test whether the metric is trending down.
 func (m *Metric) IsTrendDown() bool {
 	return m.Score < 0
 }
 
-// Is the metric trending up anomaously?
+// IsAnomalousTrendUp test whether the metric is anomalously trending up.
 func (m *Metric) IsAnomalousTrendUp() bool {
 	return m.Score > 1
 }
 
-// Is the metric trending down anomaously?
+// IsAnomalousTrendDown test whether the metric is anomalously trending down.
 func (m *Metric) IsAnomalousTrendDown() bool {
 	return m.Score < -1
 }

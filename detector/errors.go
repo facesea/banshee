@@ -5,6 +5,6 @@ package detector
 import "errors"
 
 var (
-	// Protocol
+	// ErrProtocol is returned when input line is invalid to parse.
 	ErrProtocol = errors.New("detector: invalid protocol input")
 )

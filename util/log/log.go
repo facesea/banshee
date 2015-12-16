@@ -26,18 +26,23 @@ var levelNames = [4]string{"DEBUG", "INFO", "WARN", "ERROR"}
 // Logging runtime
 var (
 	name  string
-	level int       = INFO
+	level           = INFO
 	w     io.Writer = os.Stderr
 )
 
-// Set logging name.
+// SetName sets the logging name.
 func SetName(s string) {
 	name = s
 }
 
-// Set logging level.
+// SetLevel sets the logging level.
 func SetLevel(l int) {
 	level = l % len(levelNames)
+}
+
+// SetWriter sets the writer.
+func SetWriter(writer io.Writer) {
+	w = writer
 }
 
 // Do logging.
@@ -57,22 +62,27 @@ func log(l int, format string, a ...interface{}) {
 	}
 }
 
+// Debug logs message with level DEBUG.
 func Debug(format string, a ...interface{}) {
 	log(DEBUG, format, a...)
 }
 
+// Info logs message with level INFO.
 func Info(format string, a ...interface{}) {
 	log(INFO, format, a...)
 }
 
+// Warn logs message with level WARN.
 func Warn(format string, a ...interface{}) {
 	log(WARN, format, a...)
 }
 
+// Error logs message with level ERROR.
 func Error(format string, a ...interface{}) {
 	log(ERROR, format, a...)
 }
 
+// Fatal logs message with level FATAL.
 func Fatal(format string, a ...interface{}) {
 	log(ERROR, format, a...)
 	os.Exit(1)

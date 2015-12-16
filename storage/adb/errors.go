@@ -5,6 +5,8 @@ package adb
 import "errors"
 
 var (
-	ErrNotFound  = errors.New("adb: not found")
+	// ErrNotFound is returned when requested data not found.
+	ErrNotFound = errors.New("adb: not found")
+	// ErrCorrupted is returned when corrupted data found.
 	ErrCorrupted = errors.New("adb: corrupted data found")
 )

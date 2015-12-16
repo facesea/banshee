@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-// Assert the given boolean is True.
+// Ok asserts that the given boolean is True.
 func Ok(t *testing.T, b bool) {
 	if !b {
 		_, fileName, line, _ := runtime.Caller(1)
