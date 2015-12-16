@@ -130,7 +130,7 @@ func (d *Detector) match(m *models.Metric) bool {
 
 	for _, rule := range rules {
 		if util.Match(m.Name, rule.Pattern) {
-			d.hitCache.setWLC(m,rule,true)
+			d.hitCache.setWLC(m,&rule,true)
 			return true
 		}
 	}

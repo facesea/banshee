@@ -28,7 +28,7 @@ func newCache(rules *[]string) *cache {
 }
 
 // hitWhiteListCache - Check if a metric hit the hitCache--'whiteListCache'
-func (c *cache) hitWhiteListCache(m models.Metric) (hit bool,cache bool) {
+func (c *cache) hitWhiteListCache(m *models.Metric) (hit bool,cache bool) {
 	c.lockForWLC.RLock()
 	defer c.lockForWLC.RUnlock()
 	v, e := c.whiteListCache[m.Name]
@@ -45,7 +45,7 @@ func (c *cache) hitWhiteListCache(m models.Metric) (hit bool,cache bool) {
 // send to the other func
 func (c *cache) findRule(m *models.Metric) (rulePattern string) {
 	//FIXME
-	return nil
+	return "nil"
 }
 
 // setWLC - Put a white list hitCache into cache , add it to rulesHitCache also
