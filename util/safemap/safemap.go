@@ -6,7 +6,7 @@ package safemap
 
 import "sync"
 
-// SafeMap
+// SafeMap is a type like map with rw lock.
 type SafeMap struct {
 	lock *sync.RWMutex
 	m    map[interface{}]interface{}
@@ -37,7 +37,7 @@ func (m *SafeMap) Set(key, val interface{}) {
 	m.m[key] = val
 }
 
-// Check if a key is in map.
+// Has checks if a key is in map.
 func (m *SafeMap) Has(key interface{}) bool {
 	m.lock.RLock()
 	defer m.lock.RUnlock()
@@ -57,7 +57,7 @@ func (m *SafeMap) Delete(key interface{}) bool {
 	return false
 }
 
-// Get all items in the map.
+// Items returns all items in the map.
 func (m *SafeMap) Items() map[interface{}]interface{} {
 	m.lock.RLock()
 	defer m.lock.RUnlock()
@@ -68,7 +68,7 @@ func (m *SafeMap) Items() map[interface{}]interface{} {
 	return d
 }
 
-// Get map length.
+// Len returns map length.
 func (m *SafeMap) Len() int {
 	m.lock.RLock()
 	defer m.lock.RUnlock()

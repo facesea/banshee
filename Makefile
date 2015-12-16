@@ -1,6 +1,9 @@
 default: build
 
-test:
+lint:
+	golint ./...
+
+test: lint
 	go test ./...
 
 build:

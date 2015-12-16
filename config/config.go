@@ -23,31 +23,32 @@ const (
 	leastCountMin int = 18
 )
 
+// Config is the configuration container.
 type Config struct {
 	Interval int            `json:"interval"`
 	Period   [2]int         `json:"period"`
-	Storage  ConfigStorage  `json:"storage"`
-	Detector ConfigDetector `json:"detector"`
-	Webapp   ConfigWebapp   `json:"webapp"`
-	Alerter  ConfigAlerter  `json:"alerter"`
+	Storage  configStorage  `json:"storage"`
+	Detector configDetector `json:"detector"`
+	Webapp   configWebapp   `json:"webapp"`
+	Alerter  configAlerter  `json:"alerter"`
 }
 
-type ConfigStorage struct {
+type configStorage struct {
 	Path string `json:"path"`
 }
 
-type ConfigDetector struct {
+type configDetector struct {
 	Port      int      `json:"port"`
 	Factor    float64  `json:"factor"`
 	BlackList []string `json:"blackList"`
 }
 
-type ConfigWebapp struct {
+type configWebapp struct {
 	Port int       `json:"port"`
 	Auth [2]string `json:"auth"`
 }
 
-type ConfigAlerter struct {
+type configAlerter struct {
 	Command string `json:"command"`
 	Workers int    `json:"workers"`
 }
@@ -68,8 +69,8 @@ func New() *Config {
 	return config
 }
 
-// Update config with json file.
-func (config *Config) UpdateWithJsonFile(fileName string) error {
+// UpdateWithJSONFile update the config from a json file.
+func (config *Config) UpdateWithJSONFile(fileName string) error {
 	b, err := ioutil.ReadFile(fileName)
 	if err != nil {
 		return err
@@ -81,8 +82,7 @@ func (config *Config) UpdateWithJsonFile(fileName string) error {
 	return err
 }
 
-// Get leastC, detector won't start detect a metric until its count
-// reaches this value.
+// LeastC returns the least count to start detection.
 func (config *Config) LeastC() int {
 	c := int((float64(config.Period[1]) / float64(config.Interval)) * leastCountGridPercent)
 	if c > leastCountMin {

@@ -1,6 +1,6 @@
 // Copyright 2015 Eleme Inc. All rights reserved.
 
-// Package db handles the administration storage.
+// Package adb handles the administration storage.
 package adb
 
 import (
@@ -30,7 +30,7 @@ func (db *DB) Close() error {
 
 // Operations
 
-// Get all rules from memory.
+// GetRules returns all rules from memory.
 func (db *DB) GetRules() []models.Rule {
 	// FIXME
 	return []models.Rule{

@@ -1,7 +1,7 @@
 // Copyright 2015 Eleme Inc. All rights reserved.
 
-// Detector is a tcp server which detects whether incoming metrics are
-// anomalies and send alertings on anomalies found.
+// Package detector implements a tcp server that detects whether incoming
+// metrics are anomalies and send alertings on anomalies found.
 package detector
 
 import (
@@ -38,7 +38,7 @@ type Detector struct {
 	cursor *cursor.Cursor
 }
 
-// Create a detector.
+// New creates a detector.
 func New(cfg *config.Config, db *storage.DB) *Detector {
 	d := new(Detector)
 	d.cfg = cfg

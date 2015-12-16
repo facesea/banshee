@@ -8,7 +8,7 @@ import (
 	"github.com/syndtr/goleveldb/leveldb"
 )
 
-// DB opening options.
+// Options is for db opening.
 type Options struct {
 	NumGrid int
 	GridLen int

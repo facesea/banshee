@@ -11,7 +11,7 @@ import (
 
 // Help to generate data suite.
 func genMetrics(min, max float64, count int) []*models.Metric {
-	arr := make([]*models.Metric, 0)
+	var arr []*models.Metric
 	delta := max - min
 	for i := 0; i < count; i++ {
 		value := rand.Float64()*delta + min
@@ -52,7 +52,7 @@ func TestSimple(t *testing.T) {
 	leastC := 18
 	c := New(wf, leastC)
 	l := genMetrics(120.0, 140.0, leastC)
-	var s *models.State = nil
+	var s *models.State
 	for _, m := range l {
 		s = c.Next(s, m)
 		assert.Ok(t, !m.IsAnomalous())
@@ -79,7 +79,7 @@ func TestAnomalyAfterBigAnomaly(t *testing.T) {
 	leastC := 18
 	c := New(wf, leastC)
 	l := genMetrics(120.0, 140.0, 100)
-	var s *models.State = nil
+	var s *models.State
 	for _, m := range l {
 		s = c.Next(s, m)
 		assert.Ok(t, !m.IsAnomalous())

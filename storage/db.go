@@ -22,7 +22,7 @@ const (
 	sdbFileName = "states"
 )
 
-// DB opening options.
+// Options is for db opening.
 type Options struct {
 	// sdb
 	NumGrid int
@@ -79,17 +79,17 @@ func (db *DB) Close() error {
 	return nil
 }
 
-// Using adb handle.
+// UsingA returns the adb handle.
 func (db *DB) UsingA() *adb.DB {
 	return db.adb
 }
 
-// Using mdb handle.
+// UsingM returns the mdb handle.
 func (db *DB) UsingM() *mdb.DB {
 	return db.mdb
 }
 
-// Using sdb handle.
+// UsingS returns the sdb handle.
 func (db *DB) UsingS() *sdb.DB {
 	return db.sdb
 }

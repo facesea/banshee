@@ -12,12 +12,12 @@ type Cursor struct {
 	leastC int     // Least count
 }
 
-// Create a cursor.
+// New create a cursor.
 func New(wf float64, leastC int) *Cursor {
 	return &Cursor{wf, leastC}
 }
 
-// Move the state next with the metric, this will fill in the metric's average
+// Next moves the state next with the metric, this will fill in the metric's average
 // and score fields and return the next state.
 // If the pervious state s is nil, a new state with count 1 and value from
 // metric's will be returned as the next state.
