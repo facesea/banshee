@@ -100,7 +100,11 @@ func (d *Detector) handle(conn net.Conn) {
 			}
 			elapsed := time.Since(startAt)
 			log.Debug("name=%s average=%.3f score=%.3f cost=%dμs", m.Name, m.Average, m.Score, elapsed.Nanoseconds()/1000)
-			d.rc <- m
+			select {
+			case d.rc <- m:
+			default:
+				log.Warn("buffered metric results channel is full, drop current metric..")
+			}
 		}
 	}
 }
