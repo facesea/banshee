@@ -16,6 +16,16 @@ type Metric struct {
 	Average float64
 }
 
+// MetricIndex is a container for metric latest name, score and average.
+type MetricIndex struct {
+	// Name
+	Name string
+	// Score
+	Score float64
+	// Average
+	Average float64
+}
+
 // IsAnomalous test whether the metric is anomalous.
 func (m *Metric) IsAnomalous() bool {
 	return m.IsAnomalousTrendUp() || m.IsAnomalousTrendDown()
