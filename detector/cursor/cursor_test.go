@@ -101,10 +101,17 @@ func TestAnomalyAfterBigAnomaly(t *testing.T) {
 	m := &models.Metric{Value: 2000}
 	s = c.Next(s, m)
 	assert.Ok(t, m.IsAnomalousTrendUp())
-	// Test another anomaly
+	// Test up and down anomaly
 	m = &models.Metric{Value: 190}
 	s = c.Next(s, m)
 	assert.Ok(t, m.IsAnomalousTrendUp())
+	m = &models.Metric{Value: 80}
+	s = c.Next(s, m)
+	assert.Ok(t, m.IsAnomalousTrendDown())
+	// Test normal
+	m = &models.Metric{Value: 130}
+	s = c.Next(s, m)
+	assert.Ok(t, !m.IsAnomalous())
 }
 
 // Case slowly trending up.
@@ -137,6 +144,29 @@ func TestAnomalyLowToHigh(t *testing.T) {
 		s = c.Next(s, m)
 	}
 	l = genMetrics(220.0, 240.0, 30)
+	for _, m := range l {
+		s = c.Next(s, m)
+		assert.Ok(t, !m.IsAnomalous())
+	}
+}
+
+// Case change avg from high level to low level with only one accidental data,
+// banshee should not alert forever or for a long time
+func TestAnomalyHighToLow(t *testing.T) {
+	wf := 0.05
+	leastC := 18
+	c := New(wf, leastC)
+	l := genMetrics(220.0, 240.0, 100)
+	var s *models.State
+	for _, m := range l {
+		s = c.Next(s, m)
+		assert.Ok(t, !m.IsAnomalous())
+	}
+	l = genMetrics(120.0, 140.0, 30)
+	for _, m := range l {
+		s = c.Next(s, m)
+	}
+	l = genMetrics(120.0, 140.0, 30)
 	for _, m := range l {
 		s = c.Next(s, m)
 		assert.Ok(t, !m.IsAnomalous())
