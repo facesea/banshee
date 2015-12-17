@@ -1,7 +1,7 @@
 // Copyright 2015 Eleme Inc. All rights reserved.
 
-// Package mdb handles the storage for metrics.
-package mdb
+// Package metricdb handles the storage for metrics.
+package metricdb
 
 import (
 	"fmt"

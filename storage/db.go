@@ -5,9 +5,9 @@ package storage
 
 import (
 	"fmt"
-	"github.com/eleme/banshee/storage/adb"
-	"github.com/eleme/banshee/storage/mdb"
-	"github.com/eleme/banshee/storage/sdb"
+	"github.com/eleme/banshee/storage/admindb"
+	"github.com/eleme/banshee/storage/metricdb"
+	"github.com/eleme/banshee/storage/statedb"
 	"os"
 	"path"
 )
@@ -17,9 +17,9 @@ const filemode = 0755
 
 // Child db filename.
 const (
-	adbFileName = "admin"
-	mdbFileName = "metrics"
-	sdbFileName = "states"
+	admindbFileName  = "admin"
+	metricdbFileName = "metric"
+	statedbFileName  = "state"
 )
 
 // Metrics expiration = metricExpirationNumPeriods * period
@@ -34,9 +34,9 @@ type Options struct {
 
 // DB handles the storage on leveldb.
 type DB struct {
-	adb *adb.DB
-	mdb *mdb.DB
-	sdb *sdb.DB
+	Admin  *admindb.DB
+	Metric *metricdb.DB
+	State  *statedb.DB
 }
 
 // Open a DB by fileName and options.
@@ -51,18 +51,18 @@ func Open(fileName string, options *Options) (*DB, error) {
 	}
 	// Open databases.
 	db := new(DB)
-	db.adb, err = adb.Open(path.Join(fileName, adbFileName))
+	db.Admin, err = admindb.Open(path.Join(fileName, admindbFileName))
 	if err != nil {
 		return nil, err
 	}
 	metricExpiration := uint32(options.NumGrid * options.GridLen * metricExpirationNumPeriods)
-	db.mdb, err = mdb.Open(path.Join(fileName, mdbFileName), &mdb.Options{metricExpiration})
+	db.Metric, err = metricdb.Open(path.Join(fileName, metricdbFileName), &metricdb.Options{metricExpiration})
 	if err != nil {
 		return nil, err
 	}
-	name := fmt.Sprintf("%s-%dx%d", sdbFileName, options.NumGrid, options.GridLen)
-	opts := &sdb.Options{NumGrid: options.NumGrid, GridLen: options.GridLen}
-	db.sdb, err = sdb.Open(path.Join(fileName, name), opts)
+	name := fmt.Sprintf("%s-%dx%d", statedbFileName, options.NumGrid, options.GridLen)
+	opts := &statedb.Options{NumGrid: options.NumGrid, GridLen: options.GridLen}
+	db.State, err = statedb.Open(path.Join(fileName, name), opts)
 	if err != nil {
 		return nil, err
 	}
@@ -71,29 +71,14 @@ func Open(fileName string, options *Options) (*DB, error) {
 
 // Close a DB.
 func (db *DB) Close() error {
-	if err := db.adb.Close(); err != nil {
+	if err := db.Admin.Close(); err != nil {
 		return err
 	}
-	if err := db.mdb.Close(); err != nil {
+	if err := db.Metric.Close(); err != nil {
 		return err
 	}
-	if err := db.sdb.Close(); err != nil {
+	if err := db.State.Close(); err != nil {
 		return err
 	}
 	return nil
-}
-
-// UsingA returns the adb handle.
-func (db *DB) UsingA() *adb.DB {
-	return db.adb
-}
-
-// UsingM returns the mdb handle.
-func (db *DB) UsingM() *mdb.DB {
-	return db.mdb
-}
-
-// UsingS returns the sdb handle.
-func (db *DB) UsingS() *sdb.DB {
-	return db.sdb
 }

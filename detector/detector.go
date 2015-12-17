@@ -14,7 +14,7 @@ import (
 	"github.com/eleme/banshee/detector/cursor"
 	"github.com/eleme/banshee/models"
 	"github.com/eleme/banshee/storage"
-	"github.com/eleme/banshee/storage/sdb"
+	"github.com/eleme/banshee/storage/statedb"
 	"github.com/eleme/banshee/util"
 	"github.com/eleme/banshee/util/log"
 )
@@ -111,25 +111,25 @@ func (d *Detector) handle(conn net.Conn) {
 // Test whether a metric matches the rules.
 func (d *Detector) match(m *models.Metric) bool {
 	// Check cache first.
-	hit,v:=d.hitCache.hitWhiteListCache(m)
+	hit, v := d.hitCache.hitWhiteListCache(m)
 	if hit {
 		return v
 	}
 	// Check blacklist.
 	for _, pattern := range d.cfg.Detector.BlackList {
 		if util.Match(m.Name, pattern) {
-			d.hitCache.setWLC(m,nil,false)
+			d.hitCache.setWLC(m, nil, false)
 			log.Debug("%s hit black pattern %s", m.Name, pattern)
 			return false
 		}
 	}
 	// Check rules.
-	rules := d.db.UsingA().GetRules()
+	rules := d.db.Admin.GetRules()
 	d.hitCache.updateRules(rules)
 
 	for _, rule := range rules {
 		if util.Match(m.Name, rule.Pattern) {
-			d.hitCache.setWLC(m,&rule,true)
+			d.hitCache.setWLC(m, &rule, true)
 			return true
 		}
 	}
@@ -141,17 +141,17 @@ func (d *Detector) match(m *models.Metric) bool {
 // Detect incoming metric with 3-sigma rule and fill the metric.Score.
 func (d *Detector) detect(m *models.Metric) error {
 	// Get pervious state.
-	s, err := d.db.UsingS().Get(m)
-	if err != nil && err != sdb.ErrNotFound {
+	s, err := d.db.State.Get(m)
+	if err != nil && err != statedb.ErrNotFound {
 		return err
 	}
 	// Move state next.
 	var n *models.State
-	if err == sdb.ErrNotFound {
+	if err == statedb.ErrNotFound {
 		n = d.cursor.Next(nil, m)
 	} else {
 		n = d.cursor.Next(s, m)
 	}
 	// Put the next state to db.
-	return d.db.UsingS().Put(m, n)
+	return d.db.State.Put(m, n)
 }

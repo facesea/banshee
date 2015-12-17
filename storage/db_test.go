@@ -19,8 +19,8 @@ func TestOpen(t *testing.T) {
 	assert.Ok(t, db != nil)
 	defer db.Close()
 	defer os.RemoveAll(fileName)
-	assert.Ok(t, util.IsFileExist(path.Join(fileName, adbFileName)))
-	assert.Ok(t, util.IsFileExist(path.Join(fileName, mdbFileName)))
-	sFileName := fmt.Sprintf("%s-%dx%d", sdbFileName, options.NumGrid, options.GridLen)
+	assert.Ok(t, util.IsFileExist(path.Join(fileName, admindbFileName)))
+	assert.Ok(t, util.IsFileExist(path.Join(fileName, metricdbFileName)))
+	sFileName := fmt.Sprintf("%s-%dx%d", statedbFileName, options.NumGrid, options.GridLen)
 	assert.Ok(t, util.IsFileExist(path.Join(fileName, sFileName)))
 }
