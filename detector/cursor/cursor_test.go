@@ -125,7 +125,7 @@ func TestNegativeValue(t *testing.T) {
 		s = c.Next(s, m)
 		assert.Ok(t, !m.IsAnomalous())
 	}
-	l = genMetricsLine(-200.0, -100.0, 10.0, 60)
+	l = genMetricsAroundTrendUpline(-200.0, -100.0, 10.0, 60)
 	for _, m := range l {
 		s = c.Next(s, m)
 		assert.Ok(t, !m.IsAnomalous())
