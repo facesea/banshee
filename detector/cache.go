@@ -1,8 +1,9 @@
 package detector
 
 import (
-	"github.com/eleme/banshee/models"
 	"sync"
+
+	"github.com/eleme/banshee/models"
 )
 
 // cache is two map contain hitCache for Detector with read/write lock
@@ -14,10 +15,8 @@ type cache struct {
 	rulesHitCache  map[string]map[string]bool
 }
 
-
 // newCache creates a new hitCache
-func newCache(rules *[]string) *cache {
-	//FIXME use rules
+func newCache() *cache {
 	return &cache{
 		lockForWLC:     &sync.RWMutex{},
 		lockForRHC:     &sync.RWMutex{},
@@ -28,36 +27,33 @@ func newCache(rules *[]string) *cache {
 }
 
 // hitWhiteListCache - Check if a metric hit the hitCache--'whiteListCache'
-func (c *cache) hitWhiteListCache(m *models.Metric) (hit bool,cache bool) {
+func (c *cache) hitWhiteListCache(m *models.Metric) (hit bool, cache bool) {
 	c.lockForWLC.RLock()
 	defer c.lockForWLC.RUnlock()
 	v, e := c.whiteListCache[m.Name]
 	if e {
 		if v {
-			return true,true
+			return true, true
 		}
-		return true,false
+		return true, false
 	}
-	return false,false
-}
-
-// findRule - Find the rule match metric from Cache when the nil rule param
-// send to the other func
-func (c *cache) findRule(m *models.Metric) (rulePattern string) {
-	//FIXME
-	return "nil"
+	return false, false
 }
 
 // setWLC - Put a white list hitCache into cache , add it to rulesHitCache also
-// rule can be nil , when it's nil use O(n) algorithm find rule from rulesHitCache
-func (c *cache) setWLC(m *models.Metric, rule *models.Rule,pass bool) {
-	if rule == nil {
-		//FIXME
-	}
+// rule can be nil , when it's nil the cache should be a blackListHit case , it
+// will not be added to rulesHitCache
+func (c *cache) setWLC(m *models.Metric, rule *models.Rule, pass bool) {
 	c.lockForWLC.Lock()
 	defer c.lockForWLC.Unlock()
 	c.lockForRHC.Lock()
 	defer c.lockForRHC.Unlock()
+
+	if rule == nil {
+		c.whiteListCache[m.Name] = pass
+		return
+	}
+
 	_, exists := c.rulesHitCache[rule.Pattern]
 	if exists {
 		c.rulesHitCache[rule.Pattern][m.Name] = pass
@@ -67,7 +63,28 @@ func (c *cache) setWLC(m *models.Metric, rule *models.Rule,pass bool) {
 	c.whiteListCache[m.Name] = pass
 }
 
-
+// updateRules - update cache by rules
 func (c *cache) updateRules(rules []models.Rule) {
-	//FIXME
+	c.lockForWLC.Lock()
+	defer c.lockForWLC.Unlock()
+	c.lockForRHC.Lock()
+	defer c.lockForRHC.Unlock()
+	delList := []string{}
+	for key, value := range c.rulesHitCache {
+		needDel := true
+		for _, rule := range rules {
+			if rule.Pattern == key {
+				needDel = false
+			}
+		}
+		if needDel {
+			for metric, _ := range value {
+				delete(c.whiteListCache, metric)
+			}
+			delList = append(delList, key)
+		}
+	}
+	for _, v := range delList {
+		delete(c.rulesHitCache, v)
+	}
 }
