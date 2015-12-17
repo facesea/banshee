@@ -10,7 +10,7 @@ import (
 	"github.com/eleme/banshee/util/assert"
 )
 
-// Help to generate data suite.
+// Help to generate random numbers between min and max.
 func genMetrics(min, max float64, count int) []*models.Metric {
 	var arr []*models.Metric
 	delta := max - min
@@ -22,11 +22,11 @@ func genMetrics(min, max float64, count int) []*models.Metric {
 	return arr
 }
 
-// genMetricsLine - Help to generate data suite , which have rake ratio
-func genMetricsLine(st, ed, randomRange float64, count int) []*models.Metric {
+// Help to generate random numbers around a slowly trending up line.
+func genMetricsAroundTrendUpline(min, max, randomRange float64, count int) []*models.Metric {
 	var arr []*models.Metric
 	for i := 0; i < count; i++ {
-		base := st + (st-ed)/(float64(count)-1.0)*float64(i)
+		base := min + (max-min)/(float64(count)-1.0)*float64(i)
 		value := base + rand.Float64()*randomRange - randomRange/2.0
 		m := &models.Metric{Value: value}
 		arr = append(arr, m)
@@ -138,7 +138,7 @@ func TestSlowlyTrendingUp(t *testing.T) {
 	wf := 0.05
 	leastC := 18
 	c := New(wf, leastC)
-	l := genMetricsLine(100.0, 200.0, 10.0, 60)
+	l := genMetricsAroundTrendUpline(100.0, 200.0, 10.0, 60)
 	var s *models.State
 	for _, m := range l {
 		s = c.Next(s, m)
