@@ -114,6 +114,25 @@ func TestAnomalyAfterBigAnomaly(t *testing.T) {
 	assert.Ok(t, !m.IsAnomalous())
 }
 
+// Case test random value range cover negative zone
+func TestNegativeValue(t *testing.T) {
+	wf := 0.05
+	leastC := 18
+	c := New(wf, leastC)
+	l := genMetrics(-210.0, -190.0, 60)
+	var s *models.State
+	for _, m := range l {
+		s = c.Next(s, m)
+		assert.Ok(t, !m.IsAnomalous())
+	}
+	l = genMetricsLine(-200.0, -100.0, 10.0, 60)
+	for _, m := range l {
+		s = c.Next(s, m)
+		assert.Ok(t, !m.IsAnomalous())
+	}
+}
+
+
 // Case slowly trending up.
 func TestSlowlyTrendingUp(t *testing.T) {
 	wf := 0.05
