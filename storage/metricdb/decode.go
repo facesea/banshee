@@ -1,6 +1,6 @@
 // Copyright 2015 Eleme Inc. All rights reserved.
 
-package mdb
+package metricdb
 
 import (
 	"fmt"

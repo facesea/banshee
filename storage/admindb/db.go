@@ -1,7 +1,7 @@
 // Copyright 2015 Eleme Inc. All rights reserved.
 
-// Package adb handles the administration storage.
-package adb
+// Package admindb handles the administration storage.
+package admindb
 
 import (
 	"github.com/eleme/banshee/models"

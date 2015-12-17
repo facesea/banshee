@@ -1,7 +1,7 @@
 // Copyright 2015 Eleme Inc. All rights reserved.
 
-// Package sdb handles the states storage.
-package sdb
+// Package statedb handles the states storage.
+package statedb
 
 import (
 	"github.com/eleme/banshee/models"
