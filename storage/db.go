@@ -22,6 +22,9 @@ const (
 	sdbFileName = "states"
 )
 
+// Metrics expiration = metricExpirationNumPeriods * period
+const metricExpirationNumPeriods = 7
+
 // Options is for db opening.
 type Options struct {
 	// sdb
@@ -52,7 +55,8 @@ func Open(fileName string, options *Options) (*DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	db.mdb, err = mdb.Open(path.Join(fileName, mdbFileName))
+	metricExpiration := uint32(options.NumGrid * options.GridLen * metricExpirationNumPeriods)
+	db.mdb, err = mdb.Open(path.Join(fileName, mdbFileName), &mdb.Options{metricExpiration})
 	if err != nil {
 		return nil, err
 	}
