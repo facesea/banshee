@@ -55,8 +55,7 @@ func Open(fileName string, options *Options) (*DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	metricExpiration := uint32(options.NumGrid * options.GridLen * metricExpirationNumPeriods)
-	db.Metric, err = metricdb.Open(path.Join(fileName, metricdbFileName), &metricdb.Options{metricExpiration})
+	db.Metric, err = metricdb.Open(path.Join(fileName, metricdbFileName))
 	if err != nil {
 		return nil, err
 	}
