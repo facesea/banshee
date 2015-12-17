@@ -4,7 +4,11 @@
 // state forward.
 package cursor
 
-import "github.com/eleme/banshee/models"
+import (
+	"math"
+
+	"github.com/eleme/banshee/models"
+)
 
 // Cursor is a detection state pusher.
 type Cursor struct {
@@ -47,8 +51,11 @@ func (c *Cursor) Next(s *models.State, m *models.Metric) *models.State {
 		n.Count = s.Count
 		m.Score = div3Sigma(n.Average, n.StdDev, m.Value)
 	}
-	// Don't move forward the stddev if the current metric is anomalous.
+	// Don't move forward the stddev if the current metric is anomalous.Move forward the average with
+	// a low weighted factor
 	if m.IsAnomalous() {
+		wf := c.wf * s.Average / math.Abs(s.Average-m.Value)
+		n.Average = ewma(wf, s.Average, m.Value)
 		n.StdDev = s.StdDev
 	}
 	return n
