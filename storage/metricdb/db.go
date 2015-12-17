@@ -4,50 +4,24 @@
 package metricdb
 
 import (
-	"fmt"
 	"github.com/eleme/banshee/models"
 	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/syndtr/goleveldb/leveldb/util"
 )
 
-// Prefix
-const (
-	prefixIndex = 'i'
-	prefixStamp = 's'
-)
-
-// Timstamp encoding
-const (
-	// Further incoming timestamp will be stored as the diff to this horizon.
-	stampHorizon uint32 = 1450322633
-	// Timestamps will be converted to to 36-hex string format before they are
-	// put to db.
-	stampConvBase = 36
-	// A timestamp in 36-hex format string with this length is enough.
-	stampStringLength = 7
-)
-
-// Options is for db opening.
-type Options struct {
-	// Metrics expiration.
-	Experiation uint32
-}
-
-// DB handles the metric storage.
+// DB handles metrics storage.
 type DB struct {
 	// LevelDB
 	db *leveldb.DB
-	// Expiration
-	exp uint32
 }
 
 // Open a DB by fileName.
-func Open(fileName string, options *Options) (*DB, error) {
+func Open(fileName string) (*DB, error) {
 	db, err := leveldb.OpenFile(fileName, nil)
 	if err != nil {
 		return nil, err
 	}
-	return &DB{db, options.Experiation}, nil
+	return &DB{db}, nil
 }
 
 // Close the DB.
@@ -57,94 +31,57 @@ func (db *DB) Close() error {
 
 // Operations
 
-// Put a metric to db.
+// Put a metric into db.
 func (db *DB) Put(m *models.Metric) error {
-	// Put metric and index.
-	idxKey := encodeIndexKey(m)
-	idxValue := encodeIndexValue(m)
-	stampKey := encodeStampKey(m)
-	stampValue := encodeStampValue(m)
-	batch := new(leveldb.Batch)
-	batch.Put(idxKey, idxValue)
-	batch.Put(stampKey, stampValue)
-	// Remove outdated metrics.
-	metrics, err := db.Range(m.Name, stampHorizon+1, m.Stamp-db.exp)
-	if err != nil {
-		return err
-	}
-	if len(metrics) != 0 {
-		for _, m := range metrics {
-			key := encodeStampKey(m)
-			batch.Delete(key)
-		}
-	}
-	return db.db.Write(batch, nil)
+	key := encodeKey(m)
+	value := encodeValue(m)
+	return db.db.Put(key, value, nil)
 }
 
-// Get a metric by name and stamp.
-func (db *DB) Get(name string, stamp uint32) (*models.Metric, error) {
-	m := &models.Metric{Name: name, Stamp: stamp}
-	stampKey := encodeStampKey(m)
-	value, err := db.db.Get(stampKey, nil)
-	if err != nil {
-		if err == leveldb.ErrNotFound {
-			return nil, ErrNotFound
-		}
-		return nil, err
-	}
-	err = decodeMetricValue(value, m)
-	if err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-// Range returns metrics in a stamp range, the start and end are both included
-// in the range.
-func (db *DB) Range(name string, start, end uint32) (metrics []*models.Metric, err error) {
-	startM := &models.Metric{Name: name, Stamp: start}
-	endM := &models.Metric{Name: name, Stamp: end + 1}
-	startStampKey := encodeStampKey(startM)
-	endStampKey := encodeStampKey(endM)
-	iter := db.db.NewIterator(&util.Range{Start: startStampKey, Limit: endStampKey}, nil)
+// Get metrics in a range.
+func (db *DB) Get(name string, start, end uint32) ([]*models.Metric, error) {
+	startMetric := &models.Metric{Name: name, Stamp: start}
+	endMetric := &models.Metric{Name: name, Stamp: end}
+	startKey := encodeKey(startMetric)
+	endKey := encodeKey(endMetric)
+	iter := db.db.NewIterator(&util.Range{
+		Start: startKey,
+		Limit: endKey,
+	}, nil)
+	var metrics []*models.Metric
 	for iter.Next() {
 		m := &models.Metric{}
 		key := iter.Key()
 		value := iter.Value()
-		// Fill name and stamp
-		err = decodeMetricKey(key, m)
+		// Fill in the name and stamp.
+		err := decodeKey(key, m)
 		if err != nil {
-			return
+			return metrics, err
 		}
-		// File value, score, and average.
-		err = decodeMetricValue(value, m)
+		// Fill in the value, score and average.
+		err = decodeValue(value, m)
 		if err != nil {
-			return
+			return metrics, err
 		}
+		metrics = append(metrics, m)
 	}
-	err = nil
-	return
+	return metrics, nil
 }
 
-// Indexes returns all metric indexes.
-func (db *DB) Indexes() (indexes []*models.MetricIndex, err error) {
-	prefix := []byte(fmt.Sprintf("%c", prefixIndex))
-	iter := db.db.NewIterator(util.BytesPrefix(prefix), nil)
+// Delete metrics in a range.
+func (db *DB) Delete(name string, start, end uint32) error {
+	startMetric := &models.Metric{Name: name, Stamp: start}
+	endMetric := &models.Metric{Name: name, Stamp: end}
+	startKey := encodeKey(startMetric)
+	endKey := encodeKey(endMetric)
+	iter := db.db.NewIterator(&util.Range{
+		Start: startKey,
+		Limit: endKey,
+	}, nil)
+	batch := new(leveldb.Batch)
 	for iter.Next() {
-		idx := &models.MetricIndex{}
 		key := iter.Key()
-		value := iter.Value()
-		// Fill name
-		err = decodeIndexKey(key, idx)
-		if err != nil {
-			return
-		}
-		// Fill score, average
-		err = decodeIndexValue(value, idx)
-		if err != nil {
-			return
-		}
+		batch.Delete(key)
 	}
-	err = nil
-	return
+	return db.db.Write(batch, nil)
 }
