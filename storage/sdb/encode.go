@@ -21,6 +21,6 @@ func (db *DB) encodeKey(m *models.Metric) []byte {
 
 // Encode state value.
 func (db *DB) encodeValue(s *models.State) []byte {
-	value := fmt.Sprintf("%.3f:%.3f:%d", s.Average, s.StdDev, s.Count)
+	value := fmt.Sprintf("%.5f:%.5f:%d", s.Average, s.StdDev, s.Count)
 	return []byte(value)
 }
