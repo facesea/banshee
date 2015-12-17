@@ -78,7 +78,7 @@ func (c *cache) updateRules(rules []models.Rule) {
 			}
 		}
 		if needDel {
-			for metric, _ := range value {
+			for metric := range value {
 				delete(c.whiteListCache, metric)
 			}
 			delList = append(delList, key)
