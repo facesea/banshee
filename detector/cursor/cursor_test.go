@@ -122,21 +122,21 @@ func TestSlowlyTrendingUp(t *testing.T) {
 
 // Case change avg from low level to high level with only one accidental data,
 // banshee should not alert forever or for a long time
-func TestAnomalyLowToHigh(t *testing.T){
-	wf:=0.05
-	leastC:=18
-	c:=New(wf,leastC)
-	l:=genMetrics(120.0,140.0,100)
+func TestAnomalyLowToHigh(t *testing.T) {
+	wf := 0.05
+	leastC := 18
+	c := New(wf, leastC)
+	l := genMetrics(120.0, 140.0, 100)
 	var s *models.State
 	for _, m := range l {
 		s = c.Next(s, m)
 		assert.Ok(t, !m.IsAnomalous())
 	}
-	l=genMetrics(220.0,240.0,30)
+	l = genMetrics(220.0, 240.0, 30)
 	for _, m := range l {
 		s = c.Next(s, m)
 	}
-	l=genMetrics(220.0,240.0,30)
+	l = genMetrics(220.0, 240.0, 30)
 	for _, m := range l {
 		s = c.Next(s, m)
 		assert.Ok(t, !m.IsAnomalous())
