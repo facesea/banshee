@@ -22,7 +22,14 @@ func TestSafeMap(t *testing.T) {
 		fmt.Printf("%v=>%v", k, v)
 	}
 	assert.Ok(t, m.Items()["key"] == "val")
+	// Len
+	assert.Ok(t, m.Len() == 1)
 	// Delete
 	assert.Ok(t, m.Delete("key"))
 	assert.Ok(t, !m.Delete("key1"))
+	assert.Ok(t, m.Len() == 0)
+	// Clear
+	m.Set("key", "val")
+	m.Clear()
+	assert.Ok(t, m.Len() == 0)
 }
