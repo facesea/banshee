@@ -93,3 +93,8 @@ func (db *DB) Delete(name string, start, end uint32) error {
 	}
 	return nil
 }
+
+// DeleteTo deletes metrics ranging to a stamp by name.
+func (db *DB) DeleteTo(name string, end uint32) error {
+	return db.Delete(name, horizon, end)
+}
