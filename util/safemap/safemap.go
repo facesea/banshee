@@ -79,7 +79,6 @@ func (m *SafeMap) Len() int {
 func (m *SafeMap) Clear() {
 	m.lock.RLock()
 	defer m.lock.RUnlock()
-	for key := range m.m {
-		delete(m.m, key)
-	}
+	// Rely on GC
+	m.m = make(map[interface{}]interface{})
 }
