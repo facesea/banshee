@@ -4,10 +4,15 @@ package util
 
 import (
 	"os"
+	"strconv"
 	"strings"
 )
 
-// Strings
+// ToFixed truncates float64 type to a particular percision in string.
+func ToFixed(n float64, prec int) string {
+	s := strconv.FormatFloat(n, 'f', prec, 64)
+	return strings.TrimRight(s, "0")
+}
 
 // Match tests whether a string matches a wildcard pattern.
 // Only one or multiple character "*" are supported.
@@ -25,8 +30,6 @@ func Match(p, s string) bool {
 	}
 	return true
 }
-
-// File system
 
 // IsFileExist test whether a filepath is exist.
 func IsFileExist(fileName string) bool {

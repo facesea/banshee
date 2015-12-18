@@ -5,6 +5,7 @@ package metricdb
 import (
 	"fmt"
 	"github.com/eleme/banshee/models"
+	"github.com/eleme/banshee/util"
 	"strconv"
 )
 
@@ -33,7 +34,10 @@ func encodeKey(m *models.Metric) []byte {
 // encodeValue encodes db value from metric.
 func encodeValue(m *models.Metric) []byte {
 	// Value format is Value:Score:Average.
-	s := fmt.Sprintf("%.5f:%.5f:%.5f", m.Value, m.Score, m.Average)
+	value := util.ToFixed(m.Value, 5)
+	score := util.ToFixed(m.Score, 5)
+	average := util.ToFixed(m.Average, 5)
+	s := fmt.Sprintf("%s:%s:%s", value, score, average)
 	return []byte(s)
 }
 

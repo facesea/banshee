@@ -36,15 +36,15 @@ func TestStampLenEnoughToUse(t *testing.T) {
 }
 
 func TestEncodeValue(t *testing.T) {
-	m := &models.Metric{Value: 1.23, Score: 0.72, Average: 0.79}
+	m := &models.Metric{Value: 1.23, Score: 0.72, Average: 0.798766}
 	value := encodeValue(m)
-	s := "1.23000:0.72000:0.79000"
+	s := "1.23:0.72:0.79877"
 	assert.Ok(t, s == string(value))
 }
 
 func TestDecodeValue(t *testing.T) {
 	m := &models.Metric{}
-	value := []byte("1.23000:0.72000:0.79000")
+	value := []byte("1.23:0.72:0.79")
 	err := decodeValue(value, m)
 	assert.Ok(t, err == nil)
 	assert.Ok(t, m.Value == 1.23)

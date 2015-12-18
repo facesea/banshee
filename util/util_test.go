@@ -8,6 +8,11 @@ import (
 	"testing"
 )
 
+func TestToFixed(t *testing.T) {
+	assert.Ok(t, ToFixed(1.2345, 2) == "1.23")
+	assert.Ok(t, ToFixed(10000.12121121, 5) == "10000.12121")
+}
+
 func TestMatch(t *testing.T) {
 	assert.Ok(t, Match("a*cd*fg", "abcdefg"))
 	assert.Ok(t, !Match("a*cd*fg", "cbcdefg"))
