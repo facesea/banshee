@@ -2,6 +2,8 @@
 
 package cursor
 
+// Math algorithms for detection.
+
 import "math"
 
 // An exponential weighted moving average is a type of infinite impulse

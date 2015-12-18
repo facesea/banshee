@@ -45,18 +45,19 @@ func SetWriter(writer io.Writer) {
 	w = writer
 }
 
-// Do logging.
+// log dose logging.
 func log(l int, format string, a ...interface{}) {
 	if l >= level {
-		// Caller location
+		// Caller location is pkgName/fileName:lineNo
 		_, fileName, line, _ := runtime.Caller(2)
 		dir := path.Dir(fileName)
 		base := path.Base(fileName)
 		loc := path.Join(path.Base(dir), base)
-		// Meta
-		msg := fmt.Sprintf(format, a...)
+		// Datetime and pid.
 		now := time.Now().String()[:23]
 		pid := os.Getpid()
+		// Message
+		msg := fmt.Sprintf(format, a...)
 		s := fmt.Sprintf("%s %-5s %s[%d] <%s:%d>: %s", now, levelNames[l], name, pid, loc, line, msg)
 		fmt.Fprintln(w, s)
 	}

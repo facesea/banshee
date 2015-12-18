@@ -7,7 +7,7 @@ import (
 	"github.com/eleme/banshee/models"
 )
 
-// Decode db value into State.
+// decodeValue decodes db value into state.
 func (db *DB) decodeValue(value []byte) (*models.State, error) {
 	s := &models.State{}
 	n, err := fmt.Sscanf(string(value), "%f:%f:%d", &s.Average, &s.StdDev, &s.Count)

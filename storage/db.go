@@ -22,12 +22,9 @@ const (
 	statedbFileName  = "state"
 )
 
-// Metrics expiration = metricExpirationNumPeriods * period
-const metricExpirationNumPeriods = 7
-
 // Options is for db opening.
 type Options struct {
-	// sdb
+	// statedb
 	NumGrid int
 	GridLen int
 }
@@ -49,18 +46,20 @@ func Open(fileName string, options *Options) (*DB, error) {
 			return nil, err
 		}
 	}
-	// Open databases.
+	// Admindb.
 	db := new(DB)
 	db.Admin, err = admindb.Open(path.Join(fileName, admindbFileName))
 	if err != nil {
 		return nil, err
 	}
+	// Metricdb.
 	db.Metric, err = metricdb.Open(path.Join(fileName, metricdbFileName))
 	if err != nil {
 		return nil, err
 	}
 	name := fmt.Sprintf("%s-%dx%d", statedbFileName, options.NumGrid, options.GridLen)
 	opts := &statedb.Options{NumGrid: options.NumGrid, GridLen: options.GridLen}
+	// Statedb.
 	db.State, err = statedb.Open(path.Join(fileName, name), opts)
 	if err != nil {
 		return nil, err
@@ -70,12 +69,15 @@ func Open(fileName string, options *Options) (*DB, error) {
 
 // Close a DB.
 func (db *DB) Close() error {
+	// Admindb.
 	if err := db.Admin.Close(); err != nil {
 		return err
 	}
+	// Metricdb.
 	if err := db.Metric.Close(); err != nil {
 		return err
 	}
+	// Statedb.
 	if err := db.State.Close(); err != nil {
 		return err
 	}

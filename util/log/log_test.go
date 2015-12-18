@@ -7,6 +7,7 @@ import (
 )
 
 func TestLog(t *testing.T) {
+	// No assertions.
 	SetLevel(DEBUG)
 	Debug("hello %s", "world")
 	Info("hello %s", "world")
