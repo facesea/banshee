@@ -23,6 +23,7 @@ func TestOpen(t *testing.T) {
 	defer os.RemoveAll(fileName)
 	// Check if child db file exist
 	assert.Ok(t, util.IsFileExist(path.Join(fileName, admindbFileName)))
+	assert.Ok(t, util.IsFileExist(path.Join(fileName, indexdbFileName)))
 	assert.Ok(t, util.IsFileExist(path.Join(fileName, metricdbFileName)))
 	sFileName := fmt.Sprintf("%s-%dx%d", statedbFileName, options.NumGrid, options.GridLen)
 	assert.Ok(t, util.IsFileExist(path.Join(fileName, sFileName)))

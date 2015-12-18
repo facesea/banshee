@@ -6,6 +6,7 @@ package storage
 import (
 	"fmt"
 	"github.com/eleme/banshee/storage/admindb"
+	"github.com/eleme/banshee/storage/indexdb"
 	"github.com/eleme/banshee/storage/metricdb"
 	"github.com/eleme/banshee/storage/statedb"
 	"os"
@@ -18,6 +19,7 @@ const filemode = 0755
 // Child db filename.
 const (
 	admindbFileName  = "admin"
+	indexdbFileName  = "index"
 	metricdbFileName = "metric"
 	statedbFileName  = "state"
 )
@@ -32,6 +34,7 @@ type Options struct {
 // DB handles the storage on leveldb.
 type DB struct {
 	Admin  *admindb.DB
+	Index  *indexdb.DB
 	Metric *metricdb.DB
 	State  *statedb.DB
 }
@@ -49,6 +52,11 @@ func Open(fileName string, options *Options) (*DB, error) {
 	// Admindb.
 	db := new(DB)
 	db.Admin, err = admindb.Open(path.Join(fileName, admindbFileName))
+	if err != nil {
+		return nil, err
+	}
+	// Indexdb.
+	db.Index, err = indexdb.Open(path.Join(fileName, indexdbFileName))
 	if err != nil {
 		return nil, err
 	}
@@ -71,6 +79,10 @@ func Open(fileName string, options *Options) (*DB, error) {
 func (db *DB) Close() error {
 	// Admindb.
 	if err := db.Admin.Close(); err != nil {
+		return err
+	}
+	// Indexdb.
+	if err := db.Index.Close(); err != nil {
 		return err
 	}
 	// Metricdb.
