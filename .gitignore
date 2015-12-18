@@ -1,8 +1,9 @@
 .*sw[opn]
 banshee
 storage/storage_test/
-storage/*x*
-storage/metrics
+storage/state-*x*
+storage/metric
+storage/index
+storage/admin
 test-config.json
 test-storage
-storage/admin
