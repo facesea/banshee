@@ -121,3 +121,13 @@ func (db *DB) Filter(pattern string) (l []*models.Index) {
 	}
 	return l
 }
+
+// All returns all indexes.
+func (db *DB) All() (l []*models.Index) {
+	m := db.m.Items()
+	for _, v := range m {
+		idx := v.(*models.Index)
+		l = append(l, idx)
+	}
+	return l
+}
