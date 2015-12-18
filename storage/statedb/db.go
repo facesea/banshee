@@ -6,6 +6,7 @@ package statedb
 import (
 	"github.com/eleme/banshee/models"
 	"github.com/syndtr/goleveldb/leveldb"
+	"github.com/syndtr/goleveldb/leveldb/util"
 )
 
 // Options is for db opening.
@@ -61,4 +62,20 @@ func (db *DB) Put(m *models.Metric, s *models.State) error {
 	key := db.encodeKey(m)
 	value := db.encodeValue(s)
 	return db.db.Put(key, value, nil)
+}
+
+// Delete all states for a metric name.
+// This operation is currently only used for cleaning.
+func (db *DB) Delete(name string) error {
+	// Name must be the key prefix
+	iter := db.db.NewIterator(util.BytesPrefix([]byte(name)), nil)
+	batch := new(leveldb.Batch)
+	for iter.Next() {
+		key := iter.Key()
+		batch.Delete(key)
+	}
+	if batch.Len() > 0 {
+		return db.db.Write(batch, nil)
+	}
+	return nil
 }
