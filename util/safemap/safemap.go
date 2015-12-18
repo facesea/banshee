@@ -74,3 +74,12 @@ func (m *SafeMap) Len() int {
 	defer m.lock.RUnlock()
 	return len(m.m)
 }
+
+// Clear the map.
+func (m *SafeMap) Clear() {
+	m.lock.RLock()
+	defer m.lock.RUnlock()
+	for key := range m.m {
+		delete(m.m, key)
+	}
+}
