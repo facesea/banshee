@@ -21,16 +21,18 @@ const (
 	stampLen = 7
 )
 
-// Encode metric db key.
+// encodeKey encodes db key from metric.
 func encodeKey(m *models.Metric) []byte {
+	// Key format is Name+Stamp.
 	t := m.Stamp - horizon
 	v := strconv.FormatUint(uint64(t), convBase)
 	s := m.Name + v
 	return []byte(s)
 }
 
-// Encode metric db value.
+// encodeValue encodes db value from metric.
 func encodeValue(m *models.Metric) []byte {
+	// Value format is Value:Score:Average.
 	s := fmt.Sprintf("%.5f:%.5f:%.5f", m.Value, m.Score, m.Average)
 	return []byte(s)
 }

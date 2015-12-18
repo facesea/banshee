@@ -38,12 +38,14 @@ func (db *DB) Put(m *models.Metric) error {
 	return db.db.Put(key, value, nil)
 }
 
-// Get metrics in a range.
+// Get metrics in a timstamp range, the range is left open and right closed.
 func (db *DB) Get(name string, start, end uint32) ([]*models.Metric, error) {
+	// Key encoding.
 	startMetric := &models.Metric{Name: name, Stamp: start}
 	endMetric := &models.Metric{Name: name, Stamp: end}
 	startKey := encodeKey(startMetric)
 	endKey := encodeKey(endMetric)
+	// Iterate db.
 	iter := db.db.NewIterator(&util.Range{
 		Start: startKey,
 		Limit: endKey,
@@ -68,12 +70,15 @@ func (db *DB) Get(name string, start, end uint32) ([]*models.Metric, error) {
 	return metrics, nil
 }
 
-// Delete metrics in a range.
+// Delete metrics in a timestamp range, the range is left open and right
+// closed.
 func (db *DB) Delete(name string, start, end uint32) error {
+	// Key encoding.
 	startMetric := &models.Metric{Name: name, Stamp: start}
 	endMetric := &models.Metric{Name: name, Stamp: end}
 	startKey := encodeKey(startMetric)
 	endKey := encodeKey(endMetric)
+	// Iterate db.
 	iter := db.db.NewIterator(&util.Range{
 		Start: startKey,
 		Limit: endKey,

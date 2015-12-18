@@ -20,29 +20,43 @@ const (
 type Rule struct {
 	// Pattern is a wildcard string
 	Pattern string
-	// Condition
-	// When = condition1 | condition2, example:
+	// Alerting condition, described as the logic OR result of basic conditions
+	// above:
+	//   When = condition1 | condition2
+	// example:
 	//   0x3 = WhenTrendUp | WhenTrendDown
 	When int
-	// Additional
+	// Optional thresholds data, only used if the rule condition is about
+	// threshold. Although we really don't need any thresholds for trending
+	// analyzation and alertings, but we still offer a way to alert by
+	// thresholds.
 	ThresholdMax float64
 	ThresholdMin float64
-	// Never alert for values below this line.
+	// Never alert for values below this line. The mainly reason to provide
+	// this option is to ignore the volatility of values with a very small
+	// average level.
 	TrustLine float64
 }
 
-// Test returns true if the metric is against this rule.
+// IsValid returns true if rule.When is valid.
+func (rule *Rule) IsValid() bool {
+	return rule.When >= 0x1 && rule.When <= 0x3F
+}
+
+// Test returns true if the metric hits this rule.
 func (rule *Rule) Test(m *Metric) bool {
 	if !util.Match(m.Name, rule.Pattern) {
+		// Not match this rule.
 		return false
 	}
+
 	// Ignore it if it's value small enough to be trust
 	if m.Value < rule.TrustLine {
 		return false
 	}
 
+	// Match conditions.
 	ok := false
-
 	if !ok && (rule.When&WhenTrendUp != 0) {
 		ok = m.IsAnomalousTrendUp()
 	}
@@ -62,9 +76,4 @@ func (rule *Rule) Test(m *Metric) bool {
 		ok = m.IsAnomalousTrendDown() && m.Value <= rule.ThresholdMin
 	}
 	return ok
-}
-
-// IsValid returns true if rule.When is valid.
-func (rule *Rule) IsValid() bool {
-	return rule.When >= 0x1 && rule.When <= 0x3F
 }

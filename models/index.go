@@ -2,12 +2,16 @@
 
 package models
 
-// Index is a container for metric latest name, score and average.
+// Index is for metric indexing, it records metric name for faster metric
+// indexing. And metric latest informations like timstamp, score, average are
+// also indexed.
 type Index struct {
-	// Name
+	// Metric name
 	Name string
-	// Score
+	// Latest stamp for the metric.
+	Stamp uint32
+	// Latest score for the metric.
 	Score float64
-	// Average
+	// Latest average for the metric.
 	Average float64
 }

@@ -3,6 +3,7 @@
 package models
 
 // User is the alerter message receiver.
+// One user can receive many projects.
 type User struct {
 	// Name
 	Name string

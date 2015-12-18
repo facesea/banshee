@@ -1,5 +1,6 @@
 // Copyright 2015 Eleme Inc. All rights reserved.
 
+// Package config handles the configuration container and parsing.
 package config
 
 import (
@@ -9,9 +10,13 @@ import (
 
 // Defaults
 const (
-	DefaultInterval     int     = 10
-	DefaultNumGrid      int     = 288
-	DefaultGridLen      int     = 300
+	// Default time interval for all metrics in seconds.
+	DefaultInterval int = 10
+	// Default number of grids in one period.
+	DefaultNumGrid int = 288
+	// Default grid length in seconds.
+	DefaultGridLen int = 300
+	// Default weight factor for moving average and standard deviation.
 	DefaultWeightFactor float64 = 0.05
 )
 
@@ -19,7 +24,7 @@ const (
 const (
 	// Percentage the leastC in one grid.
 	leastCountGridPercent float64 = 0.6
-	// leastC must be greater than this
+	// Min value of leastC.
 	leastCountMin int = 18
 )
 
@@ -82,7 +87,9 @@ func (config *Config) UpdateWithJSONFile(fileName string) error {
 	return err
 }
 
-// LeastC returns the least count to start detection.
+// LeastC returns the least count to start detection, if the count of a metric
+// is less than this value, it will be trusted without an calculation on its
+// score.
 func (config *Config) LeastC() int {
 	c := int((float64(config.Period[1]) / float64(config.Interval)) * leastCountGridPercent)
 	if c > leastCountMin {
