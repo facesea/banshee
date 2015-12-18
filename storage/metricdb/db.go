@@ -88,5 +88,8 @@ func (db *DB) Delete(name string, start, end uint32) error {
 		key := iter.Key()
 		batch.Delete(key)
 	}
-	return db.db.Write(batch, nil)
+	if batch.Len() > 0 {
+		return db.db.Write(batch, nil)
+	}
+	return nil
 }
