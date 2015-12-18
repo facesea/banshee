@@ -117,7 +117,7 @@ func (d *Detector) match(m *models.Metric) bool {
 	}
 	// Check blacklist.
 	for _, pattern := range d.cfg.Detector.BlackList {
-		if util.Match(m.Name, pattern) {
+		if util.Match(pattern, m.Name) {
 			d.hitCache.setWLC(m, nil, false)
 			log.Debug("%s hit black pattern %s", m.Name, pattern)
 			return false
@@ -128,7 +128,7 @@ func (d *Detector) match(m *models.Metric) bool {
 	d.hitCache.updateRules(rules)
 
 	for _, rule := range rules {
-		if util.Match(m.Name, rule.Pattern) {
+		if util.Match(rule.Pattern, m.Name) {
 			d.hitCache.setWLC(m, &rule, true)
 			return true
 		}
