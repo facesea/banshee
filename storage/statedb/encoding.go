@@ -28,3 +28,16 @@ func (db *DB) encodeValue(s *models.State) []byte {
 	value := fmt.Sprintf("%.5f:%.5f:%d", s.Average, s.StdDev, s.Count)
 	return []byte(value)
 }
+
+// decodeValue decodes db value into state.
+func (db *DB) decodeValue(value []byte) (*models.State, error) {
+	s := &models.State{}
+	n, err := fmt.Sscanf(string(value), "%f:%f:%d", &s.Average, &s.StdDev, &s.Count)
+	if err != nil {
+		return nil, err
+	}
+	if n != 3 {
+		return nil, ErrCorrupted
+	}
+	return s, nil
+}
