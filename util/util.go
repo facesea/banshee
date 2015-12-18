@@ -11,8 +11,11 @@ import (
 
 // Match tests whether a string matches a wildcard pattern.
 // Only one or multiple character "*" are supported.
-func Match(s, p string) bool {
+func Match(p, s string) bool {
 	l := strings.Split(p, "*")
+	if len(l) == 1 {
+		return s == p
+	}
 	for i, j := 0, 0; i < len(l); i++ {
 		j = strings.Index(s[j:], l[i])
 		if j < 0 {

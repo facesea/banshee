@@ -9,10 +9,11 @@ import (
 )
 
 func TestMatch(t *testing.T) {
-	assert.Ok(t, Match("abcdefg", "a*cd*fg"))
-	assert.Ok(t, !Match("cbcdefg", "a*cd*fg"))
-	assert.Ok(t, !Match("abcdef", "a*cd*fg"))
-	assert.Ok(t, !Match("abxdef", "a*cd*fg"))
+	assert.Ok(t, Match("a*cd*fg", "abcdefg"))
+	assert.Ok(t, !Match("a*cd*fg", "cbcdefg"))
+	assert.Ok(t, !Match("a*cd*fg", "abcdef"))
+	assert.Ok(t, !Match("a*cd*fg", "abxdef"))
+	assert.Ok(t, Match("abxdef", "abxdef"))
 }
 
 func TestIsFileExist(t *testing.T) {
