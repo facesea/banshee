@@ -5,6 +5,7 @@ package metricdb
 import (
 	"fmt"
 	"github.com/eleme/banshee/models"
+	"github.com/eleme/banshee/util"
 	"strconv"
 )
 
@@ -17,7 +18,7 @@ const (
 	// to db, also for storage cost reason.
 	convBase = 36
 	// A 36-hex string format timestamp with this length is enough to use for
-	// later 100 years.
+	// later 90 years.
 	stampLen = 7
 )
 
@@ -26,14 +27,17 @@ func encodeKey(m *models.Metric) []byte {
 	// Key format is Name+Stamp.
 	t := m.Stamp - horizon
 	v := strconv.FormatUint(uint64(t), convBase)
-	s := m.Name + v
+	s := fmt.Sprintf("%s%0*s", m.Name, stampLen, v)
 	return []byte(s)
 }
 
 // encodeValue encodes db value from metric.
 func encodeValue(m *models.Metric) []byte {
 	// Value format is Value:Score:Average.
-	s := fmt.Sprintf("%.5f:%.5f:%.5f", m.Value, m.Score, m.Average)
+	value := util.ToFixed(m.Value, 5)
+	score := util.ToFixed(m.Score, 5)
+	average := util.ToFixed(m.Average, 5)
+	s := fmt.Sprintf("%s:%s:%s", value, score, average)
 	return []byte(s)
 }
 

@@ -5,12 +5,15 @@ package indexdb
 import (
 	"fmt"
 	"github.com/eleme/banshee/models"
+	"github.com/eleme/banshee/util"
 )
 
 // encode encodes db value from index.
 func encode(idx *models.Index) []byte {
 	// Value format is Stamp:Score:Average
-	s := fmt.Sprintf("%d:%.5f:%.5f", idx.Stamp, idx.Score, idx.Average)
+	score := util.ToFixed(idx.Score, 5)
+	average := util.ToFixed(idx.Average, 5)
+	s := fmt.Sprintf("%d:%s:%s", idx.Stamp, score, average)
 	return []byte(s)
 }
 

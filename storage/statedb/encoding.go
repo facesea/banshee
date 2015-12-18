@@ -5,6 +5,7 @@ package statedb
 import (
 	"fmt"
 	"github.com/eleme/banshee/models"
+	"github.com/eleme/banshee/util"
 )
 
 // getGirdNo returns the grid number for the metric.
@@ -25,7 +26,9 @@ func (db *DB) encodeKey(m *models.Metric) []byte {
 // encodeValue encodes state value.
 func (db *DB) encodeValue(s *models.State) []byte {
 	// Value format is Average:StdDev:Count
-	value := fmt.Sprintf("%.5f:%.5f:%d", s.Average, s.StdDev, s.Count)
+	average := util.ToFixed(s.Average, 5)
+	stddev := util.ToFixed(s.StdDev, 5)
+	value := fmt.Sprintf("%s:%s:%d", average, stddev, s.Count)
 	return []byte(value)
 }
 
