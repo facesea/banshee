@@ -77,6 +77,8 @@ func Open(fileName string, options *Options) (*DB, error) {
 	}
 	// Period
 	db.cleaner = &cleaner{db, options.NumGrid * options.GridLen}
+	// Start cleaner.
+	go db.cleaner.start()
 	return db, nil
 }
 
