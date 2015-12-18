@@ -17,7 +17,7 @@ const (
 	// to db, also for storage cost reason.
 	convBase = 36
 	// A 36-hex string format timestamp with this length is enough to use for
-	// later 100 years.
+	// later 90 years.
 	stampLen = 7
 )
 
@@ -26,7 +26,7 @@ func encodeKey(m *models.Metric) []byte {
 	// Key format is Name+Stamp.
 	t := m.Stamp - horizon
 	v := strconv.FormatUint(uint64(t), convBase)
-	s := m.Name + v
+	s := fmt.Sprintf("%s%0*s", m.Name, stampLen, v)
 	return []byte(s)
 }
 
