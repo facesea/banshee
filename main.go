@@ -6,6 +6,7 @@ import (
 	"flag"
 	"runtime"
 
+	"github.com/eleme/banshee/cleaner"
 	"github.com/eleme/banshee/config"
 	"github.com/eleme/banshee/detector"
 	"github.com/eleme/banshee/storage"
@@ -42,6 +43,9 @@ func main() {
 	if err != nil {
 		log.Fatal("failed to open %s: %v", cfg.Storage.Path, err)
 	}
+	// Cleaner
+	cleaner := cleaner.New(db, cfg.Period[0]*cfg.Period[1])
+	go cleaner.Start()
 	// Detector
 	detector := detector.New(cfg, db)
 	detector.Start()
