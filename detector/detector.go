@@ -110,31 +110,35 @@ func (d *Detector) handle(conn net.Conn) {
 
 // Test whether a metric matches the rules.
 func (d *Detector) match(m *models.Metric) bool {
+	// Check rules.
+	//FIXME use channel
+	rules := d.db.Admin.GetRules()
+	d.hitCache.updateRules()
+
 	// Check cache first.
 	hit, v := d.hitCache.hitWhiteListCache(m)
 	if hit {
 		return v
 	}
+
 	// Check blacklist.
 	for _, pattern := range d.cfg.Detector.BlackList {
 		if util.Match(pattern, m.Name) {
-			d.hitCache.setWLC(m, nil, false)
+			d.hitCache.setWLC(m, false)
 			log.Debug("%s hit black pattern %s", m.Name, pattern)
 			return false
 		}
 	}
-	// Check rules.
-	rules := d.db.Admin.GetRules()
-	d.hitCache.updateRules(rules)
 
 	for _, rule := range rules {
 		if util.Match(rule.Pattern, m.Name) {
-			d.hitCache.setWLC(m, &rule, true)
+			d.hitCache.setWLC(m, true)
 			return true
 		}
 	}
 	// No rules was hit.
 	log.Debug("%s hit no rules", m.Name)
+	d.hitCache.setWLC(m, false)
 	return false
 }
 
