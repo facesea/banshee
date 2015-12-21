@@ -18,6 +18,7 @@ func main() {
 	debug := flag.Bool("d", false, "debug mode")
 	flag.Parse()
 	// Logging
+	log.SetName("banshee")
 	if *debug {
 		log.SetLevel(log.DEBUG)
 	}
