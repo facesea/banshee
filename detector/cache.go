@@ -9,15 +9,15 @@ import (
 // cache is two map contain hitCache for Detector with read/write lock
 // to keep goroutine safety
 type cache struct {
-	lockForWLC     *sync.RWMutex
-	cache map[string]bool
+	lockForWLC *sync.RWMutex
+	cache      map[string]bool
 }
 
 // newCache creates a new hitCache
 func newCache() *cache {
 	return &cache{
-		lockForWLC:     &sync.RWMutex{},
-		cache: make(map[string]bool),
+		lockForWLC: &sync.RWMutex{},
+		cache:      make(map[string]bool),
 	}
 
 }
