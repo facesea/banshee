@@ -6,6 +6,7 @@ package cleaner
 
 import (
 	"github.com/eleme/banshee/storage"
+	"github.com/eleme/banshee/util/log"
 	"time"
 )
 
@@ -34,8 +35,8 @@ func New(db *storage.DB, period int) *Cleaner {
 	c := new(Cleaner)
 	c.db = db
 	c.expiration = time.Duration(uint32(expirationNumToPeriod*float32(period))) * time.Second
-	c.interval = time.Duration(uint32(intervalNumToPeriod * float32(period)))
-	c.ticker = time.NewTicker(c.interval * time.Second)
+	c.interval = time.Duration(uint32(intervalNumToPeriod*float32(period))) * time.Second
+	c.ticker = time.NewTicker(c.interval)
 	return c
 }
 
@@ -61,6 +62,7 @@ func (c *Cleaner) clean() {
 			c.db.State.Delete(idx.Name)
 			c.db.Metric.DeleteTo(idx.Name, uint32(now.Unix()))
 			c.db.Index.Delete(idx.Name)
+			log.Info("%s cleaned", idx.Name)
 		}
 	}
 }
