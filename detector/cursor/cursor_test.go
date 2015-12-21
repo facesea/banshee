@@ -132,7 +132,6 @@ func TestNegativeValue(t *testing.T) {
 	}
 }
 
-
 // Case slowly trending up.
 func TestSlowlyTrendingUp(t *testing.T) {
 	wf := 0.05
