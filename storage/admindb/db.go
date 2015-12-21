@@ -1,26 +1,40 @@
 // Copyright 2015 Eleme Inc. All rights reserved.
 
-// Package admindb handles the administration storage.
+// Package admindb handles the admin storage.
 package admindb
 
 import (
 	"github.com/eleme/banshee/models"
-	"github.com/syndtr/goleveldb/leveldb"
+	"github.com/eleme/banshee/util/safemap"
+	"github.com/jinzhu/gorm"
+	_ "github.com/mattn/go-sqlite3" // Import but not use
 )
 
-// DB handles the administration storage including rules, users etc.
+// DB handles admin storage.
 type DB struct {
-	// LevelDB
-	db *leveldb.DB
+	// Gorm
+	db gorm.DB
+	// Cache
+	projects *safemap.SafeMap
+	rules    *safemap.SafeMap
+	users    *safemap.SafeMap
 }
 
 // Open a DB by fileName.
 func Open(fileName string) (*DB, error) {
-	db, err := leveldb.OpenFile(fileName, nil)
+	sdb, err := gorm.Open("sqlite3", fileName)
 	if err != nil {
 		return nil, err
 	}
-	return &DB{db}, nil
+	db := new(DB)
+	db.db = sdb
+	db.projects = safemap.New()
+	db.rules = safemap.New()
+	db.users = safemap.New()
+	if err := db.autoMigrate(); err != nil {
+		return nil, err
+	}
+	return db, nil
 }
 
 // Close the DB.
@@ -28,15 +42,7 @@ func (db *DB) Close() error {
 	return db.db.Close()
 }
 
-// Operations
-
-// GetRules returns all rules from memory.
-func (db *DB) GetRules() []models.Rule {
-	// FIXME
-	return []models.Rule{
-		models.Rule{
-			Pattern: "*",
-			When:    models.WhenTrendUp | models.WhenTrendDown,
-		},
-	}
+// autoMigrate creates tables if there are not exist.
+func (db *DB) autoMigrate() error {
+	return db.db.AutoMigrate(&models.Project{}, &models.User{}, &models.Rule{}).Error
 }

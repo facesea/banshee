@@ -18,8 +18,12 @@ const (
 
 // Rule is a type to describe alerting rule.
 type Rule struct {
+	// ID in db.
+	ID int `gorm:"primary_key"`
+	// Project belongs to
+	ProjectID int `sql:"index;not null"`
 	// Pattern is a wildcard string
-	Pattern string
+	Pattern string `sql:"size:400;not null;unique"`
 	// Alerting condition, described as the logic OR result of basic conditions
 	// above:
 	//   When = condition1 | condition2
@@ -76,4 +80,17 @@ func (rule *Rule) Test(m *Metric) bool {
 		ok = m.IsAnomalousTrendDown() && m.Value <= rule.ThresholdMin
 	}
 	return ok
+}
+
+// Clone the rule.
+func (rule *Rule) Clone() *Rule {
+	return &Rule{
+		ID:           rule.ID,
+		ProjectID:    rule.ProjectID,
+		Pattern:      rule.Pattern,
+		When:         rule.When,
+		ThresholdMax: rule.ThresholdMax,
+		ThresholdMin: rule.ThresholdMin,
+		TrustLine:    rule.TrustLine,
+	}
 }
