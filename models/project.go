@@ -17,7 +17,7 @@ type Project struct {
 	// Project has many rules.
 	Rules []*Rule
 	// Project has many receivers.
-	Users []*User `gorm:"many2many:project_user"`
+	Users []*User `gorm:"many2many:project_users"`
 }
 
 // AddRule adds a rule to the project.
