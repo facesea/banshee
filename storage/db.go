@@ -38,8 +38,6 @@ type DB struct {
 	Index  *indexdb.DB
 	Metric *metricdb.DB
 	State  *statedb.DB
-	// Cleaner
-	cleaner *cleaner
 }
 
 // Open a DB by fileName and options.
@@ -75,10 +73,6 @@ func Open(fileName string, options *Options) (*DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	// Period
-	db.cleaner = &cleaner{db, options.NumGrid * options.GridLen}
-	// Start cleaner.
-	go db.cleaner.start()
 	return db, nil
 }
 
