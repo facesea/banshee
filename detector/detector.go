@@ -116,7 +116,7 @@ func (d *Detector) match(m *models.Metric) bool {
 	d.hitCache.updateRules()
 
 	// Check cache first.
-	hit, v := d.hitCache.hitWhiteListCache(m)
+	hit, v := d.hitCache.hitCache(m)
 	if hit {
 		return v
 	}
@@ -124,7 +124,7 @@ func (d *Detector) match(m *models.Metric) bool {
 	// Check blacklist.
 	for _, pattern := range d.cfg.Detector.BlackList {
 		if util.Match(pattern, m.Name) {
-			d.hitCache.setWLC(m, false)
+			d.hitCache.setCache(m, false)
 			log.Debug("%s hit black pattern %s", m.Name, pattern)
 			return false
 		}
@@ -132,13 +132,13 @@ func (d *Detector) match(m *models.Metric) bool {
 
 	for _, rule := range rules {
 		if util.Match(rule.Pattern, m.Name) {
-			d.hitCache.setWLC(m, true)
+			d.hitCache.setCache(m, true)
 			return true
 		}
 	}
 	// No rules was hit.
 	log.Debug("%s hit no rules", m.Name)
-	d.hitCache.setWLC(m, false)
+	d.hitCache.setCache(m, false)
 	return false
 }
 

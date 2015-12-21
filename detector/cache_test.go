@@ -12,22 +12,22 @@ func TestCache(t *testing.T) {
 	ma := &models.Metric{Name: "abcde"}
 	mb := &models.Metric{Name: "abcdf"}
 	mc := &models.Metric{Name: "abcdg"}
-	c.setWLC(ma, true)
-	c.setWLC(mb, false)
-	e, v := c.hitWhiteListCache(ma)
+	c.setCache(ma, true)
+	c.setCache(mb, false)
+	e, v := c.hitCache(ma)
 	assert.Ok(t, e && v)
-	e, v = c.hitWhiteListCache(mb)
+	e, v = c.hitCache(mb)
 	assert.Ok(t, e && !v)
-	e, v = c.hitWhiteListCache(mc)
+	e, v = c.hitCache(mc)
 	assert.Ok(t, !e)
 
 	c.updateRules()
-	e, v = c.hitWhiteListCache(ma)
+	e, v = c.hitCache(ma)
 	assert.Ok(t, !e)
-	e, v = c.hitWhiteListCache(mb)
+	e, v = c.hitCache(mb)
 	assert.Ok(t, !e)
-	c.setWLC(mc, true)
-	e, v = c.hitWhiteListCache(mc)
+	c.setCache(mc, true)
+	e, v = c.hitCache(mc)
 	assert.Ok(t, e && v)
 
 }
