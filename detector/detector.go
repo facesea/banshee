@@ -112,7 +112,7 @@ func (d *Detector) handle(conn net.Conn) {
 func (d *Detector) match(m *models.Metric) bool {
 	// Check rules.
 	//FIXME use channel
-	rules := d.db.Admin.GetRules()
+	rules := d.db.Admin.Rules()
 	d.hitCache.updateRules()
 
 	// Check cache first.

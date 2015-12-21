@@ -5,8 +5,8 @@ package admindb
 import "errors"
 
 var (
-	// ErrNotFound is returned when requested data not found.
+	// ErrNotFound is returned when requested project not found.
 	ErrNotFound = errors.New("admindb: not found")
-	// ErrCorrupted is returned when corrupted data found.
-	ErrCorrupted = errors.New("admindb: corrupted data found")
+	// ErrConstraintUnique is returned when the unique constraint is violated.
+	ErrConstraintUnique = errors.New("admindb: unique constraint violated")
 )
