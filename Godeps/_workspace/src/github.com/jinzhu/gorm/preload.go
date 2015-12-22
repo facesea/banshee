@@ -9,13 +9,18 @@ import (
 )
 
 func getRealValue(value reflect.Value, columns []string) (results []interface{}) {
-	for _, column := range columns {
-		if reflect.Indirect(value).FieldByName(column).IsValid() {
-			result := reflect.Indirect(value).FieldByName(column).Interface()
-			if r, ok := result.(driver.Valuer); ok {
-				result, _ = r.Value()
+	// If value is a nil pointer, Indirect returns a zero Value!
+	// Therefor we need to check for a zero value,
+	// as FieldByName could panic
+	if pointedValue := reflect.Indirect(value); pointedValue.IsValid() {
+		for _, column := range columns {
+			if pointedValue.FieldByName(column).IsValid() {
+				result := pointedValue.FieldByName(column).Interface()
+				if r, ok := result.(driver.Valuer); ok {
+					result, _ = r.Value()
+				}
+				results = append(results, result)
 			}
-			results = append(results, result)
 		}
 	}
 	return
@@ -63,7 +68,7 @@ func Preload(scope *Scope) {
 				case "belongs_to":
 					currentScope.handleBelongsToPreload(field, conditions)
 				case "many_to_many":
-					currentScope.handleHasManyToManyPreload(field, conditions)
+					currentScope.handleManyToManyPreload(field, conditions)
 				default:
 					currentScope.Err(errors.New("not supported relation"))
 				}
@@ -191,9 +196,8 @@ func (scope *Scope) handleBelongsToPreload(field *Field, conditions []interface{
 	}
 }
 
-func (scope *Scope) handleHasManyToManyPreload(field *Field, conditions []interface{}) {
+func (scope *Scope) handleManyToManyPreload(field *Field, conditions []interface{}) {
 	relation := field.Relationship
-
 	joinTableHandler := relation.JoinTableHandler
 	destType := field.StructField.Struct.Type.Elem()
 	var isPtr bool
@@ -210,7 +214,9 @@ func (scope *Scope) handleHasManyToManyPreload(field *Field, conditions []interf
 	}
 
 	db := scope.NewDB().Table(scope.New(reflect.New(destType).Interface()).TableName()).Select("*")
+
 	preloadJoinDB := joinTableHandler.JoinWith(joinTableHandler, db, scope.Value)
+
 	if len(conditions) > 0 {
 		preloadJoinDB = preloadJoinDB.Where(conditions[0], conditions[1:]...)
 	}
@@ -228,13 +234,15 @@ func (scope *Scope) handleHasManyToManyPreload(field *Field, conditions []interf
 
 		fields := scope.New(elem.Addr().Interface()).Fields()
 
+		var foundFields = map[string]bool{}
 		for index, column := range columns {
-			if field, ok := fields[column]; ok {
+			if field, ok := fields[column]; ok && !foundFields[column] {
 				if field.Field.Kind() == reflect.Ptr {
 					values[index] = field.Field.Addr().Interface()
 				} else {
 					values[index] = reflect.New(reflect.PtrTo(field.Field.Type())).Interface()
 				}
+				foundFields[column] = true
 			} else {
 				var i interface{}
 				values[index] = &i
@@ -245,14 +253,16 @@ func (scope *Scope) handleHasManyToManyPreload(field *Field, conditions []interf
 
 		var sourceKey []interface{}
 
+		var scannedFields = map[string]bool{}
 		for index, column := range columns {
 			value := values[index]
-			if field, ok := fields[column]; ok {
+			if field, ok := fields[column]; ok && !scannedFields[column] {
 				if field.Field.Kind() == reflect.Ptr {
 					field.Field.Set(reflect.ValueOf(value).Elem())
 				} else if v := reflect.ValueOf(value).Elem().Elem(); v.IsValid() {
 					field.Field.Set(v)
 				}
+				scannedFields[column] = true
 			} else if strInSlice(column, sourceKeys) {
 				sourceKey = append(sourceKey, *(value.(*interface{})))
 			}
@@ -285,11 +295,12 @@ func (scope *Scope) handleHasManyToManyPreload(field *Field, conditions []interf
 			}
 		}
 	} else {
-		object := scope.IndirectValue()
-		source := getRealValue(object, associationForeignStructFieldNames)
-		field := object.FieldByName(field.Name)
-		for _, link := range linkHash[toString(source)] {
-			field.Set(reflect.Append(field, link))
+		if object := scope.IndirectValue(); object.IsValid() {
+			source := getRealValue(object, associationForeignStructFieldNames)
+			field := object.FieldByName(field.Name)
+			for _, link := range linkHash[toString(source)] {
+				field.Set(reflect.Append(field, link))
+			}
 		}
 	}
 }

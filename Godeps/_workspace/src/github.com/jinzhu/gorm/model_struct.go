@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/qor/inflection"
+	"github.com/jinzhu/inflection"
 )
 
 var DefaultTableNameHandler = func(db *DB, defaultTableName string) string {
@@ -149,24 +149,25 @@ func (scope *Scope) GetModelStruct() *ModelStruct {
 
 			if fieldStruct.Tag.Get("sql") == "-" {
 				field.IsIgnored = true
-			} else {
-				sqlSettings := parseTagSetting(field.Tag.Get("sql"))
-				gormSettings := parseTagSetting(field.Tag.Get("gorm"))
-				if _, ok := gormSettings["PRIMARY_KEY"]; ok {
-					field.IsPrimaryKey = true
-					modelStruct.PrimaryFields = append(modelStruct.PrimaryFields, field)
-				}
-
-				if _, ok := sqlSettings["DEFAULT"]; ok {
-					field.HasDefaultValue = true
-				}
-
-				if value, ok := gormSettings["COLUMN"]; ok {
-					field.DBName = value
-				} else {
-					field.DBName = ToDBName(fieldStruct.Name)
-				}
 			}
+
+			sqlSettings := parseTagSetting(field.Tag.Get("sql"))
+			gormSettings := parseTagSetting(field.Tag.Get("gorm"))
+			if _, ok := gormSettings["PRIMARY_KEY"]; ok {
+				field.IsPrimaryKey = true
+				modelStruct.PrimaryFields = append(modelStruct.PrimaryFields, field)
+			}
+
+			if _, ok := sqlSettings["DEFAULT"]; ok {
+				field.HasDefaultValue = true
+			}
+
+			if value, ok := gormSettings["COLUMN"]; ok {
+				field.DBName = value
+			} else {
+				field.DBName = ToDBName(fieldStruct.Name)
+			}
+
 			fields = append(fields, field)
 		}
 	}
@@ -435,9 +436,12 @@ func (scope *Scope) generateSqlTag(field *StructField) string {
 			size, _ = strconv.Atoi(value)
 		}
 
-		_, autoIncrease := sqlSettings["AUTO_INCREMENT"]
+		v, autoIncrease := sqlSettings["AUTO_INCREMENT"]
 		if field.IsPrimaryKey {
 			autoIncrease = true
+		}
+		if v == "FALSE" {
+			autoIncrease = false
 		}
 
 		sqlType = scope.Dialect().SqlTag(reflectValue, size, autoIncrease)
