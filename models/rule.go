@@ -18,6 +18,8 @@ const (
 
 // Rule is a type to describe alerting rule.
 type Rule struct {
+	// Rule may be cached.
+	cache `sql:"-"`
 	// ID in db.
 	ID int `gorm:"primary_key"`
 	// Project belongs to
@@ -45,6 +47,23 @@ type Rule struct {
 // IsValid returns true if rule.When is valid.
 func (rule *Rule) IsValid() bool {
 	return rule.When >= 0x1 && rule.When <= 0x3F
+}
+
+// Copy the rule.
+func (rule *Rule) Copy() *Rule {
+	if rule.IsShared() {
+		rule.RLock()
+		defer rule.RUnlock()
+	}
+	return &Rule{
+		ID:           rule.ID,
+		ProjectID:    rule.ProjectID,
+		Pattern:      rule.Pattern,
+		When:         rule.When,
+		ThresholdMax: rule.ThresholdMax,
+		ThresholdMin: rule.ThresholdMin,
+		TrustLine:    rule.TrustLine,
+	}
 }
 
 // Test returns true if the metric hits this rule.
@@ -80,17 +99,4 @@ func (rule *Rule) Test(m *Metric) bool {
 		ok = m.IsAnomalousTrendDown() && m.Value <= rule.ThresholdMin
 	}
 	return ok
-}
-
-// Clone the rule.
-func (rule *Rule) Clone() *Rule {
-	return &Rule{
-		ID:           rule.ID,
-		ProjectID:    rule.ProjectID,
-		Pattern:      rule.Pattern,
-		When:         rule.When,
-		ThresholdMax: rule.ThresholdMax,
-		ThresholdMin: rule.ThresholdMin,
-		TrustLine:    rule.TrustLine,
-	}
 }
