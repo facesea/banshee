@@ -10,6 +10,7 @@ import (
 	"github.com/eleme/banshee/models"
 	"github.com/eleme/banshee/storage"
 	"github.com/eleme/banshee/util/log"
+	"github.com/eleme/banshee/util/safemap"
 )
 
 // Limit for buffered detected metric results, further results will be dropped
@@ -18,12 +19,13 @@ const bufferedMetricResultsLimit = 10 * 1024
 
 // Alerter will goroutine to alert metric which match rule
 type Alerter struct {
-	db  *storage.DB
-	cfg *config.Config
-	rc  chan *models.Metric
+	db       *storage.DB
+	cfg      *config.Config
+	rc       chan *models.Metric
+	stampMap *safemap.SafeMap
 }
 
-type alertMsg struct {
+type msg struct {
 	Project *models.Project `json:"project"`
 	Metric  *models.Metric  `json:"metric"`
 	User    *models.User    `json:"user"`
@@ -35,31 +37,42 @@ func New(cfg *config.Config, db *storage.DB) *Alerter {
 	alerter.cfg = cfg
 	alerter.db = db
 	alerter.rc = make(chan *models.Metric, bufferedMetricResultsLimit)
+	alerter.stampMap = safemap.New()
 	return alerter
 }
 
-// StartAlertingWorkers - start several goroutines to wait for detected metrics,
+// Start - start several goroutines to wait for detected metrics,
 // then check each metric with all the rules, the configured shell command will
 // be executed once a rule is hit.
-func (alerter *Alerter) StartAlertingWorkers() {
+func (alerter *Alerter) Start() {
 	for i := 0; i < alerter.cfg.Alerter.Workers; i++ {
-		go alerter.alertingWork()
+		go alerter.work()
 	}
 }
 
-// alertingWork - wait for detected metrics, then check each metric with all the
+// work - wait for detected metrics, then check each metric with all the
 // rules, the configured shell command will be executed once a rule is hit.
-func (alerter *Alerter) alertingWork() {
-	metric := <-alerter.rc
-	rules := alerter.db.Admin.Rules()
-	for _, rule := range rules {
-		if rule.Test(metric) {
-			proj, err := alerter.db.Admin.GetProject(rule.ProjectID)
-			if err != nil {
-				log.Error("getProject by id failed, projectID: %d ruleid: %d", rule.ID, rule.ProjectID)
-			} else {
+func (alerter *Alerter) work() {
+	for {
+		metric := <-alerter.rc
+
+		v, e := alerter.stampMap.Get(metric.Name)
+		if e && metric.Stamp-uint32(v) < alerter.cfg.Interval {
+			return
+		}
+		alerter.stampMap.Set(metric.Name, metric.Stamp)
+
+		rules := alerter.db.Admin.Rules()
+		for _, rule := range rules {
+			if rule.Test(metric) {
+				proj, err := alerter.db.Admin.GetProject(rule.ProjectID)
+				if err != nil {
+					log.Error("%v, projectID: %d ruleid: %d", err, rule.ID, rule.ProjectID)
+					continue
+				}
+
 				for _, user := range proj.Users {
-					msg := &alertMsg{
+					msg := &msg{
 						Project: proj,
 						Metric:  metric,
 						User:    user}
@@ -69,6 +82,7 @@ func (alerter *Alerter) alertingWork() {
 						log.Error("exec alert command failed : %s", err)
 					}
 				}
+
 			}
 		}
 	}

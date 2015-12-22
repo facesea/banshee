@@ -49,7 +49,7 @@ func main() {
 	go cleaner.Start()
 	// Alerter
 	alerter := alerter.New(cfg, db)
-	alerter.StartAlertingWorkers()
+	alerter.Start()
 	// Detector
 	detector := detector.New(cfg, db, alerter)
 	detector.Start()
