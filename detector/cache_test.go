@@ -29,5 +29,4 @@ func TestCache(t *testing.T) {
 	c.setCache(mc, true)
 	e, v = c.hitCache(mc)
 	assert.Ok(t, e && v)
-
 }
