@@ -35,7 +35,7 @@ func TestLoadM(t *testing.T) {
 	assert.Ok(t, db.m.Len() == 0)
 	assert.Ok(t, !db.m.Has(idx.Name))
 	// Reload
-	db.loadM()
+	db.load()
 	// Must not empty and idx in cache
 	assert.Ok(t, db.m.Len() == 1)
 	assert.Ok(t, db.m.Has(idx.Name))
@@ -79,11 +79,6 @@ func TestGet(t *testing.T) {
 	idx1, err := db.Get(idx.Name)
 	assert.Ok(t, err == nil)
 	assert.Ok(t, reflect.DeepEqual(idx, idx1))
-	// Get it from db.
-	db.m.Clear()
-	idx2, err := db.Get(idx.Name)
-	assert.Ok(t, err == nil)
-	assert.Ok(t, reflect.DeepEqual(idx, idx2))
 }
 
 func TestDelete(t *testing.T) {

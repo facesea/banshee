@@ -46,7 +46,8 @@ func (db *DB) AddProject(proj *models.Project) error {
 		}
 		return err
 	}
-	// Cache
+	// Cache a copy.
+	proj = proj.Copy()
 	// Mark as shared.
 	proj.MakeShared()
 	// Add to projects.
