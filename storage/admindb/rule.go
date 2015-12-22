@@ -8,21 +8,33 @@ import (
 	"github.com/mattn/go-sqlite3"
 )
 
+// getRule returns the rule by id.
+func (db *DB) getRule(id int) (*models.Rule, bool) {
+	v, ok := db.rules.Get(id)
+	if !ok {
+		// Not found
+		return nil, false
+	}
+	rule := v.(*models.Rule)
+	return rule, true
+}
+
 // Rules returns all the rules.
 func (db *DB) Rules() (l []*models.Rule) {
-	for _, rule := range db.rules.Items() {
-		l = append(l, rule.(*models.Rule))
+	for _, v := range db.rules.Items() {
+		rule := v.(*models.Rule)
+		l = append(l, rule.Copy())
 	}
 	return l
 }
 
 // GetRule returns rule by id.
 func (db *DB) GetRule(id int) (*models.Rule, error) {
-	v, ok := db.rules.Get(id)
+	rule, ok := db.getRule(id)
 	if !ok {
 		return nil, ErrNotFound
 	}
-	return v.(*models.Rule), nil
+	return rule.Copy(), nil
 }
 
 // AddRule adds a rule to the db.
@@ -38,14 +50,16 @@ func (db *DB) AddRule(rule *models.Rule) error {
 		return err
 	}
 	// Cache
+	// Add to its project.
+	proj, ok := db.getProject(rule.ProjectID)
+	if !ok {
+		return ErrNotFound
+	}
+	proj.AddRule(rule)
+	// Marke as shared.
+	rule.MakeShared()
 	// Add to rules.
 	db.rules.Set(rule.ID, rule)
-	// Add to its project.
-	proj, err := db.GetProject(rule.ProjectID)
-	if err != nil {
-		return err
-	}
-	proj.AddRule(rule.Clone())
 	return nil
 }
 
@@ -60,14 +74,15 @@ func (db *DB) DeleteRule(id int) error {
 	}
 	// Cache
 	// Get rule by id.
-	rule, err := db.GetRule(id)
-	if err != nil {
-		return err
+	rule, ok := db.getRule(id)
+	if !ok {
+		return ErrNotFound
 	}
-	// Delete from its projects.
-	proj, err := db.GetProject(rule.ProjectID)
-	if err != nil {
-		return err
+	// Delete rule from its projects.
+	rule = rule.Copy()
+	proj, ok := db.getProject(rule.ProjectID)
+	if !ok {
+		return ErrNotFound
 	}
 	proj.DeleteRule(id)
 	// Delete from rules.

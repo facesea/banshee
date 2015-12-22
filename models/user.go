@@ -2,14 +2,10 @@
 
 package models
 
-import "sync"
-
 // User is the alerter message receiver.
-// One user can receive many projects.
 type User struct {
-	// A user instance will be shared between goroutines as cache, this RWMetux
-	// is to guarantee its safety.
-	sync.RWMutex
+	// User may be cached.
+	cache `sql:"-"`
 	// ID in db.
 	ID int `gorm:"primary_key"`
 	// Name
@@ -24,17 +20,45 @@ type User struct {
 	Projects []*Project `gorm:"many2many:project_users"`
 }
 
+// Copy the user.
+func (user *User) Copy() *User {
+	if user.IsShared() {
+		user.RLock()
+		defer user.RUnlock()
+	}
+	dst := &User{
+		ID:          user.ID,
+		Name:        user.Name,
+		Email:       user.Email,
+		EnableEmail: user.EnableEmail,
+		Phone:       user.Phone,
+		EnablePhone: user.EnablePhone,
+	}
+	copy(dst.Projects, user.Projects)
+	return dst
+}
+
 // AddProject adds a project to the user.
 func (user *User) AddProject(proj *Project) {
-	user.Lock()
-	defer user.Unlock()
+	if proj.IsShared() {
+		// Copy if shared.
+		proj = proj.Copy()
+	}
+	if user.IsShared() {
+		// Lock if shared.
+		user.Lock()
+		defer user.Unlock()
+	}
 	user.Projects = append(user.Projects, proj)
 }
 
 // DeleteProject deletes a project from user.
 func (user *User) DeleteProject(id int) bool {
-	user.Lock()
-	defer user.Unlock()
+	if user.IsShared() {
+		// Lock if shared.
+		user.Lock()
+		defer user.Unlock()
+	}
 	for i, proj := range user.Projects {
 		if proj.ID == id {
 			user.Projects = append(user.Projects[:i], user.Projects[i+1:]...)
@@ -46,11 +70,20 @@ func (user *User) DeleteProject(id int) bool {
 
 // UpdateProject updates a project.
 func (user *User) UpdateProject(proj *Project) bool {
-	user.Lock()
-	defer user.Unlock()
+	if proj.IsShared() {
+		// Copy if shared.
+		proj = proj.Copy()
+	}
+	if user.IsShared() {
+		// Lock if shared.
+		user.Lock()
+		defer user.Unlock()
+	}
 	for i, p := range user.Projects {
 		if p.ID == proj.ID {
-			user.Projects[i] = proj
+			tmp := p.Copy()
+			tmp.Update(proj)
+			user.Projects[i] = tmp
 			return true
 		}
 	}
@@ -59,8 +92,11 @@ func (user *User) UpdateProject(proj *Project) bool {
 
 // Update the user.
 func (user *User) Update(u *User) {
-	user.Lock()
-	defer user.Unlock()
+	if user.IsShared() {
+		// Lock if shared.
+		user.Lock()
+		defer user.Unlock()
+	}
 	user.Name = u.Name
 	user.Email = u.Email
 	user.EnableEmail = u.EnableEmail
@@ -68,18 +104,17 @@ func (user *User) Update(u *User) {
 	user.EnablePhone = u.EnablePhone
 }
 
-// Clone the user.
-func (user *User) Clone() *User {
-	user.RLock()
-	defer user.RUnlock()
-	dst := &User{
-		ID:          user.ID,
-		Name:        user.Name,
-		Email:       user.Email,
-		EnableEmail: user.EnableEmail,
-		Phone:       user.Phone,
-		EnablePhone: user.EnablePhone,
+// GetProjects returns the projects of the user.
+func (user *User) GetProjects() []*Project {
+	if user.IsShared() {
+		// RLock if shared.
+		user.RLock()
+		defer user.RUnlock()
+		// Return a copy.
+		var l []*Project
+		copy(l, user.Projects)
+		return l
 	}
-	copy(dst.Projects, user.Projects)
-	return dst
+	// Return itself.
+	return user.Projects
 }

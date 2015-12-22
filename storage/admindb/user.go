@@ -8,21 +8,33 @@ import (
 	"github.com/mattn/go-sqlite3"
 )
 
+// getUser returns the user by id.
+func (db *DB) getUser(id int) (*models.User, bool) {
+	v, ok := db.users.Get(id)
+	if !ok {
+		// Not found.
+		return nil, false
+	}
+	user := v.(*models.User)
+	return user, true
+}
+
 // Users returns all the users.
 func (db *DB) Users() (l []*models.User) {
-	for _, user := range db.users.Items() {
-		l = append(l, user.(*models.User))
+	for _, v := range db.users.Items() {
+		user := v.(*models.User)
+		l = append(l, user.Copy())
 	}
 	return l
 }
 
 // GetUser returns user by id.
 func (db *DB) GetUser(id int) (*models.User, error) {
-	v, ok := db.users.Get(id)
+	user, ok := db.getUser(id)
 	if !ok {
 		return nil, ErrNotFound
 	}
-	return v.(*models.User), nil
+	return user.Copy(), nil
 }
 
 // AddUser adds a user to db.
@@ -35,6 +47,8 @@ func (db *DB) AddUser(user *models.User) error {
 		return err
 	}
 	// Cache
+	// Mark as shared.
+	user.MakeShared()
 	// Add to users
 	db.users.Set(user.ID, user)
 	return nil
@@ -54,17 +68,17 @@ func (db *DB) UpdateUser(user *models.User) error {
 	}
 	// Cache
 	// Update user in users.
-	u, err := db.GetUser(user.ID)
-	if err != nil {
-		return err
+	u, ok := db.getUser(user.ID)
+	if !ok {
+		return ErrNotFound
 	}
 	u.Update(user)
 	// Update user in its projects.
-	user = u.Clone()
-	for _, p := range user.Projects {
-		proj, err := db.GetProject(p.ID)
-		if err != nil {
-			return err
+	projects := u.GetProjects()
+	for _, p := range projects {
+		proj, ok := db.getProject(p.ID)
+		if !ok {
+			return ErrNotFound
 		}
 		if !proj.UpdateUser(user) {
 			return ErrNotFound
@@ -84,16 +98,15 @@ func (db *DB) DeleteUser(id int) error {
 	}
 	// Cache
 	// Get this user.
-	user, err := db.GetUser(id)
-	if err != nil {
-		return err
+	user, ok := db.getUser(id)
+	if !ok {
+		return ErrNotFound
 	}
-	// Clone
-	user = user.Clone()
 	// Delete user from its projects.
-	for _, p := range user.Projects {
-		proj, err := db.GetProject(p.ID)
-		if err != nil {
+	projects := user.GetProjects()
+	for _, p := range projects {
+		proj, ok := db.getProject(p.ID)
+		if !ok {
 			return ErrNotFound
 		}
 		if !proj.DeleteUser(id) {
