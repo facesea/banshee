@@ -57,7 +57,7 @@ func (alerter *Alerter) work() {
 		metric := <-alerter.rc
 
 		v, e := alerter.stampMap.Get(metric.Name)
-		if e && metric.Stamp-uint32(v) < alerter.cfg.Interval {
+		if e && metric.Stamp-v.(uint32) < alerter.cfg.Alerter.Interval {
 			return
 		}
 		alerter.stampMap.Set(metric.Name, metric.Stamp)
