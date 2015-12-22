@@ -27,13 +27,13 @@ func main() {
 	log.Debug("using %s, max cpus: %d", runtime.Version(), runtime.GOMAXPROCS(-1))
 	// Config
 	cfg := config.New()
-	if flag.NFlag() == 1 && *debug == false {
+	if flag.NFlag() == 0 || (flag.NFlag() == 1 && *debug == true) {
+		log.Warn("no config file specified, using default..")
+	} else {
 		err := cfg.UpdateWithJSONFile(*fileName)
 		if err != nil {
 			log.Fatal("failed to load %s: %s", *fileName, err)
 		}
-	} else {
-		log.Warn("no config file specified, using default..")
 	}
 	// Storage
 	options := &storage.Options{
