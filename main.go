@@ -6,6 +6,7 @@ import (
 	"flag"
 	"runtime"
 
+	"github.com/eleme/banshee/alerter"
 	"github.com/eleme/banshee/cleaner"
 	"github.com/eleme/banshee/config"
 	"github.com/eleme/banshee/detector"
@@ -46,7 +47,10 @@ func main() {
 	// Cleaner
 	cleaner := cleaner.New(db, cfg.Period[0]*cfg.Period[1])
 	go cleaner.Start()
+	// Alerter
+	alerter := alerter.New(cfg, db)
+	alerter.Start()
 	// Detector
-	detector := detector.New(cfg, db)
+	detector := detector.New(cfg, db, alerter)
 	detector.Start()
 }

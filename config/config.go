@@ -54,8 +54,9 @@ type configWebapp struct {
 }
 
 type configAlerter struct {
-	Command string `json:"command"`
-	Workers int    `json:"workers"`
+	Command  string `json:"command"`
+	Workers  int    `json:"workers"`
+	Interval uint32 `json:"inteval"`
 }
 
 // New creates a Config with default values.

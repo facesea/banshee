@@ -5,9 +5,9 @@ package models
 // User is the alerter message receiver.
 type User struct {
 	// User may be cached.
-	cache `sql:"-"`
+	cache `sql:"-" json:"-"`
 	// ID in db.
-	ID int `gorm:"primary_key"`
+	ID int `gorm:"primary_key" json:"-"`
 	// Name
 	Name string `sql:"not null;unique"`
 	// Email
@@ -17,7 +17,7 @@ type User struct {
 	Phone       string
 	EnablePhone bool
 	// Users can subscribe many projects.
-	Projects []*Project `gorm:"many2many:project_users"`
+	Projects []*Project `gorm:"many2many:project_users" json:"-"`
 }
 
 // Copy the user.

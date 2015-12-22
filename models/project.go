@@ -5,15 +5,15 @@ package models
 // Project is a rules group.
 type Project struct {
 	// Project may be cached.
-	cache `sql:"-"`
+	cache `sql:"-" json:"-"`
 	// ID in db.
-	ID int
+	ID int `json:"-"`
 	// Name
 	Name string `sql:"not null";unique`
 	// Project may have many rules, they shouldn't be shared.
-	Rules []*Rule
+	Rules []*Rule `json:"-"`
 	// Project may have many users, they shouldn't be shared.
-	Users []*User `gorm:"many2many:project_users"`
+	Users []*User `gorm:"many2many:project_users" json:"-"`
 }
 
 // Copy the project.
