@@ -49,7 +49,8 @@ func (db *DB) AddRule(rule *models.Rule) error {
 		}
 		return err
 	}
-	// Cache
+	// Cache a copy.
+	rule = rule.Copy()
 	// Add to its project.
 	proj, ok := db.getProject(rule.ProjectID)
 	if !ok {
