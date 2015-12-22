@@ -28,7 +28,7 @@ func Open(fileName string) (*DB, error) {
 	db := new(DB)
 	db.db = ldb
 	db.m = m
-	db.loadM()
+	db.load()
 	return db, nil
 }
 
@@ -37,8 +37,8 @@ func (db *DB) Close() error {
 	return db.db.Close()
 }
 
-// loadM loads indexes from db to cache.
-func (db *DB) loadM() {
+// load indexes from db to cache.
+func (db *DB) load() {
 	// Scan values to memory.
 	iter := db.db.NewIterator(nil, nil)
 	for iter.Next() {
@@ -56,6 +56,15 @@ func (db *DB) loadM() {
 	}
 }
 
+// get index by name.
+func (db *DB) get(name string) (*models.Index, bool) {
+	v, ok := db.m.Get(name)
+	if ok {
+		return v.(*models.Index), true
+	}
+	return nil, false
+}
+
 // Operations.
 
 // Put an index into db.
@@ -67,37 +76,21 @@ func (db *DB) Put(idx *models.Index) error {
 	if err != nil {
 		return err
 	}
+	// Use an copy.
+	idx = idx.Copy()
 	// Add to cache.
+	idx.MakeShared()
 	db.m.Set(idx.Name, idx)
 	return nil
 }
 
 // Get an index by name.
 func (db *DB) Get(name string) (*models.Index, error) {
-	v, ok := db.m.Get(name)
-	if ok {
-		// Found in cache.
-		return v.(*models.Index), nil
+	idx, ok := db.get(name)
+	if !ok {
+		return nil, ErrNotFound
 	}
-	// Not found in cache, query db.
-	value, err := db.db.Get([]byte(name), nil)
-	if err != nil {
-		if err == leveldb.ErrNotFound {
-			// Not found
-			return nil, ErrNotFound
-		}
-		// Unexcepted error
-		return nil, err
-	}
-	// Decode
-	idx := &models.Index{Name: name}
-	err = decode(value, idx)
-	if err != nil {
-		return nil, err
-	}
-	// Add to cache.
-	db.m.Set(name, idx)
-	return idx, nil
+	return idx.Copy(), nil
 }
 
 // Delete an index.
@@ -113,10 +106,11 @@ func (db *DB) Delete(name string) error {
 // Filter indexes by pattern.
 func (db *DB) Filter(pattern string) (l []*models.Index) {
 	m := db.m.Items()
-	for _, v := range m {
+	for k, v := range m {
 		idx := v.(*models.Index)
-		if util.Match(pattern, idx.Name) {
-			l = append(l, idx)
+		name := k.(string)
+		if util.Match(pattern, name) {
+			l = append(l, idx.Copy())
 		}
 	}
 	return l
@@ -127,7 +121,7 @@ func (db *DB) All() (l []*models.Index) {
 	m := db.m.Items()
 	for _, v := range m {
 		idx := v.(*models.Index)
-		l = append(l, idx)
+		l = append(l, idx.Copy())
 	}
 	return l
 }
