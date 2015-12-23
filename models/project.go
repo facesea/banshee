@@ -16,54 +16,88 @@ type Project struct {
 	Users []*User `gorm:"many2many:project_users"`
 }
 
+// Copy if shared.
+func (proj *Project) CopyIfShared() *Project {
+	if proj.IsShared() {
+		return proj.Copy()
+	}
+	return proj
+}
+
 // Copy the project.
 func (proj *Project) Copy() *Project {
-	if proj.IsShared() {
-		// Lock if shared.
-		proj.RLock()
-		defer proj.RUnlock()
-	}
-	dst := &Project{ID: proj.ID, Name: proj.Name}
-	copy(dst.Rules, proj.Rules)
-	copy(dst.Users, proj.Users)
+	dst := &Project{}
+	proj.CopyTo(dst)
 	return dst
+}
+
+// CopyTo copy the project to another.
+func (proj *Project) CopyTo(p *Project) {
+	proj.RLockIfShared()
+	defer proj.RUnlockIfShared()
+	p.LockIfShared()
+	defer p.UnlockIfShared()
+	p.ID = proj.ID
+	p.Name = proj.Name
+	p.Rules = make([]*Rule, len(proj.Rules))
+	p.Users = make([]*User, len(proj.Users))
+	copy(p.Rules, proj.Rules)
+	copy(p.Users, proj.Users)
+}
+
+// Equal tests the equality.
+func (proj *Project) Equal(p *Project) bool {
+	proj.RLockIfShared()
+	defer proj.RLockIfShared()
+	p.RLockIfShared()
+	defer p.RLockIfShared()
+	if p.ID != proj.ID {
+		return false
+	}
+	if p.Name != proj.Name {
+		return false
+	}
+	// Rules
+	if len(p.Rules) != len(proj.Rules) {
+		return false
+	}
+	for i := 0; i < len(p.Rules); i++ {
+		if !p.Rules[i].Equal(proj.Rules[i]) {
+			return false
+		}
+	}
+	// Users
+	if len(p.Users) != len(proj.Users) {
+		return false
+	}
+	for i := 0; i < len(p.Users); i++ {
+		if p.Users[i].ID != proj.Users[i].ID {
+			return false
+		}
+	}
+	return true
 }
 
 // AddRule adds a rule to the project.
 func (proj *Project) AddRule(rule *Rule) {
-	if rule.IsShared() {
-		// Copy if shared.
-		rule = rule.Copy()
-	}
-	if proj.IsShared() {
-		// Lock if shared.
-		proj.Lock()
-		defer proj.Unlock()
-	}
+	rule = rule.CopyIfShared()
+	proj.LockIfShared()
+	defer proj.UnlockIfShared()
 	proj.Rules = append(proj.Rules, rule)
 }
 
 // AddUser adds a user to the project.
 func (proj *Project) AddUser(user *User) {
-	if user.IsShared() {
-		// Copy if shared.
-		user = user.Copy()
-	}
-	if proj.IsShared() {
-		// Lock if shared.
-		proj.Lock()
-		defer proj.Unlock()
-	}
+	user = user.CopyIfShared()
+	proj.LockIfShared()
+	defer proj.UnlockIfShared()
 	proj.Users = append(proj.Users, user)
 }
 
 // DeleteRule deletes a rule from the project.
 func (proj *Project) DeleteRule(id int) bool {
-	if proj.IsShared() {
-		// Lock if shared.
-		proj.Lock()
-		defer proj.Unlock()
-	}
+	proj.LockIfShared()
+	defer proj.UnlockIfShared()
 	for i, rule := range proj.Rules {
 		if rule.ID == id {
 			proj.Rules = append(proj.Rules[:i], proj.Rules[i+1:]...)
@@ -75,11 +109,8 @@ func (proj *Project) DeleteRule(id int) bool {
 
 // DeleteUser deletes a user from the project.
 func (proj *Project) DeleteUser(id int) bool {
-	if proj.IsShared() {
-		// Lock if shared.
-		proj.Lock()
-		defer proj.Unlock()
-	}
+	proj.LockIfShared()
+	defer proj.UnlockIfShared()
 	for i, user := range proj.Users {
 		if user.ID == id {
 			proj.Users = append(proj.Users[:i], proj.Users[i+1:]...)
@@ -91,15 +122,9 @@ func (proj *Project) DeleteUser(id int) bool {
 
 // UpdateUser updates a user.
 func (proj *Project) UpdateUser(user *User) bool {
-	if user.IsShared() {
-		// Copy if shared.
-		user = user.Copy()
-	}
-	if proj.IsShared() {
-		// Lock if shared
-		proj.Lock()
-		defer proj.Unlock()
-	}
+	user = user.CopyIfShared()
+	proj.LockIfShared()
+	defer proj.UnlockIfShared()
 	for i, u := range proj.Users {
 		if u.ID == user.ID {
 			tmp := u.Copy()
@@ -112,43 +137,45 @@ func (proj *Project) UpdateUser(user *User) bool {
 }
 
 // Update the project.
-func (proj *Project) Update(project *Project) {
-	if project.IsShared() {
-		// Copy if shared.
-		project = project.Copy()
-	}
-	if proj.IsShared() {
-		// Lock if shared
-		proj.Lock()
-		defer proj.Unlock()
-	}
-	proj.Name = project.Name
+func (proj *Project) Update(p *Project) {
+	p = p.CopyIfShared()
+	proj.LockIfShared()
+	defer proj.UnlockIfShared()
+	proj.Name = p.Name
 }
 
 // GetRules returns the rules of the project.
 func (proj *Project) GetRules() []*Rule {
+	proj.RLockIfShared()
+	defer proj.RUnlockIfShared()
 	if proj.IsShared() {
-		// RLock if shared.
-		proj.RLock()
-		defer proj.RUnlock()
-		var l []*Rule
+		l := make([]*Rule, len(proj.Rules))
 		copy(l, proj.Rules)
 		return l
 	}
-	// Return itself.
 	return proj.Rules
 }
 
 // GetUsers returns the users of the project.
 func (proj *Project) GetUsers() []*User {
+	proj.RLockIfShared()
+	defer proj.RUnlockIfShared()
 	if proj.IsShared() {
-		// RLock if shared.
-		proj.RLock()
-		defer proj.RUnlock()
-		var l []*User
+		l := make([]*User, len(proj.Users))
 		copy(l, proj.Users)
 		return l
 	}
-	// Return itself.
 	return proj.Users
+}
+
+// GetUser returns a user of the project.
+func (proj *Project) GetUser(id int) (*User, bool) {
+	proj.RLockIfShared()
+	defer proj.RUnlockIfShared()
+	for _, user := range proj.Users {
+		if user.ID == id {
+			return user, true
+		}
+	}
+	return nil, false
 }

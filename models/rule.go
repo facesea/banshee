@@ -49,21 +49,75 @@ func (rule *Rule) IsValid() bool {
 	return rule.When >= 0x1 && rule.When <= 0x3F
 }
 
+// Copy if shared.
+func (rule *Rule) CopyIfShared() *Rule {
+	if rule.IsShared() {
+		return rule.Copy()
+	}
+	return rule
+}
+
 // Copy the rule.
 func (rule *Rule) Copy() *Rule {
+	dst := &Rule{}
+	rule.CopyTo(dst)
+	return dst
+}
+
+// CopyTo copy the rule to another.
+func (rule *Rule) CopyTo(r *Rule) {
 	if rule.IsShared() {
 		rule.RLock()
 		defer rule.RUnlock()
 	}
-	return &Rule{
-		ID:           rule.ID,
-		ProjectID:    rule.ProjectID,
-		Pattern:      rule.Pattern,
-		When:         rule.When,
-		ThresholdMax: rule.ThresholdMax,
-		ThresholdMin: rule.ThresholdMin,
-		TrustLine:    rule.TrustLine,
+	if r.IsShared() {
+		r.Lock()
+		defer r.Unlock()
 	}
+	r.ID = rule.ID
+	r.ProjectID = rule.ProjectID
+	r.Pattern = rule.Pattern
+	r.When = rule.When
+	r.ThresholdMax = rule.ThresholdMax
+	r.ThresholdMin = rule.ThresholdMin
+	r.TrustLine = rule.TrustLine
+}
+
+// Equal tests the equality.
+func (rule *Rule) Equal(r *Rule) bool {
+	rule.RLockIfShared()
+	defer rule.RUnlockIfShared()
+	r.RLockIfShared()
+	defer r.RUnlockIfShared()
+	if rule.ID != r.ID {
+		return false
+	}
+	if rule.ProjectID != r.ProjectID {
+		return false
+	}
+	if rule.Pattern != r.Pattern {
+		return false
+	}
+	if rule.When != r.When {
+		return false
+	}
+	if rule.ThresholdMax != r.ThresholdMax {
+		return false
+	}
+	if rule.ThresholdMin != r.ThresholdMin {
+		return false
+	}
+	if rule.TrustLine != r.TrustLine {
+		return false
+	}
+	return true
+}
+
+// GetProjectID returns the project id of the rule.
+func (rule *Rule) GetProjectID() int {
+	rule.RLockIfShared()
+	defer rule.RUnlockIfShared()
+	return rule.ProjectID
 }
 
 // Test returns true if the metric hits this rule.
@@ -72,12 +126,10 @@ func (rule *Rule) Test(m *Metric) bool {
 		// Not match this rule.
 		return false
 	}
-
 	// Ignore it if it's value small enough to be trust
 	if m.Value < rule.TrustLine {
 		return false
 	}
-
 	// Match conditions.
 	ok := false
 	if !ok && (rule.When&WhenTrendUp != 0) {

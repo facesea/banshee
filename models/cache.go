@@ -24,3 +24,31 @@ func (c *cache) MakeShared() {
 		c.shared = true
 	}
 }
+
+// Lock if shared.
+func (c *cache) LockIfShared() {
+	if c.IsShared() {
+		c.Lock()
+	}
+}
+
+// Unlock if shared.
+func (c *cache) UnlockIfShared() {
+	if c.IsShared() {
+		c.Unlock()
+	}
+}
+
+// Rlock if shared.
+func (c *cache) RLockIfShared() {
+	if c.IsShared() {
+		c.RLock()
+	}
+}
+
+// RUnlock if shared.
+func (c *cache) RUnlockIfShared() {
+	if c.IsShared() {
+		c.RUnlock()
+	}
+}

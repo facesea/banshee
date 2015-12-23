@@ -15,10 +15,10 @@ import (
 func TestOpen(t *testing.T) {
 	fileName := "db-testing"
 	db, err := Open(fileName)
-	defer db.Close()
-	defer os.RemoveAll(fileName)
 	assert.Ok(t, err == nil)
 	assert.Ok(t, util.IsFileExist(fileName))
+	defer db.Close()
+	defer os.RemoveAll(fileName)
 }
 
 func TestLoadM(t *testing.T) {

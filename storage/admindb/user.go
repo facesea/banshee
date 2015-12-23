@@ -28,25 +28,30 @@ func (db *DB) Users() (l []*models.User) {
 	return l
 }
 
-// GetUser returns user by id.
-func (db *DB) GetUser(id int) (*models.User, error) {
-	user, ok := db.getUser(id)
+// GetUser returns user by into a local value.
+func (db *DB) GetUser(u *models.User) error {
+	user, ok := db.getUser(u.ID)
 	if !ok {
-		return nil, ErrNotFound
+		return ErrNotFound
 	}
-	return user.Copy(), nil
+	user.CopyTo(u)
+	return nil
 }
 
 // AddUser adds a user to db.
 func (db *DB) AddUser(user *models.User) error {
-	// Sql
+	// Sql: user.ID will be created.
 	if err := db.db.Create(user).Error; err != nil {
 		if err == sqlite3.ErrConstraintUnique {
 			return ErrConstraintUnique
 		}
+		if err == sqlite3.ErrConstraintNotNull {
+			return ErrConstraintNotNull
+		}
 		return err
 	}
-	// Cache
+	// Cache a copy.
+	user = user.Copy()
 	// Mark as shared.
 	user.MakeShared()
 	// Add to users

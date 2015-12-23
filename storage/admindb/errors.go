@@ -9,4 +9,10 @@ var (
 	ErrNotFound = errors.New("admindb: not found")
 	// ErrConstraintUnique is returned when the unique constraint is violated.
 	ErrConstraintUnique = errors.New("admindb: unique constraint violated")
+	// ErrConstraintPrimaryKey is returned when the primary key constraint is
+	// violated.
+	ErrConstraintPrimaryKey = errors.New("admindb: primary key constraint violated")
+	// ErrConstrainNotNull is returned when the not null constraint is
+	// violated.
+	ErrConstraintNotNull = errors.New("admindb: not null constraint violated")
 )

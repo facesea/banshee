@@ -28,39 +28,52 @@ func (db *DB) Rules() (l []*models.Rule) {
 	return l
 }
 
-// GetRule returns rule by id.
-func (db *DB) GetRule(id int) (*models.Rule, error) {
-	rule, ok := db.getRule(id)
+// GetRule returns rule into a local value.
+func (db *DB) GetRule(r *models.Rule) error {
+	rule, ok := db.getRule(r.ID)
 	if !ok {
-		return nil, ErrNotFound
+		return ErrNotFound
 	}
-	return rule.Copy(), nil
+	rule.CopyTo(r)
+	return nil
 }
 
-// AddRule adds a rule to the db.
-func (db *DB) AddRule(rule *models.Rule) error {
-	// Sql
+// AddRuleToProject adds a rule to a project.
+func (db *DB) AddRuleToProject(proj *models.Project, rule *models.Rule) error {
+	// If proj exist.
+	_, ok := db.getProject(proj.ID)
+	if !ok {
+		return ErrNotFound
+	}
+	// Create projectID
+	rule.ProjectID = proj.ID
+	// Sql: rule.ID will be created.
 	if err := db.db.Create(rule).Error; err != nil {
 		if err == sqlite3.ErrConstraintUnique {
 			return ErrConstraintUnique
+		}
+		if err == sqlite3.ErrConstraintNotNull {
+			return ErrConstraintNotNull
 		}
 		if err == gorm.RecordNotFound {
 			return ErrNotFound
 		}
 		return err
 	}
+	// Append rule to proj.Rules.
+	proj.AddRule(rule)
 	// Cache a copy.
-	rule = rule.Copy()
+	r := rule.Copy()
 	// Add to its project.
-	proj, ok := db.getProject(rule.ProjectID)
+	p, ok := db.getProject(r.ProjectID)
 	if !ok {
 		return ErrNotFound
 	}
-	proj.AddRule(rule)
-	// Marke as shared.
-	rule.MakeShared()
+	p.AddRule(r)
+	// Mark as shared.
+	r.MakeShared()
 	// Add to rules.
-	db.rules.Set(rule.ID, rule)
+	db.rules.Set(r.ID, r)
 	return nil
 }
 
@@ -80,8 +93,7 @@ func (db *DB) DeleteRule(id int) error {
 		return ErrNotFound
 	}
 	// Delete rule from its projects.
-	rule = rule.Copy()
-	proj, ok := db.getProject(rule.ProjectID)
+	proj, ok := db.getProject(rule.GetProjectID())
 	if !ok {
 		return ErrNotFound
 	}

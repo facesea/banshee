@@ -28,21 +28,25 @@ func (db *DB) Projects() (l []*models.Project) {
 	return l
 }
 
-// GetProject returns project by id.
-func (db *DB) GetProject(id int) (*models.Project, error) {
-	proj, ok := db.getProject(id)
+// GetProject returns project into a local value.
+func (db *DB) GetProject(p *models.Project) error {
+	proj, ok := db.getProject(p.ID)
 	if !ok {
-		return nil, ErrNotFound
+		return ErrNotFound
 	}
-	return proj.Copy(), nil
+	proj.CopyTo(p)
+	return nil
 }
 
 // AddProject adds a project to db.
 func (db *DB) AddProject(proj *models.Project) error {
-	// Sql
+	// Sql: proj.ID will be created.
 	if err := db.db.Create(proj).Error; err != nil {
 		if err == sqlite3.ErrConstraintUnique {
 			return ErrConstraintUnique
+		}
+		if err == sqlite3.ErrConstraintNotNull {
+			return ErrConstraintNotNull
 		}
 		return err
 	}
@@ -125,5 +129,39 @@ func (db *DB) DeleteProject(id int) error {
 	if !db.projects.Delete(id) {
 		return ErrNotFound
 	}
+	return nil
+}
+
+// AddUserToProject adds a user to a project.
+func (db *DB) AddUserToProject(proj *models.Project, user *models.User) error {
+	// If user exist
+	u, ok := db.getUser(user.ID)
+	if !ok {
+		return ErrNotFound
+	}
+	// If proj exist
+	p, ok := db.getProject(proj.ID)
+	if !ok {
+		return ErrNotFound
+	}
+	// Sql: user will be appened to proj.Users.
+	if err := db.db.Model(proj).Association("Users").Append(user).Error; err != nil {
+		if err == gorm.RecordNotFound {
+			return ErrNotFound
+		}
+		if err == sqlite3.ErrConstraintPrimaryKey {
+			return ErrConstraintPrimaryKey
+		}
+		if err == sqlite3.ErrConstraintUnique {
+			return ErrConstraintUnique
+		}
+		return err
+	}
+	// Append proj to user.
+	user.AddProject(proj)
+	// Add user to project.
+	p.AddUser(u)
+	// Add project to user.
+	u.AddProject(p)
 	return nil
 }

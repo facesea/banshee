@@ -20,45 +20,85 @@ type User struct {
 	Projects []*Project `gorm:"many2many:project_users"`
 }
 
+// Copy if shared.
+func (user *User) CopyIfShared() *User {
+	if user.IsShared() {
+		return user.Copy()
+	}
+	return user
+}
+
 // Copy the user.
 func (user *User) Copy() *User {
-	if user.IsShared() {
-		user.RLock()
-		defer user.RUnlock()
-	}
-	dst := &User{
-		ID:          user.ID,
-		Name:        user.Name,
-		Email:       user.Email,
-		EnableEmail: user.EnableEmail,
-		Phone:       user.Phone,
-		EnablePhone: user.EnablePhone,
-	}
-	copy(dst.Projects, user.Projects)
+	dst := &User{}
+	user.CopyTo(dst)
 	return dst
+}
+
+// CopyTo copy the user to another.
+func (user *User) CopyTo(u *User) {
+	user.RLockIfShared()
+	defer user.RUnlockIfShared()
+	u.LockIfShared()
+	defer u.UnlockIfShared()
+	u.ID = user.ID
+	u.Name = user.Name
+	u.Email = user.Email
+	u.EnableEmail = user.EnableEmail
+	u.Phone = user.Phone
+	u.EnablePhone = user.EnablePhone
+	u.Projects = make([]*Project, len(user.Projects))
+	copy(u.Projects, user.Projects)
+}
+
+// Equal tests the equality.
+func (user *User) Equal(u *User) bool {
+	user.RLockIfShared()
+	defer user.RUnlockIfShared()
+	u.LockIfShared()
+	defer u.UnlockIfShared()
+	if u.ID != user.ID {
+		return false
+	}
+	if u.Name != user.Name {
+		return false
+	}
+	if u.Email != user.Email {
+		return false
+	}
+	if u.EnableEmail != user.EnableEmail {
+		return false
+	}
+	if u.Phone != user.Phone {
+		return false
+	}
+	if u.EnablePhone != user.EnablePhone {
+		return false
+	}
+	// Projects
+	if len(u.Projects) != len(user.Projects) {
+		return false
+	}
+	for i := 0; i < len(u.Projects); i++ {
+		if u.Projects[i].ID != user.Projects[i].ID {
+			return false
+		}
+	}
+	return true
 }
 
 // AddProject adds a project to the user.
 func (user *User) AddProject(proj *Project) {
-	if proj.IsShared() {
-		// Copy if shared.
-		proj = proj.Copy()
-	}
-	if user.IsShared() {
-		// Lock if shared.
-		user.Lock()
-		defer user.Unlock()
-	}
+	proj = proj.CopyIfShared()
+	user.LockIfShared()
+	defer user.UnlockIfShared()
 	user.Projects = append(user.Projects, proj)
 }
 
 // DeleteProject deletes a project from user.
 func (user *User) DeleteProject(id int) bool {
-	if user.IsShared() {
-		// Lock if shared.
-		user.Lock()
-		defer user.Unlock()
-	}
+	user.LockIfShared()
+	defer user.UnlockIfShared()
 	for i, proj := range user.Projects {
 		if proj.ID == id {
 			user.Projects = append(user.Projects[:i], user.Projects[i+1:]...)
@@ -70,15 +110,9 @@ func (user *User) DeleteProject(id int) bool {
 
 // UpdateProject updates a project.
 func (user *User) UpdateProject(proj *Project) bool {
-	if proj.IsShared() {
-		// Copy if shared.
-		proj = proj.Copy()
-	}
-	if user.IsShared() {
-		// Lock if shared.
-		user.Lock()
-		defer user.Unlock()
-	}
+	proj = proj.CopyIfShared()
+	user.LockIfShared()
+	defer user.UnlockIfShared()
 	for i, p := range user.Projects {
 		if p.ID == proj.ID {
 			tmp := p.Copy()
@@ -92,11 +126,8 @@ func (user *User) UpdateProject(proj *Project) bool {
 
 // Update the user.
 func (user *User) Update(u *User) {
-	if user.IsShared() {
-		// Lock if shared.
-		user.Lock()
-		defer user.Unlock()
-	}
+	user.LockIfShared()
+	defer user.UnlockIfShared()
 	user.Name = u.Name
 	user.Email = u.Email
 	user.EnableEmail = u.EnableEmail
@@ -106,15 +137,24 @@ func (user *User) Update(u *User) {
 
 // GetProjects returns the projects of the user.
 func (user *User) GetProjects() []*Project {
+	user.RLockIfShared()
+	defer user.RUnlockIfShared()
 	if user.IsShared() {
-		// RLock if shared.
-		user.RLock()
-		defer user.RUnlock()
-		// Return a copy.
-		var l []*Project
+		l := make([]*Project, len(user.Projects))
 		copy(l, user.Projects)
 		return l
 	}
-	// Return itself.
 	return user.Projects
+}
+
+// GetProject returns the project of the user.
+func (user *User) GetProject(id int) (*Project, bool) {
+	user.RLockIfShared()
+	defer user.RUnlockIfShared()
+	for _, proj := range user.Projects {
+		if proj.ID == id {
+			return proj, true
+		}
+	}
+	return nil, false
 }
