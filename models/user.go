@@ -9,13 +9,13 @@ type User struct {
 	// ID in db.
 	ID int `gorm:"primary_key" json:"-"`
 	// Name
-	Name string `sql:"not null;unique"`
+	Name string `sql:"not null;unique" json:"name"`
 	// Email
-	Email       string
-	EnableEmail bool
+	Email       string `json:"email"`
+	EnableEmail bool   `json:"enableEmail"`
 	// Phone
-	Phone       string
-	EnablePhone bool
+	Phone       string `json:"phone"`
+	EnablePhone bool   `json:"enablePhone"`
 	// Users can subscribe many projects.
 	Projects []*Project `gorm:"many2many:project_users" json:"-"`
 }
