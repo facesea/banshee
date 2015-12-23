@@ -74,7 +74,7 @@ func (db *DB) loadRules() error {
 		return err
 	}
 	for _, rule := range rules {
-		r := rule.Copy()
+		r := &rule
 		// Add to cache.
 		r.MakeShared()
 		db.rules.Set(rule.ID, r)
@@ -89,15 +89,14 @@ func (db *DB) loadUsers() error {
 		return err
 	}
 	for _, user := range users {
-		u := user.Copy()
+		u := &user
 		// Projects
 		var projs []models.Project
 		if err := db.db.Model(u).Related(&projs, "Projects").Error; err != nil {
 			return err
 		}
 		for _, proj := range projs {
-			p := proj.Copy()
-			u.AddProject(p)
+			u.AddProject(&proj)
 		}
 		// Add to cache.
 		u.MakeShared()
@@ -113,15 +112,14 @@ func (db *DB) loadProjects() error {
 		return err
 	}
 	for _, proj := range projs {
-		p := proj.Copy()
+		p := &proj
 		// Rules
 		var rules []models.Rule
 		if err := db.db.Model(p).Related(&rules).Error; err != nil {
 			return err
 		}
 		for _, rule := range rules {
-			r := rule.Copy()
-			p.AddRule(r)
+			p.AddRule(&rule)
 		}
 		// Users
 		var users []models.User
@@ -129,8 +127,7 @@ func (db *DB) loadProjects() error {
 			return err
 		}
 		for _, user := range users {
-			u := user.Copy()
-			p.AddUser(u)
+			p.AddUser(&user)
 		}
 		// Add to cache.
 		p.MakeShared()
