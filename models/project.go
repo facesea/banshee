@@ -16,7 +16,7 @@ type Project struct {
 	Users []*User `gorm:"many2many:project_users"`
 }
 
-// Copy if shared.
+// CopyIfShared returns a copy if the proj is shared.
 func (proj *Project) CopyIfShared() *Project {
 	if proj.IsShared() {
 		return proj.Copy()

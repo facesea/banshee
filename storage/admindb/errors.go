@@ -12,7 +12,7 @@ var (
 	// ErrConstraintPrimaryKey is returned when the primary key constraint is
 	// violated.
 	ErrConstraintPrimaryKey = errors.New("admindb: primary key constraint violated")
-	// ErrConstrainNotNull is returned when the not null constraint is
+	// ErrConstraintNotNull is returned when the not null constraint is
 	// violated.
 	ErrConstraintNotNull = errors.New("admindb: not null constraint violated")
 )

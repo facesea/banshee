@@ -49,7 +49,7 @@ func (rule *Rule) IsValid() bool {
 	return rule.When >= 0x1 && rule.When <= 0x3F
 }
 
-// Copy if shared.
+// CopyIfShared returns a copy if the rule is shared.
 func (rule *Rule) CopyIfShared() *Rule {
 	if rule.IsShared() {
 		return rule.Copy()
