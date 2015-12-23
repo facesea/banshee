@@ -41,16 +41,16 @@ func New(cfg *config.Config, db *storage.DB) *Alerter {
 	return alerter
 }
 
-// Start - start several goroutines to wait for detected metrics,
-// then check each metric with all the rules, the configured shell command will
-// be executed once a rule is hit.
+// Start several goroutines to wait for detected metrics, then check each
+// metric with all the rules, the configured shell command will be executed
+// once a rule is hit.
 func (alerter *Alerter) Start() {
 	for i := 0; i < alerter.cfg.Alerter.Workers; i++ {
 		go alerter.work()
 	}
 }
 
-// work - wait for detected metrics, then check each metric with all the
+// work waits for detected metrics, then check each metric with all the
 // rules, the configured shell command will be executed once a rule is hit.
 func (alerter *Alerter) work() {
 	for {
