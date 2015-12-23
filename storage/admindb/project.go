@@ -32,7 +32,7 @@ func (db *DB) Projects() (l []*models.Project) {
 func (db *DB) GetProject(p *models.Project) error {
 	proj, ok := db.getProject(p.ID)
 	if !ok {
-		return ErrNotFound
+		return ErrProjectNotFound
 	}
 	proj.CopyTo(p)
 	return nil
@@ -64,7 +64,7 @@ func (db *DB) UpdateProject(proj *models.Project) error {
 	// Sql
 	if err := db.db.Model(proj).Update(proj).Error; err != nil {
 		if err == gorm.RecordNotFound {
-			return ErrNotFound
+			return ErrProjectNotFound
 		}
 		if err == sqlite3.ErrConstraintUnique {
 			return ErrConstraintUnique
@@ -75,7 +75,7 @@ func (db *DB) UpdateProject(proj *models.Project) error {
 	// Update project in projects.
 	project, ok := db.getProject(proj.ID)
 	if !ok {
-		return ErrNotFound
+		return ErrProjectNotFound
 	}
 	project.Update(proj)
 	// Update project in its users.
@@ -83,10 +83,10 @@ func (db *DB) UpdateProject(proj *models.Project) error {
 	for _, u := range users {
 		user, ok := db.getUser(u.ID)
 		if !ok {
-			return ErrNotFound
+			return ErrUserNotFound
 		}
 		if !user.UpdateProject(proj) {
-			return ErrNotFound
+			return ErrProjectNotFound
 		}
 	}
 	return nil
@@ -97,7 +97,7 @@ func (db *DB) DeleteProject(id int) error {
 	// Sql
 	if err := db.db.Delete(&models.Project{ID: id}).Error; err != nil {
 		if err == gorm.RecordNotFound {
-			return ErrNotFound
+			return ErrProjectNotFound
 		}
 		return err
 	}
@@ -105,13 +105,13 @@ func (db *DB) DeleteProject(id int) error {
 	// Get this project.
 	proj, ok := db.getProject(id)
 	if !ok {
-		return ErrNotFound
+		return ErrProjectNotFound
 	}
 	// Delete its rules.
 	rules := proj.GetRules()
 	for _, rule := range rules {
 		if !db.rules.Delete(rule.ID) {
-			return ErrNotFound
+			return ErrRuleNotFound
 		}
 	}
 	// Delete project from its users.
@@ -119,15 +119,15 @@ func (db *DB) DeleteProject(id int) error {
 	for _, u := range users {
 		user, ok := db.getUser(u.ID)
 		if !ok {
-			return ErrNotFound
+			return ErrUserNotFound
 		}
 		if !user.DeleteProject(id) {
-			return ErrNotFound
+			return ErrProjectNotFound
 		}
 	}
 	// Delete project from projects.
 	if !db.projects.Delete(id) {
-		return ErrNotFound
+		return ErrProjectNotFound
 	}
 	return nil
 }
@@ -137,12 +137,12 @@ func (db *DB) AddUserToProject(proj *models.Project, user *models.User) error {
 	// If user exist
 	u, ok := db.getUser(user.ID)
 	if !ok {
-		return ErrNotFound
+		return ErrUserNotFound
 	}
 	// If proj exist
 	p, ok := db.getProject(proj.ID)
 	if !ok {
-		return ErrNotFound
+		return ErrProjectNotFound
 	}
 	// Sql: user will be appened to proj.Users.
 	if err := db.db.Model(proj).Association("Users").Append(user).Error; err != nil {

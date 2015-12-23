@@ -32,7 +32,7 @@ func (db *DB) Rules() (l []*models.Rule) {
 func (db *DB) GetRule(r *models.Rule) error {
 	rule, ok := db.getRule(r.ID)
 	if !ok {
-		return ErrNotFound
+		return ErrRuleNotFound
 	}
 	rule.CopyTo(r)
 	return nil
@@ -43,7 +43,7 @@ func (db *DB) AddRuleToProject(proj *models.Project, rule *models.Rule) error {
 	// If proj exist.
 	_, ok := db.getProject(proj.ID)
 	if !ok {
-		return ErrNotFound
+		return ErrProjectNotFound
 	}
 	// Create projectID
 	rule.ProjectID = proj.ID
@@ -67,7 +67,7 @@ func (db *DB) AddRuleToProject(proj *models.Project, rule *models.Rule) error {
 	// Add to its project.
 	p, ok := db.getProject(r.ProjectID)
 	if !ok {
-		return ErrNotFound
+		return ErrProjectNotFound
 	}
 	p.AddRule(r)
 	// Mark as shared.
@@ -82,7 +82,7 @@ func (db *DB) DeleteRule(id int) error {
 	// Sql.
 	if err := db.db.Delete(&models.Rule{ID: id}).Error; err != nil {
 		if err == gorm.RecordNotFound {
-			return ErrNotFound
+			return ErrRuleNotFound
 		}
 		return err
 	}
@@ -90,17 +90,17 @@ func (db *DB) DeleteRule(id int) error {
 	// Get rule by id.
 	rule, ok := db.getRule(id)
 	if !ok {
-		return ErrNotFound
+		return ErrRuleNotFound
 	}
 	// Delete rule from its projects.
 	proj, ok := db.getProject(rule.GetProjectID())
 	if !ok {
-		return ErrNotFound
+		return ErrProjectNotFound
 	}
 	proj.DeleteRule(id)
 	// Delete from rules.
 	if !db.rules.Delete(id) {
-		return ErrNotFound
+		return ErrRuleNotFound
 	}
 	return nil
 }
