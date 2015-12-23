@@ -16,7 +16,7 @@ const (
 	WhenTrendDownAndValueLt = 0x20 // 0b100000
 )
 
-// Rule is a type to describe alerting rule.
+// Rule is a type to describe alerter rule.
 type Rule struct {
 	// Rule may be cached.
 	cache `sql:"-"`

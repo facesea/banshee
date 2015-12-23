@@ -10,6 +10,7 @@ import (
 	"net"
 	"time"
 
+	"github.com/eleme/banshee/alerter"
 	"github.com/eleme/banshee/config"
 	"github.com/eleme/banshee/detector/cursor"
 	"github.com/eleme/banshee/models"
@@ -19,18 +20,14 @@ import (
 	"github.com/eleme/banshee/util/log"
 )
 
-// Limit for buffered detected metric results, further results will be dropped
-// if this limit is reached.
-const bufferedMetricResultsLimit = 10 * 1024
-
 // Detector is a tcp server to detect anomalies.
 type Detector struct {
 	// Config
 	cfg *config.Config
 	// Storage
 	db *storage.DB
-	// Results
-	rc chan *models.Metric
+	// Alerter
+	alerter *alerter.Alerter
 	// Filter
 	hitCache *cache
 	// Cursor
@@ -38,11 +35,11 @@ type Detector struct {
 }
 
 // New creates a detector.
-func New(cfg *config.Config, db *storage.DB) *Detector {
+func New(cfg *config.Config, db *storage.DB, alerter *alerter.Alerter) *Detector {
 	d := new(Detector)
 	d.cfg = cfg
 	d.db = db
-	d.rc = make(chan *models.Metric, bufferedMetricResultsLimit)
+	d.alerter = alerter
 	d.hitCache = newCache()
 	d.cursor = cursor.New(cfg.Detector.Factor, cfg.LeastC())
 	return d
@@ -99,11 +96,7 @@ func (d *Detector) handle(conn net.Conn) {
 			}
 			elapsed := time.Since(startAt)
 			log.Debug("name=%s average=%.3f score=%.3f cost=%dμs", m.Name, m.Average, m.Score, elapsed.Nanoseconds()/1000)
-			select {
-			case d.rc <- m:
-			default:
-				log.Warn("buffered metric results channel is full, drop current metric..")
-			}
+			d.alerter.Alert(m)
 		}
 	}
 }

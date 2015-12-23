@@ -70,7 +70,7 @@ func (c *Cursor) Next(s *models.State, m *models.Metric) *models.State {
 		// Absorb average from the usual less than usual.
 		wf := c.wf * s.Average / math.Abs(s.Average-m.Value)
 		n.Average = ewma(wf, s.Average, m.Value)
-		// Don't move forwad the stddev, use previous.
+		// Don't move forward the stddev, use previous.
 		n.StdDev = s.StdDev
 	}
 	return n
