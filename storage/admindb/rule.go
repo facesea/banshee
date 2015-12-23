@@ -28,6 +28,12 @@ func (db *DB) Rules() (l []*models.Rule) {
 	return l
 }
 
+// HasRule returns true if the rule of this id is in db.
+func (db *DB) HasRule(id int) bool {
+	_, ok := db.getRule(id)
+	return ok
+}
+
 // GetRule returns rule into a local value.
 func (db *DB) GetRule(r *models.Rule) error {
 	rule, ok := db.getRule(r.ID)
