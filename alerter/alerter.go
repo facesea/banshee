@@ -65,8 +65,8 @@ func (alerter *Alerter) work() {
 		rules := alerter.db.Admin.Rules()
 		for _, rule := range rules {
 			if rule.Test(metric) {
-				proj, err := alerter.db.Admin.GetProject(rule.ProjectID)
-				if err != nil {
+				proj := &models.Project{ID: rule.ProjectID}
+				if err := alerter.db.Admin.GetProject(proj); err != nil {
 					log.Error("%v, projectID: %d ruleid: %d", err, rule.ID, rule.ProjectID)
 					continue
 				}

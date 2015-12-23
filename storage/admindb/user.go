@@ -28,25 +28,30 @@ func (db *DB) Users() (l []*models.User) {
 	return l
 }
 
-// GetUser returns user by id.
-func (db *DB) GetUser(id int) (*models.User, error) {
-	user, ok := db.getUser(id)
+// GetUser returns user by into a local value.
+func (db *DB) GetUser(u *models.User) error {
+	user, ok := db.getUser(u.ID)
 	if !ok {
-		return nil, ErrNotFound
+		return ErrUserNotFound
 	}
-	return user.Copy(), nil
+	user.CopyTo(u)
+	return nil
 }
 
 // AddUser adds a user to db.
 func (db *DB) AddUser(user *models.User) error {
-	// Sql
+	// Sql: user.ID will be created.
 	if err := db.db.Create(user).Error; err != nil {
 		if err == sqlite3.ErrConstraintUnique {
 			return ErrConstraintUnique
 		}
+		if err == sqlite3.ErrConstraintNotNull {
+			return ErrConstraintNotNull
+		}
 		return err
 	}
-	// Cache
+	// Cache a copy.
+	user = user.Copy()
 	// Mark as shared.
 	user.MakeShared()
 	// Add to users
@@ -59,7 +64,7 @@ func (db *DB) UpdateUser(user *models.User) error {
 	// Sql
 	if err := db.db.Model(user).Update(user).Error; err != nil {
 		if err == gorm.RecordNotFound {
-			return ErrNotFound
+			return ErrUserNotFound
 		}
 		if err == sqlite3.ErrConstraintUnique {
 			return ErrConstraintUnique
@@ -70,7 +75,7 @@ func (db *DB) UpdateUser(user *models.User) error {
 	// Update user in users.
 	u, ok := db.getUser(user.ID)
 	if !ok {
-		return ErrNotFound
+		return ErrUserNotFound
 	}
 	u.Update(user)
 	// Update user in its projects.
@@ -78,10 +83,10 @@ func (db *DB) UpdateUser(user *models.User) error {
 	for _, p := range projects {
 		proj, ok := db.getProject(p.ID)
 		if !ok {
-			return ErrNotFound
+			return ErrProjectNotFound
 		}
 		if !proj.UpdateUser(user) {
-			return ErrNotFound
+			return ErrUserNotFound
 		}
 	}
 	return nil
@@ -92,7 +97,7 @@ func (db *DB) DeleteUser(id int) error {
 	// Sql
 	if err := db.db.Delete(&models.User{ID: id}).Error; err != nil {
 		if err == gorm.RecordNotFound {
-			return ErrNotFound
+			return ErrUserNotFound
 		}
 		return err
 	}
@@ -100,22 +105,22 @@ func (db *DB) DeleteUser(id int) error {
 	// Get this user.
 	user, ok := db.getUser(id)
 	if !ok {
-		return ErrNotFound
+		return ErrUserNotFound
 	}
 	// Delete user from its projects.
 	projects := user.GetProjects()
 	for _, p := range projects {
 		proj, ok := db.getProject(p.ID)
 		if !ok {
-			return ErrNotFound
+			return ErrProjectNotFound
 		}
 		if !proj.DeleteUser(id) {
-			return ErrNotFound
+			return ErrUserNotFound
 		}
 	}
 	// Delete user from users.
 	if !db.users.Delete(id) {
-		return ErrNotFound
+		return ErrUserNotFound
 	}
 	return nil
 }
