@@ -80,7 +80,13 @@ func (user *User) Equal(u *User) bool {
 		return false
 	}
 	for i := 0; i < len(u.Projects); i++ {
-		if u.Projects[i].ID != user.Projects[i].ID {
+		found := false
+		for j := 0; j < len(user.Projects); j++ {
+			if u.Projects[i].ID == user.Projects[j].ID {
+				found = true
+			}
+		}
+		if !found {
 			return false
 		}
 	}

@@ -3,7 +3,6 @@
 package admindb
 
 import (
-	"fmt"
 	"github.com/eleme/banshee/models"
 	"github.com/eleme/banshee/util"
 	"github.com/eleme/banshee/util/assert"
@@ -67,5 +66,4 @@ func TestLoad(t *testing.T) {
 	u := &models.User{ID: user.ID}
 	assert.Ok(t, nil == db.GetUser(u))
 	assert.Ok(t, u.Equal(user))
-	fmt.Printf("\n\nuser:\t%v\nu:\t%v\n", user, u)
 }

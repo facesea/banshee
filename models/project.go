@@ -62,7 +62,13 @@ func (proj *Project) Equal(p *Project) bool {
 		return false
 	}
 	for i := 0; i < len(p.Rules); i++ {
-		if !p.Rules[i].Equal(proj.Rules[i]) {
+		found := false
+		for j := 0; j < len(proj.Rules); j++ {
+			if p.Rules[i].Equal(proj.Rules[j]) {
+				found = true
+			}
+		}
+		if !found {
 			return false
 		}
 	}
@@ -71,7 +77,13 @@ func (proj *Project) Equal(p *Project) bool {
 		return false
 	}
 	for i := 0; i < len(p.Users); i++ {
-		if p.Users[i].ID != proj.Users[i].ID {
+		found := false
+		for j := 0; j < len(proj.Users); j++ {
+			if p.Users[i].ID == proj.Users[j].ID {
+				found = true
+			}
+		}
+		if !found {
 			return false
 		}
 	}
