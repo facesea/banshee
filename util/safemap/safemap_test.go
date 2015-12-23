@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestSafeMap(t *testing.T) {
+func TestBasic(t *testing.T) {
 	m := New()
 	// Set
 	m.Set("key", "val")
