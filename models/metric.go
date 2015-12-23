@@ -5,15 +5,15 @@ package models
 // Metric is a data container for time series datapoint.
 type Metric struct {
 	// Name
-	Name string
+	Name string `json:"name"`
 	// Metric unix time stamp
-	Stamp uint32
+	Stamp uint32 `json:"stamp"`
 	// Metric value
-	Value float64
+	Value float64 `json:"value"`
 	// Anomaly score
-	Score float64
+	Score float64 `json:"score"`
 	// Average old
-	Average float64
+	Average float64 `json:"average"`
 }
 
 // IsAnomalous test whether the metric is anomalous.

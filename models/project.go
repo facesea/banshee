@@ -9,7 +9,7 @@ type Project struct {
 	// ID in db.
 	ID int `json:"-"`
 	// Name
-	Name string `sql:"not null";unique`
+	Name string `sql:"not null";unique json:"name"`
 	// Project may have many rules, they shouldn't be shared.
 	Rules []*Rule `json:"-"`
 	// Project may have many users, they shouldn't be shared.
