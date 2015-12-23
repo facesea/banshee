@@ -84,16 +84,17 @@ func (db *DB) Put(idx *models.Index) error {
 	return nil
 }
 
-// Get an index by name.
-func (db *DB) Get(name string) (*models.Index, error) {
-	idx, ok := db.get(name)
+// Get an index by index name.
+func (db *DB) Get(idx *models.Index) error {
+	i, ok := db.get(idx.Name)
 	if !ok {
-		return nil, ErrNotFound
+		return ErrNotFound
 	}
-	return idx.Copy(), nil
+	i.CopyTo(idx)
+	return nil
 }
 
-// Delete an index.
+// Delete an index by name.
 func (db *DB) Delete(name string) error {
 	if db.m.Has(name) {
 		// Delete in cache.
