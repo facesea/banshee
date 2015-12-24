@@ -191,3 +191,27 @@ func (proj *Project) GetUser(id int) (*User, bool) {
 	}
 	return nil, false
 }
+
+// HasRule checks whether rule in thr project.
+func (proj *Project) HasRule(id int) bool {
+	proj.RLockIfShared()
+	defer proj.RUnlockIfShared()
+	for _, rule := range proj.Rules {
+		if rule.ID == id {
+			return true
+		}
+	}
+	return false
+}
+
+// HasUser checks whether user in thr project.
+func (proj *Project) HasUser(id int) bool {
+	proj.RLockIfShared()
+	defer proj.RUnlockIfShared()
+	for _, user := range proj.Users {
+		if user.ID == id {
+			return true
+		}
+	}
+	return false
+}
