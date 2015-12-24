@@ -4,9 +4,25 @@ package admindb
 
 import (
 	"github.com/eleme/banshee/models"
+	"github.com/eleme/banshee/util/log"
 	"github.com/jinzhu/gorm"
 	"github.com/mattn/go-sqlite3"
 )
+
+// SetRuleChan set the changed rule channel
+func (db *DB) SetRuleChan(rc chan *models.Rule) {
+	db.ruleChan = rc
+}
+
+// changedRule send msg to cache that rule changed, cache should clean the
+// dirty cache of the rule
+func (db *DB) changedRule(rule *models.Rule) {
+	select {
+	case db.ruleChan <- rule:
+	default:
+		log.Error("buffered changed rules channel is full, cache won't clean the dirty cache..")
+	}
+}
 
 // getRule returns the rule by id.
 func (db *DB) getRule(id int) (*models.Rule, bool) {
@@ -80,6 +96,8 @@ func (db *DB) AddRuleToProject(proj *models.Project, rule *models.Rule) error {
 	r.MakeShared()
 	// Add to rules.
 	db.rules.Put(r.ID, r)
+	// send changed rule to cache
+	db.changedRule(rule.Copy())
 	return nil
 }
 
@@ -92,12 +110,13 @@ func (db *DB) DeleteRule(id int) error {
 		}
 		return err
 	}
-	// Cache
 	// Get rule by id.
 	rule, ok := db.getRule(id)
 	if !ok {
 		return ErrRuleNotFound
 	}
+	// Cache
+	db.changedRule(rule.Copy())
 	// Delete rule from its projects.
 	proj, ok := db.getProject(rule.GetProjectID())
 	if !ok {

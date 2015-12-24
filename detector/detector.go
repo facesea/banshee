@@ -41,6 +41,7 @@ func New(cfg *config.Config, db *storage.DB, alerter *alerter.Alerter) *Detector
 	d.db = db
 	d.alerter = alerter
 	d.hitCache = newCache()
+	d.db.Admin.SetRuleChan(d.hitCache.Rc)
 	d.cursor = cursor.New(cfg.Detector.Factor, cfg.LeastC())
 	return d
 }

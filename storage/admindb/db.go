@@ -12,6 +12,8 @@ import (
 type DB struct {
 	cache   *cache.Cache
 	persist *persist.Persist
+	// changed rule channel
+	ruleChan chan *models.Rule
 }
 
 // Open a DB by fileName.
