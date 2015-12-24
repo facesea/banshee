@@ -114,7 +114,7 @@ func (sl *Skiplist) Put(score int, data interface{}) {
 	sl.length += 1
 }
 
-// Get data by score. O(logN)
+// Get data by score. O(1)
 func (sl *Skiplist) Get(score int) (interface{}, bool) {
 	sl.RLock()
 	defer sl.RUnlock()
@@ -125,7 +125,7 @@ func (sl *Skiplist) Get(score int) (interface{}, bool) {
 	return nil, false
 }
 
-// Has checks if a score is in list. O(logN)
+// Has checks if a score is in list. O(1)
 func (sl *Skiplist) Has(score int) bool {
 	sl.RLock()
 	defer sl.RUnlock()
