@@ -18,18 +18,12 @@ func TestOpen(t *testing.T) {
 	assert.Ok(t, util.IsFileExist(fileName))
 	defer db.Close()
 	defer os.RemoveAll(fileName)
-	// Tables should exist.
-	assert.Ok(t, db.db.HasTable(&models.Project{}))
-	assert.Ok(t, db.db.HasTable(&models.User{}))
-	assert.Ok(t, db.db.HasTable(&models.Rule{}))
 }
 
-func TestLoad(t *testing.T) {
+func TestReLoad(t *testing.T) {
+	// Open db.
 	fileName := "db-testing"
-	db, err := Open(fileName)
-	// File should exist.
-	assert.Ok(t, err == nil)
-	assert.Ok(t, util.IsFileExist(fileName))
+	db, _ := Open(fileName)
 	defer db.Close()
 	defer os.RemoveAll(fileName)
 	// Add user.
@@ -43,17 +37,15 @@ func TestLoad(t *testing.T) {
 	assert.Ok(t, nil == db.AddRuleToProject(proj, rule))
 	// Add user to proj.
 	assert.Ok(t, nil == db.AddUserToProject(proj, user))
-	// Clear the cache.
-	db.users.Clear()
-	db.projects.Clear()
-	db.rules.Clear()
-	// Reload the cache.
-	assert.Ok(t, nil == db.load())
+	// Clear cache.
+	db.cache.Clear()
+	// Init cache again.
+	assert.Ok(t, nil == db.cache.Init(db.persist))
 	// Check cache.
 	// Must be not empty.
-	assert.Ok(t, db.users.Len() == 1)
-	assert.Ok(t, db.rules.Len() == 1)
-	assert.Ok(t, db.projects.Len() == 1)
+	assert.Ok(t, db.NumRules() == 1)
+	assert.Ok(t, db.NumUsers() == 1)
+	assert.Ok(t, db.NumProjects() == 1)
 	// Reloaded rule should be equal with old rule.
 	r := &models.Rule{ID: rule.ID}
 	assert.Ok(t, nil == db.GetRule(r))

@@ -164,3 +164,15 @@ func (user *User) GetProject(id int) (*Project, bool) {
 	}
 	return nil, false
 }
+
+// HasProject checks whether project in the user.
+func (user *User) HasProject(id int) bool {
+	user.RLockIfShared()
+	defer user.RUnlockIfShared()
+	for _, proj := range user.Projects {
+		if proj.ID == id {
+			return true
+		}
+	}
+	return false
+}

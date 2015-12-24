@@ -2,125 +2,49 @@
 
 package admindb
 
-import (
-	"github.com/eleme/banshee/models"
-	"github.com/jinzhu/gorm"
-	"github.com/mattn/go-sqlite3"
-)
+import "github.com/eleme/banshee/models"
 
-// getUser returns the user by id.
-func (db *DB) getUser(id int) (*models.User, bool) {
-	v, ok := db.users.Get(id)
-	if !ok {
-		// Not found.
-		return nil, false
-	}
-	user := v.(*models.User)
-	return user, true
+// NumUsers returns the number of users.
+func (db *DB) NumUsers() int {
+	return db.cache.NumUsers()
 }
 
-// Users returns all the users.
-func (db *DB) Users() (l []*models.User) {
-	for _, v := range db.users.Items() {
-		user := v.(*models.User)
-		l = append(l, user.Copy())
-	}
-	return l
+// GetUser returns user.
+func (db *DB) GetUser(user *models.User) error {
+	return db.cache.GetUser(user)
 }
 
-// GetUser returns user by into a local value.
-func (db *DB) GetUser(u *models.User) error {
-	user, ok := db.getUser(u.ID)
-	if !ok {
-		return ErrUserNotFound
-	}
-	user.CopyTo(u)
-	return nil
+// Users returns all users.
+func (db *DB) Users(users *[]*models.User) {
+	db.cache.Users(users)
+}
+
+// UsersN returns users for given range.
+func (db *DB) UsersN(users *[]*models.User, offset int, limit int) {
+	db.cache.UsersN(users, offset, limit)
 }
 
 // AddUser adds a user to db.
 func (db *DB) AddUser(user *models.User) error {
-	// Sql: user.ID will be created.
-	if err := db.db.Create(user).Error; err != nil {
-		if err == sqlite3.ErrConstraintUnique {
-			return ErrConstraintUnique
-		}
-		if err == sqlite3.ErrConstraintNotNull {
-			return ErrConstraintNotNull
-		}
+	if err := db.persist.AddUser(user); err != nil {
 		return err
 	}
-	// Cache a copy.
-	user = user.Copy()
-	// Mark as shared.
-	user.MakeShared()
-	// Add to users
-	db.users.Put(user.ID, user)
+	db.cache.AddUser(user)
 	return nil
 }
 
 // UpdateUser updates a user with another.
 func (db *DB) UpdateUser(user *models.User) error {
-	// Sql
-	if err := db.db.Model(user).Update(user).Error; err != nil {
-		if err == gorm.RecordNotFound {
-			return ErrUserNotFound
-		}
-		if err == sqlite3.ErrConstraintUnique {
-			return ErrConstraintUnique
-		}
+	if err := db.persist.UpdateUser(user); err != nil {
 		return err
 	}
-	// Cache
-	// Update user in users.
-	u, ok := db.getUser(user.ID)
-	if !ok {
-		return ErrUserNotFound
-	}
-	u.Update(user)
-	// Update user in its projects.
-	projects := u.GetProjects()
-	for _, p := range projects {
-		proj, ok := db.getProject(p.ID)
-		if !ok {
-			return ErrProjectNotFound
-		}
-		if !proj.UpdateUser(user) {
-			return ErrUserNotFound
-		}
-	}
-	return nil
+	return db.cache.UpdateUser(user)
 }
 
 // DeleteUser deletes a user from db.
-func (db *DB) DeleteUser(id int) error {
-	// Sql
-	if err := db.db.Delete(&models.User{ID: id}).Error; err != nil {
-		if err == gorm.RecordNotFound {
-			return ErrUserNotFound
-		}
+func (db *DB) DeleteUser(user *models.User) error {
+	if err := db.persist.DeleteUser(user); err != nil {
 		return err
 	}
-	// Cache
-	// Get this user.
-	user, ok := db.getUser(id)
-	if !ok {
-		return ErrUserNotFound
-	}
-	// Delete user from its projects.
-	projects := user.GetProjects()
-	for _, p := range projects {
-		proj, ok := db.getProject(p.ID)
-		if !ok {
-			return ErrProjectNotFound
-		}
-		if !proj.DeleteUser(id) {
-			return ErrUserNotFound
-		}
-	}
-	// Delete user from users.
-	if !db.users.Delete(id) {
-		return ErrUserNotFound
-	}
-	return nil
+	return db.cache.DeleteUser(user)
 }

@@ -135,7 +135,7 @@ func BenchmarkSafeMapSortedItems(b *testing.B) {
 		d := m.Items()
 		ints := make([]int, len(d))
 		j := 0
-		for k, _ := range d {
+		for k := range d {
 			ints[j] = k.(int)
 			j++
 		}
