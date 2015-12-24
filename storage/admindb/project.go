@@ -55,7 +55,7 @@ func (db *DB) AddProject(proj *models.Project) error {
 	// Mark as shared.
 	proj.MakeShared()
 	// Add to projects.
-	db.projects.Set(proj.ID, proj)
+	db.projects.Put(proj.ID, proj)
 	return nil
 }
 
