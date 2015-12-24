@@ -14,6 +14,8 @@ import (
 type DB struct {
 	// Gorm
 	db gorm.DB
+	// changed rule channel
+	ruleChan chan *models.Rule
 	// Cache
 	projects *skiplist.Skiplist
 	rules    *skiplist.Skiplist
