@@ -14,6 +14,11 @@ func (c *Cache) getUser(id int) (*models.User, bool) {
 	return user, true
 }
 
+// NumUsers returns the number of users.
+func (c *Cache) NumUsers() int {
+	return c.users.Len()
+}
+
 // GetUser returns user.
 func (c *Cache) GetUser(user *models.User) error {
 	u, ok := c.getUser(user.ID)
@@ -53,7 +58,7 @@ func (c *Cache) AddUser(user *models.User) {
 }
 
 // UpdateUser updates a user.
-func (c *Cache) UpdateUser(user *models.User) {
+func (c *Cache) UpdateUser(user *models.User) error {
 	// Find
 	u, ok := c.getUser(user.ID)
 	if !ok {
@@ -78,7 +83,7 @@ func (c *Cache) UpdateUser(user *models.User) {
 // DeleteUser deletes a user from cache.
 func (c *Cache) DeleteUser(user *models.User) error {
 	// Check
-	u, ok := c.getUser(user.ID)
+	_, ok := c.getUser(user.ID)
 	if !ok {
 		return ErrUserNotFound
 	}

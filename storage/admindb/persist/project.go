@@ -70,10 +70,15 @@ func (p *Persist) Projects(projs *[]*models.Project) error {
 }
 
 // RulesOfProject returns all rules for given project.
-func (p *Persist) RulesOfProjects(proj *models.Project, rules *[]*models.Rule) error {
+func (p *Persist) RulesOfProject(proj *models.Project, rules *[]*models.Rule) error {
 	var res []models.Rule
-	if err := p.db.Model(proj).Related(res).Error; err != nil {
-		return err
+	if err := p.db.Model(proj).Related(&res).Error; err != nil {
+		switch err {
+		case gorm.RecordNotFound:
+			return ErrNotFound
+		default:
+			return err
+		}
 	}
 	for _, rule := range res {
 		*rules = append(*rules, &rule)
@@ -81,14 +86,38 @@ func (p *Persist) RulesOfProjects(proj *models.Project, rules *[]*models.Rule) e
 	return nil
 }
 
-// UsersOfProjects returns all users for given project.
-func (p *Project) UsersOfProjects(proj *models.Project, users *[]*models.User) error {
+// UsersOfProject returns all users for given project.
+func (p *Persist) UsersOfProject(proj *models.Project, users *[]*models.User) error {
 	var res []models.User
-	if err := p.db.Model(proj).Related(res, "Users").Error; err != nil {
-		return err
+	if err := p.db.Model(proj).Related(&res, "Users").Error; err != nil {
+		switch err {
+		case gorm.RecordNotFound:
+			return ErrNotFound
+		default:
+			return err
+		}
 	}
 	for _, user := range res {
 		*users = append(*users, &user)
+	}
+	return nil
+}
+
+// AddUserToProject adds a user to project.
+func (p *Persist) AddUserToProject(proj *models.Project, user *models.User) error {
+	if err := p.db.Model(proj).Association("Users").Append(user).Error; err != nil {
+		switch err {
+		case gorm.RecordNotFound:
+			return ErrNotFound
+		case sqlite3.ErrConstraintNotNull:
+			return ErrNotNull
+		case sqlite3.ErrConstraintUnique:
+			return ErrUnique
+		case sqlite3.ErrConstraintPrimaryKey:
+			return ErrPrimaryKey
+		default:
+			return err
+		}
 	}
 	return nil
 }

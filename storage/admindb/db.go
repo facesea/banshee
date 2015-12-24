@@ -4,16 +4,19 @@
 package admindb
 
 import (
+	"github.com/eleme/banshee/models"
 	"github.com/eleme/banshee/storage/admindb/cache"
 	"github.com/eleme/banshee/storage/admindb/persist"
 )
 
 // DB handles admin storage.
 type DB struct {
-	cache   *cache.Cache
+	// Cache
+	cache *cache.Cache
+	// Persist
 	persist *persist.Persist
-	// changed rule channel
-	ruleChan chan *models.Rule
+	// Signals
+	ruleChanges []chan *models.Rule
 }
 
 // Open a DB by fileName.
@@ -26,7 +29,9 @@ func Open(fileName string) (*DB, error) {
 		return nil, err
 	}
 	// Init cache.
-	db.cache.Init(db.persist)
+	if err := db.cache.Init(db.persist); err != nil {
+		return nil, err
+	}
 	return db, nil
 }
 

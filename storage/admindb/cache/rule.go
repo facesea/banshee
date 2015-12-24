@@ -14,6 +14,11 @@ func (c *Cache) getRule(id int) (*models.Rule, bool) {
 	return rule, true
 }
 
+// NumRules returns the number of rules.
+func (c *Cache) NumRules() int {
+	return c.rules.Len()
+}
+
 // GetRule returns rule.
 func (c *Cache) GetRule(rule *models.Rule) error {
 	r, ok := c.getRule(rule.ID)
@@ -24,8 +29,8 @@ func (c *Cache) GetRule(rule *models.Rule) error {
 	return nil
 }
 
-// HasRule checks whetthe a rule exist.
-func (c *Cache) HasRule(rule *models.Rule) error {
+// HasRule checks whether a rule exist.
+func (c *Cache) HasRule(rule *models.Rule) bool {
 	return c.rules.Has(rule.ID)
 }
 
@@ -55,7 +60,7 @@ func (c *Cache) AddRule(rule *models.Rule) {
 // DeleteRule deletes a rule from cache.
 func (c *Cache) DeleteRule(rule *models.Rule) error {
 	// Check.
-	r, ok := c.getRule(rule.ID)
+	_, ok := c.getRule(rule.ID)
 	if !ok {
 		return ErrRuleNotFound
 	}

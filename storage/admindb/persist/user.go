@@ -9,7 +9,7 @@ import (
 )
 
 // AddUser adds a user to db.
-func (p *Persist) AddUser(user *models.Project) error {
+func (p *Persist) AddUser(user *models.User) error {
 	if err := p.db.Create(user).Error; err != nil {
 		switch err {
 		case sqlite3.ErrConstraintUnique:
@@ -45,7 +45,7 @@ func (p *Persist) UpdateUser(user *models.User) error {
 }
 
 // DeleteUser deletes a user.
-func (p *Persist) DeleteUser(user *models.User) errorr {
+func (p *Persist) DeleteUser(user *models.User) error {
 	if err := p.db.Delete(user).Error; err != nil {
 		switch err {
 		case gorm.RecordNotFound:
@@ -61,7 +61,12 @@ func (p *Persist) DeleteUser(user *models.User) errorr {
 func (p *Persist) Users(users *[]*models.User) error {
 	var res []models.User
 	if err := p.db.Find(&res).Error; err != nil {
-		return err
+		switch err {
+		case gorm.RecordNotFound:
+			return ErrNotFound
+		default:
+			return err
+		}
 	}
 	for _, user := range res {
 		*users = append(*users, &user)
@@ -72,8 +77,13 @@ func (p *Persist) Users(users *[]*models.User) error {
 // ProjectsOfUser return all projects for given user.
 func (p *Persist) ProjectsOfUser(user *models.User, projs *[]*models.Project) error {
 	var res []models.Project
-	if err := p.db.Model(user).Related(res, "Projects").Error; err != nil {
-		return err
+	if err := p.db.Model(user).Related(&res, "Projects").Error; err != nil {
+		switch err {
+		case gorm.RecordNotFound:
+			return ErrNotFound
+		default:
+			return err
+		}
 	}
 	for _, proj := range res {
 		*projs = append(*projs, &proj)

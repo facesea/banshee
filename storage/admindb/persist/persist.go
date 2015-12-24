@@ -6,11 +6,12 @@ package persist
 import (
 	"github.com/eleme/banshee/models"
 	"github.com/jinzhu/gorm"
+	_ "github.com/mattn/go-sqlite3" // Import but no use
 )
 
 const dialect = "sqlite3"
 
-// Persist
+// Persist is db persistence.
 type Persist struct {
 	// db handle.
 	db gorm.DB
@@ -26,7 +27,7 @@ func Open(fileName string) (*Persist, error) {
 	p := new(Persist)
 	p.db = db
 	// Migrate schema.
-	err = persist.Migrate()
+	err = p.Migrate()
 	if err != nil {
 		return nil, err
 	}
@@ -44,4 +45,9 @@ func (p *Persist) Migrate() error {
 	user := &models.User{}
 	proj := &models.Project{}
 	return p.db.AutoMigrate(rule, user, proj).Error
+}
+
+// DB returns the DB handle.
+func (p *Persist) DB() *gorm.DB {
+	return &p.db
 }

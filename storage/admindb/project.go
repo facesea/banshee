@@ -2,166 +2,57 @@
 
 package admindb
 
-import (
-	"github.com/eleme/banshee/models"
-	"github.com/jinzhu/gorm"
-	"github.com/mattn/go-sqlite3"
-)
+import "github.com/eleme/banshee/models"
 
-// getProject returns the project by id.
-func (db *DB) getProject(id int) (*models.Project, bool) {
-	v, ok := db.projects.Get(id)
-	if !ok {
-		// Not found.
-		return nil, false
-	}
-	proj := v.(*models.Project)
-	return proj, true
+// NumProjects returns the number of projects.
+func (db *DB) NumProjects() int {
+	return db.cache.NumProjects()
 }
 
-// Projects returns all the projects.
-func (db *DB) Projects() (l []*models.Project) {
-	for _, v := range db.projects.Items() {
-		proj := v.(*models.Project)
-		l = append(l, proj.Copy())
-	}
-	return l
+// Projects returns all projects.
+func (db *DB) Projects(projs *[]*models.Project) {
+	db.cache.Projects(projs)
 }
 
-// GetProject returns project into a local value.
-func (db *DB) GetProject(p *models.Project) error {
-	proj, ok := db.getProject(p.ID)
-	if !ok {
-		return ErrProjectNotFound
-	}
-	proj.CopyTo(p)
-	return nil
+// ProjectsN returns projects for given range.
+func (db *DB) ProjectsN(projs *[]*models.Project, offset int, limit int) {
+	db.cache.ProjectsN(projs, offset, limit)
+}
+
+// GetProject returns project.
+func (db *DB) GetProject(proj *models.Project) error {
+	return db.cache.GetProject(proj)
 }
 
 // AddProject adds a project to db.
 func (db *DB) AddProject(proj *models.Project) error {
-	// Sql: proj.ID will be created.
-	if err := db.db.Create(proj).Error; err != nil {
-		if err == sqlite3.ErrConstraintUnique {
-			return ErrConstraintUnique
-		}
-		if err == sqlite3.ErrConstraintNotNull {
-			return ErrConstraintNotNull
-		}
+	if err := db.persist.AddProject(proj); err != nil {
 		return err
 	}
-	// Cache a copy.
-	proj = proj.Copy()
-	// Mark as shared.
-	proj.MakeShared()
-	// Add to projects.
-	db.projects.Put(proj.ID, proj)
+	db.cache.AddProject(proj)
 	return nil
 }
 
 // UpdateProject updates a project with another.
 func (db *DB) UpdateProject(proj *models.Project) error {
-	// Sql
-	if err := db.db.Model(proj).Update(proj).Error; err != nil {
-		if err == gorm.RecordNotFound {
-			return ErrProjectNotFound
-		}
-		if err == sqlite3.ErrConstraintUnique {
-			return ErrConstraintUnique
-		}
+	if err := db.persist.UpdateProject(proj); err != nil {
 		return err
 	}
-	// Cache
-	// Update project in projects.
-	project, ok := db.getProject(proj.ID)
-	if !ok {
-		return ErrProjectNotFound
-	}
-	project.Update(proj)
-	// Update project in its users.
-	users := project.GetUsers()
-	for _, u := range users {
-		user, ok := db.getUser(u.ID)
-		if !ok {
-			return ErrUserNotFound
-		}
-		if !user.UpdateProject(proj) {
-			return ErrProjectNotFound
-		}
-	}
-	return nil
+	return db.cache.UpdateProject(proj)
 }
 
 // DeleteProject deletes a project from db.
-func (db *DB) DeleteProject(id int) error {
-	// Sql
-	if err := db.db.Delete(&models.Project{ID: id}).Error; err != nil {
-		if err == gorm.RecordNotFound {
-			return ErrProjectNotFound
-		}
+func (db *DB) DeleteProject(proj *models.Project) error {
+	if err := db.persist.DeleteProject(proj); err != nil {
 		return err
 	}
-	// Cache
-	// Get this project.
-	proj, ok := db.getProject(id)
-	if !ok {
-		return ErrProjectNotFound
-	}
-	// Delete its rules.
-	rules := proj.GetRules()
-	for _, rule := range rules {
-		if !db.rules.Delete(rule.ID) {
-			return ErrRuleNotFound
-		}
-	}
-	// Delete project from its users.
-	users := proj.GetUsers()
-	for _, u := range users {
-		user, ok := db.getUser(u.ID)
-		if !ok {
-			return ErrUserNotFound
-		}
-		if !user.DeleteProject(id) {
-			return ErrProjectNotFound
-		}
-	}
-	// Delete project from projects.
-	if !db.projects.Delete(id) {
-		return ErrProjectNotFound
-	}
-	return nil
+	return db.cache.DeleteProject(proj)
 }
 
 // AddUserToProject adds a user to a project.
 func (db *DB) AddUserToProject(proj *models.Project, user *models.User) error {
-	// If user exist
-	u, ok := db.getUser(user.ID)
-	if !ok {
-		return ErrUserNotFound
-	}
-	// If proj exist
-	p, ok := db.getProject(proj.ID)
-	if !ok {
-		return ErrProjectNotFound
-	}
-	// Sql: user will be appened to proj.Users.
-	if err := db.db.Model(proj).Association("Users").Append(user).Error; err != nil {
-		if err == gorm.RecordNotFound {
-			return ErrNotFound
-		}
-		if err == sqlite3.ErrConstraintPrimaryKey {
-			return ErrConstraintPrimaryKey
-		}
-		if err == sqlite3.ErrConstraintUnique {
-			return ErrConstraintUnique
-		}
+	if err := db.persist.AddUserToProject(proj, user); err != nil {
 		return err
 	}
-	// Append proj to user.
-	user.AddProject(proj)
-	// Add user to project.
-	p.AddUser(u)
-	// Add project to user.
-	u.AddProject(p)
-	return nil
+	return db.cache.AddUserToProject(proj, user)
 }

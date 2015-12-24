@@ -25,7 +25,8 @@ func TestRules(t *testing.T) {
 	assert.Ok(t, nil == db.AddRuleToProject(proj, rule1))
 	assert.Ok(t, nil == db.AddRuleToProject(proj, rule2))
 	// Get rules.
-	rules := db.Rules()
+	var rules []*models.Rule
+	db.Rules(&rules)
 	assert.Ok(t, len(rules) == 2)
 	r1, r2 := rules[0], rules[1]
 	assert.Ok(t, (r1.Equal(rule1) && r2.Equal(rule2)) || (r1.Equal(rule2) && r2.Equal(rule1)))
@@ -71,7 +72,7 @@ func TestAddRuleToProject(t *testing.T) {
 	assert.Ok(t, r.Equal(rule))
 	// Must rule in db and its project id is proj.ID
 	r1 := &models.Rule{}
-	err := db.db.Find(r1, rule.ID).Error
+	err := db.persist.DB().Find(r1, rule.ID).Error
 	assert.Ok(t, err == nil)
 	assert.Ok(t, r1.ProjectID == proj.ID)
 }
@@ -89,10 +90,10 @@ func TestDeleteRule(t *testing.T) {
 	rule := &models.Rule{Pattern: "g.*"}
 	assert.Ok(t, nil == db.AddRuleToProject(proj, rule))
 	// Delete it.
-	assert.Ok(t, nil == db.DeleteRule(rule.ID))
+	assert.Ok(t, nil == db.DeleteRule(rule))
 	// Must rule not in cache.
-	assert.Ok(t, !db.HasRule(rule.ID))
+	assert.Ok(t, !db.HasRule(rule))
 	// Must rule not in db.
-	err := db.db.Find(&models.Rule{}, rule.ID).Error
+	err := db.persist.DB().Find(&models.Rule{}, rule.ID).Error
 	assert.Ok(t, err == gorm.RecordNotFound)
 }

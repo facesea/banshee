@@ -14,6 +14,11 @@ func (c *Cache) getProject(id int) (*models.Project, bool) {
 	return proj, true
 }
 
+// NumProjects returns the number of projects.
+func (c *Cache) NumProjects() int {
+	return c.projs.Len()
+}
+
 // GetProject returns project.
 func (c *Cache) GetProject(proj *models.Project) error {
 	p, ok := c.getProject(proj.ID)
@@ -53,7 +58,7 @@ func (c *Cache) AddProject(proj *models.Project) {
 }
 
 // UpdateProject updates a project.
-func (c *Cache) UpdateProject(proj *models.Project) {
+func (c *Cache) UpdateProject(proj *models.Project) error {
 	// Find
 	p, ok := c.getProject(proj.ID)
 	if !ok {
@@ -85,7 +90,7 @@ func (c *Cache) DeleteProject(proj *models.Project) error {
 	// Delete its rules.
 	rules := p.GetRules()
 	for _, rule := range rules {
-		if !c.rules.Delete(rule) {
+		if !c.rules.Delete(rule.ID) {
 			return ErrRuleNotFound
 		}
 	}
@@ -143,12 +148,12 @@ func (c *Cache) AddUserToProject(proj *models.Project, user *models.User) error 
 	// Add p to u.
 	u.AddProject(p)
 	// Add proj to user.
-	if !user.HasProject(proj) {
+	if !user.HasProject(proj.ID) {
 		user.AddProject(proj)
 	}
 	// Add user to proj.
-	if !proj.HasUser(user.Id) {
-		proj.AddProject(user)
+	if !proj.HasUser(user.ID) {
+		proj.AddUser(user)
 	}
 	return nil
 }
