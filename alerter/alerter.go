@@ -17,14 +17,19 @@ import (
 // if this limit is reached.
 const bufferedMetricResultsLimit = 10 * 1024
 
-// Alerter will goroutine to alert metric which match rule
+// Alerter alerts on anomalies detected.
 type Alerter struct {
-	db       *storage.DB
-	cfg      *config.Config
-	rc       chan *models.Metric
-	stampMap *safemap.SafeMap
+	// Storage
+	db *storage.DB
+	// Config
+	cfg *config.Config
+	// Input
+	In chan *models.Metric
+	// Alertings stamps
+	m *safemap.SafeMap
 }
 
+// Alerting message.
 type msg struct {
 	Project *models.Project `json:"project"`
 	Metric  *models.Metric  `json:"metric"`
@@ -36,8 +41,8 @@ func New(cfg *config.Config, db *storage.DB) *Alerter {
 	alerter := new(Alerter)
 	alerter.cfg = cfg
 	alerter.db = db
-	alerter.rc = make(chan *models.Metric, bufferedMetricResultsLimit)
-	alerter.stampMap = safemap.New()
+	alerter.In = make(chan *models.Metric, bufferedMetricResultsLimit)
+	alerter.m = safemap.New()
 	return alerter
 }
 
@@ -54,45 +59,36 @@ func (alerter *Alerter) Start() {
 // rules, the configured shell command will be executed once a rule is hit.
 func (alerter *Alerter) work() {
 	for {
-		metric := <-alerter.rc
-
-		v, e := alerter.stampMap.Get(metric.Name)
-		if e && metric.Stamp-v.(uint32) < alerter.cfg.Alerter.Interval {
+		metric := <-alerter.In
+		// Check interval.
+		v, ok := alerter.m.Get(metric.Name)
+		if ok && metric.Stamp-v.(uint32) < alerter.cfg.Alerter.Interval {
 			return
 		}
-		alerter.stampMap.Set(metric.Name, metric.Stamp)
-		var rules []*models.Rule
-		alerter.db.Admin.GetRules(&rules)
-		for _, rule := range rules {
-			if rule.Test(metric) {
-				proj := &models.Project{ID: rule.ProjectID}
-				if err := alerter.db.Admin.GetProject(proj); err != nil {
-					log.Error("%v, projectID: %d ruleid: %d", err, rule.ID, rule.ProjectID)
-					continue
-				}
-
-				for _, user := range proj.Users {
-					msg := &msg{
-						Project: proj,
-						Metric:  metric,
-						User:    user}
-					msgBytes, _ := json.Marshal(msg)
-					err := exec.Command(alerter.cfg.Alerter.Command, string(msgBytes)).Run()
-					if err != nil {
-						log.Error("exec alert command failed : %s", err)
+		// Test with rules.
+		var projs []*models.Project
+		alerter.db.Admin.GetProjects(&projs)
+		for _, proj := range projs {
+			for _, rule := range proj.Rules {
+				if rule.Test(metric) {
+					// Tested ok.
+					for _, user := range proj.Users {
+						// Send message to each user.
+						d := &msg{
+							Project: proj,
+							Metric:  metric,
+							User:    user,
+						}
+						b, _ := json.Marshal(d)
+						cmd := exec.Command(alerter.cfg.Alerter.Command, string(b))
+						if err := cmd.Run(); err != nil {
+							log.Error("exec %s: %v", alerter.cfg.Alerter.Command, err)
+						}
 					}
+					// Add to stamp map.
+					alerter.m.Set(metric.Name, metric.Stamp)
 				}
-
 			}
 		}
-	}
-}
-
-// Alert add metric to the alerting chan
-func (alerter *Alerter) Alert(metric *models.Metric) {
-	select {
-	case alerter.rc <- metric:
-	default:
-		log.Warn("buffered metric results channel is full, drop current metric..")
 	}
 }

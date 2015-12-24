@@ -51,6 +51,7 @@ func main() {
 	alerter := alerter.New(cfg, db)
 	alerter.Start()
 	// Detector
-	detector := detector.New(cfg, db, alerter)
+	detector := detector.New(cfg, db)
+	detector.Out(alerter.In)
 	detector.Start()
 }

@@ -10,7 +10,6 @@ import (
 	"net"
 	"time"
 
-	"github.com/eleme/banshee/alerter"
 	"github.com/eleme/banshee/config"
 	"github.com/eleme/banshee/detector/cursor"
 	"github.com/eleme/banshee/models"
@@ -26,24 +25,39 @@ type Detector struct {
 	cfg *config.Config
 	// Storage
 	db *storage.DB
-	// Alerter
-	alerter *alerter.Alerter
 	// Filter
 	hitCache *cache
 	// Cursor
 	cursor *cursor.Cursor
+	// Output
+	outs []chan *models.Metric
 }
 
 // New creates a detector.
-func New(cfg *config.Config, db *storage.DB, alerter *alerter.Alerter) *Detector {
+func New(cfg *config.Config, db *storage.DB) *Detector {
 	d := new(Detector)
 	d.cfg = cfg
 	d.db = db
-	d.alerter = alerter
 	d.hitCache = newCache()
 	d.db.Admin.ListenRuleChanges(d.hitCache.Rc)
 	d.cursor = cursor.New(cfg.Detector.Factor, cfg.LeastC())
 	return d
+}
+
+// Out outputs detected metrics to given channel.
+func (d *Detector) Out(ch chan *models.Metric) {
+	d.outs = append(d.outs, ch)
+}
+
+// output detected metrics to outs.
+func (d *Detector) output(m *models.Metric) {
+	for _, ch := range d.outs {
+		select {
+		case ch <- m:
+		default:
+			log.Error("channel is full, cannot output metric, skipping..")
+		}
+	}
 }
 
 // Start detector.
@@ -97,7 +111,7 @@ func (d *Detector) handle(conn net.Conn) {
 			}
 			elapsed := time.Since(startAt)
 			log.Debug("name=%s average=%.3f score=%.3f cost=%dμs", m.Name, m.Average, m.Score, elapsed.Nanoseconds()/1000)
-			d.alerter.Alert(m)
+			d.output(m)
 		}
 	}
 }
