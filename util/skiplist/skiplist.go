@@ -193,6 +193,16 @@ func (sl *Skiplist) Map() map[int]interface{} {
 	return m
 }
 
+// Clear the list.
+func (sl *Skiplist) Clear() {
+	sl.Lock()
+	defer sl.Unlock()
+	sl.length = 0
+	sl.level = 1
+	sl.head = NewNode(LevelMax, 0, nil)
+	sl.index = make(map[int]*Node)
+}
+
 // Print the skiplist.
 func (sl *Skiplist) Print() {
 	sl.RLock()
