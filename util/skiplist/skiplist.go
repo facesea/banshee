@@ -18,7 +18,10 @@ import (
 	"sync"
 )
 
+// LevelMax is the max value of skiplist level.
 const LevelMax = 36
+
+// FactorP is to get random level.
 const FactorP float64 = 0.5
 
 // Node is skiplist node.
@@ -28,7 +31,7 @@ type Node struct {
 	forwards []*Node
 }
 
-// Skiplist
+// Skiplist is an ordered list.
 type Skiplist struct {
 	sync.RWMutex
 	length int
@@ -41,7 +44,7 @@ type Skiplist struct {
 func randLevel() int {
 	level := 1
 	for float64(rand.Int()&0xffff) < FactorP*float64(0xffff) {
-		level += 1
+		level++
 	}
 	if level < LevelMax {
 		return level
@@ -112,7 +115,7 @@ func (sl *Skiplist) Put(score int, data interface{}) {
 	// Add to index.
 	sl.index[score] = node
 	// Incr length.
-	sl.length += 1
+	sl.length++
 }
 
 // Get data by score. O(1)
@@ -161,12 +164,12 @@ func (sl *Skiplist) Delete(score int) bool {
 	}
 	// Decr level if need.
 	for sl.level > 1 && head.forwards[sl.level-1] == nil {
-		sl.level -= 1
+		sl.level--
 	}
 	// Delete from index.
 	delete(sl.index, score)
 	// Decr length.
-	sl.length -= 1
+	sl.length--
 	return true
 }
 
@@ -178,7 +181,7 @@ func (sl *Skiplist) Items() []interface{} {
 	i := 0
 	for node := sl.head.forwards[0]; node != nil; node = node.forwards[0] {
 		items[i] = node.data
-		i += 1
+		i++
 	}
 	return items
 }
@@ -195,7 +198,7 @@ func (sl *Skiplist) ItemsN(offset int, limit int) (items []interface{}) {
 				return items
 			}
 		}
-		i += 1
+		i++
 	}
 	return items
 }
