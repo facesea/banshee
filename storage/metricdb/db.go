@@ -38,7 +38,7 @@ func (db *DB) Put(m *models.Metric) error {
 	return db.db.Put(key, value, nil)
 }
 
-// Get metrics in a timstamp range, the range is left open and right closed.
+// Get metrics in a timestamp range, the range is left open and right closed.
 func (db *DB) Get(name string, start, end uint32) ([]*models.Metric, error) {
 	// Key encoding.
 	startMetric := &models.Metric{Name: name, Stamp: start}
