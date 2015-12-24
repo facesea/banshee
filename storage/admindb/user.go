@@ -55,7 +55,7 @@ func (db *DB) AddUser(user *models.User) error {
 	// Mark as shared.
 	user.MakeShared()
 	// Add to users
-	db.users.Set(user.ID, user)
+	db.users.Put(user.ID, user)
 	return nil
 }
 

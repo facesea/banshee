@@ -5,7 +5,7 @@ package admindb
 
 import (
 	"github.com/eleme/banshee/models"
-	"github.com/eleme/banshee/util/safemap"
+	"github.com/eleme/banshee/util/skiplist"
 	"github.com/jinzhu/gorm"
 	_ "github.com/mattn/go-sqlite3" // Import but no use
 )
@@ -15,9 +15,9 @@ type DB struct {
 	// Gorm
 	db gorm.DB
 	// Cache
-	projects *safemap.SafeMap
-	rules    *safemap.SafeMap
-	users    *safemap.SafeMap
+	projects *skiplist.Skiplist
+	rules    *skiplist.Skiplist
+	users    *skiplist.Skiplist
 }
 
 // Open a DB by fileName.
@@ -28,9 +28,9 @@ func Open(fileName string) (*DB, error) {
 	}
 	db := new(DB)
 	db.db = sdb
-	db.projects = safemap.New()
-	db.rules = safemap.New()
-	db.users = safemap.New()
+	db.projects = skiplist.New()
+	db.rules = skiplist.New()
+	db.users = skiplist.New()
 	if err := db.autoMigrate(); err != nil {
 		return nil, err
 	}
@@ -77,7 +77,7 @@ func (db *DB) loadRules() error {
 		r := &rule
 		// Add to cache.
 		r.MakeShared()
-		db.rules.Set(rule.ID, r)
+		db.rules.Put(rule.ID, r)
 	}
 	return nil
 }
@@ -100,7 +100,7 @@ func (db *DB) loadUsers() error {
 		}
 		// Add to cache.
 		u.MakeShared()
-		db.users.Set(u.ID, u)
+		db.users.Put(u.ID, u)
 	}
 	return nil
 }
@@ -131,7 +131,7 @@ func (db *DB) loadProjects() error {
 		}
 		// Add to cache.
 		p.MakeShared()
-		db.projects.Set(p.ID, p)
+		db.projects.Put(p.ID, p)
 	}
 	return nil
 }

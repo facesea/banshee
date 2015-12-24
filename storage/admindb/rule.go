@@ -79,7 +79,7 @@ func (db *DB) AddRuleToProject(proj *models.Project, rule *models.Rule) error {
 	// Mark as shared.
 	r.MakeShared()
 	// Add to rules.
-	db.rules.Set(r.ID, r)
+	db.rules.Put(r.ID, r)
 	return nil
 }
 

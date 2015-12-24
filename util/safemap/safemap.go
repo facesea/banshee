@@ -61,7 +61,7 @@ func (m *SafeMap) Delete(key interface{}) bool {
 func (m *SafeMap) Items() map[interface{}]interface{} {
 	m.lock.RLock()
 	defer m.lock.RUnlock()
-	d := make(map[interface{}]interface{})
+	d := make(map[interface{}]interface{}, len(m.m))
 	for key, val := range m.m {
 		d[key] = val
 	}
