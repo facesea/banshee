@@ -29,14 +29,14 @@ func (db *DB) NumRules() int {
 	return db.cache.NumRules()
 }
 
-// Rules returns all rules.
-func (db *DB) Rules(rules *[]*models.Rule) {
-	db.cache.Rules(rules)
+// GetRules returns all rules.
+func (db *DB) GetRules(rules *[]*models.Rule) {
+	db.cache.GetRules(rules)
 }
 
-// RulesN returns rules for given range.
-func (db *DB) RulesN(rules *[]*models.Rule, offset int, limit int) {
-	db.cache.RulesN(rules, offset, limit)
+// GetRulesN returns rules for given range.
+func (db *DB) GetRulesN(rules *[]*models.Rule, offset int, limit int) {
+	db.cache.GetRulesN(rules, offset, limit)
 }
 
 // HasRule returns true if the rule of this id is in db.

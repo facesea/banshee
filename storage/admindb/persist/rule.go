@@ -38,8 +38,8 @@ func (p *Persist) DeleteRule(rule *models.Rule) error {
 	return nil
 }
 
-// Rules returns all rules.
-func (p *Persist) Rules(rules *[]*models.Rule) error {
+// GetRules returns all rules.
+func (p *Persist) GetRules(rules *[]*models.Rule) error {
 	var res []models.Rule
 	if err := p.db.Find(&res).Error; err != nil {
 		return err

@@ -49,7 +49,7 @@ func (c *Cache) Init(p *persist.Persist) error {
 // initRules inits rules from persist.
 func (c *Cache) initRules(p *persist.Persist) error {
 	var rules []*models.Rule
-	if err := p.Rules(&rules); err != nil {
+	if err := p.GetRules(&rules); err != nil {
 		return err
 	}
 	for _, rule := range rules {
@@ -62,7 +62,7 @@ func (c *Cache) initRules(p *persist.Persist) error {
 // initUsers inits users from persist.
 func (c *Cache) initUsers(p *persist.Persist) error {
 	var users []*models.User
-	if err := p.Users(&users); err != nil {
+	if err := p.GetUsers(&users); err != nil {
 		return err
 	}
 	for _, user := range users {
@@ -82,7 +82,7 @@ func (c *Cache) initUsers(p *persist.Persist) error {
 // initProjects inits projs from persist.
 func (c *Cache) initProjects(p *persist.Persist) error {
 	var projs []*models.Project
-	if err := p.Projects(&projs); err != nil {
+	if err := p.GetProjects(&projs); err != nil {
 		return err
 	}
 	for _, proj := range projs {
