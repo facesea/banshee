@@ -73,6 +73,12 @@ func TestBasic(t *testing.T) {
 	assert.Ok(t, "d" == items[6].(string))
 	assert.Ok(t, "h" == items[7].(string))
 	assert.Ok(t, "g" == items[8].(string))
+	// ItemsN
+	items = sl.ItemsN(2, 3)
+	assert.Ok(t, len(items) == 3)
+	assert.Ok(t, "c" == items[0].(string))
+	assert.Ok(t, "a" == items[1].(string))
+	assert.Ok(t, "e" == items[2].(string))
 	// Map
 	m := sl.Map()
 	x := map[int]string{a: "a", b: "b", c: "c", d: "d", e: "e", f: "f", g: "g", h: "h", i: "i"}

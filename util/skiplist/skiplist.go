@@ -182,6 +182,23 @@ func (sl *Skiplist) Items() []interface{} {
 	return items
 }
 
+// ItemsN returns sorted items for given range. O(N)
+func (sl *Skiplist) ItemsN(offset int, limit int) (items []interface{}) {
+	sl.RLock()
+	defer sl.RUnlock()
+	i := 0
+	for node := sl.head.forwards[0]; node != nil; node = node.forwards[0] {
+		if i >= offset {
+			items = append(items, node.data)
+			if len(items) >= limit {
+				return items
+			}
+		}
+		i += 1
+	}
+	return items
+}
+
 // Map returns all items in map. O(N)
 func (sl *Skiplist) Map() map[int]interface{} {
 	sl.RLock()
