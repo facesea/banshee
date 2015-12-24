@@ -7,6 +7,7 @@ package skiplist
 // Compare to SafeMap:
 //   Skiplist: Get O(1), Put O(logN), Delete O(log(N)), SortedItems O(N)
 //   SafeMap:  Get O(1), Put O(1), Delete O(1), SortedItems O(N*log(N))
+//
 // Compare to array with binary-search strageory:
 //   the same log(N) search time complexity but less memory moves with
 //   put/delete.
