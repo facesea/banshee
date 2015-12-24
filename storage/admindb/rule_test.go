@@ -28,8 +28,13 @@ func TestGetRules(t *testing.T) {
 	var rules []*models.Rule
 	db.GetRules(&rules)
 	assert.Ok(t, len(rules) == 2)
-	r1, r2 := rules[0], rules[1]
-	assert.Ok(t, (r1.Equal(rule1) && r2.Equal(rule2)) || (r1.Equal(rule2) && r2.Equal(rule1)))
+	assert.Ok(t, rules[0].Equal(rule1))
+	assert.Ok(t, rules[1].Equal(rule2))
+	// Get rulesN
+	rules = rules[:0]
+	db.GetRulesN(&rules, 0, 1)
+	assert.Ok(t, len(rules) == 1)
+	assert.Ok(t, rules[0].Equal(rule1))
 }
 
 func TestGetRule(t *testing.T) {
@@ -96,8 +101,4 @@ func TestDeleteRule(t *testing.T) {
 	// Must rule not in db.
 	err := db.persist.DB().Find(&models.Rule{}, rule.ID).Error
 	assert.Ok(t, err == gorm.RecordNotFound)
-}
-
-func TestGetRulesN(t *testing.T) {
-
 }
