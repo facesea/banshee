@@ -34,16 +34,16 @@ func (c *Cache) HasProject(proj *models.Project) bool {
 	return c.projs.Has(proj.ID)
 }
 
-// Projects returns all projects.
-func (c *Cache) Projects(projs *[]*models.Project) {
+// GetProjects returns all projects.
+func (c *Cache) GetProjects(projs *[]*models.Project) {
 	for _, v := range c.projs.Items() {
 		proj := v.(*models.Project)
 		*projs = append(*projs, proj.Copy())
 	}
 }
 
-// ProjectsN returns projects for given range.
-func (c *Cache) ProjectsN(projs *[]*models.Project, offset int, limit int) {
+// GetProjectsN returns projects for given range.
+func (c *Cache) GetProjectsN(projs *[]*models.Project, offset int, limit int) {
 	for _, v := range c.projs.ItemsN(offset, limit) {
 		proj := v.(*models.Project)
 		*projs = append(*projs, proj.Copy())

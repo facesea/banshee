@@ -14,14 +14,14 @@ func (db *DB) GetUser(user *models.User) error {
 	return db.cache.GetUser(user)
 }
 
-// Users returns all users.
-func (db *DB) Users(users *[]*models.User) {
-	db.cache.Users(users)
+// GetUsers returns all users.
+func (db *DB) GetUsers(users *[]*models.User) {
+	db.cache.GetUsers(users)
 }
 
-// UsersN returns users for given range.
-func (db *DB) UsersN(users *[]*models.User, offset int, limit int) {
-	db.cache.UsersN(users, offset, limit)
+// GetUsersN returns users for given range.
+func (db *DB) GetUsersN(users *[]*models.User, offset int, limit int) {
+	db.cache.GetUsersN(users, offset, limit)
 }
 
 // AddUser adds a user to db.

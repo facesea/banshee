@@ -34,16 +34,16 @@ func (c *Cache) HasUser(user *models.User) bool {
 	return c.users.Has(user.ID)
 }
 
-// Users returns all users.
-func (c *Cache) Users(users *[]*models.User) {
+// GetUsers returns all users.
+func (c *Cache) GetUsers(users *[]*models.User) {
 	for _, v := range c.users.Items() {
 		user := v.(*models.User)
 		*users = append(*users, user.Copy())
 	}
 }
 
-// UsersN returns users for given range.
-func (c *Cache) UsersN(users *[]*models.User, offset int, limit int) {
+// GetUsersN returns users for given range.
+func (c *Cache) GetUsersN(users *[]*models.User, offset int, limit int) {
 	for _, v := range c.users.ItemsN(offset, limit) {
 		user := v.(*models.User)
 		*users = append(*users, user.Copy())

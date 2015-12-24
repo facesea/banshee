@@ -9,14 +9,14 @@ func (db *DB) NumProjects() int {
 	return db.cache.NumProjects()
 }
 
-// Projects returns all projects.
-func (db *DB) Projects(projs *[]*models.Project) {
-	db.cache.Projects(projs)
+// GetProjects returns all projects.
+func (db *DB) GetProjects(projs *[]*models.Project) {
+	db.cache.GetProjects(projs)
 }
 
-// ProjectsN returns projects for given range.
-func (db *DB) ProjectsN(projs *[]*models.Project, offset int, limit int) {
-	db.cache.ProjectsN(projs, offset, limit)
+// GetProjectsN returns projects for given range.
+func (db *DB) GetProjectsN(projs *[]*models.Project, offset int, limit int) {
+	db.cache.GetProjectsN(projs, offset, limit)
 }
 
 // GetProject returns project.

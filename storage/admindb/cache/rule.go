@@ -34,16 +34,16 @@ func (c *Cache) HasRule(rule *models.Rule) bool {
 	return c.rules.Has(rule.ID)
 }
 
-// Rules returns all rules.
-func (c *Cache) Rules(rules *[]*models.Rule) {
+// GetRules returns all rules.
+func (c *Cache) GetRules(rules *[]*models.Rule) {
 	for _, v := range c.rules.Items() {
 		rule := v.(*models.Rule)
 		*rules = append(*rules, rule.Copy())
 	}
 }
 
-// RulesN returns rules for given range.
-func (c *Cache) RulesN(rules *[]*models.Rule, offset int, limit int) {
+// GetRulesN returns rules for given range.
+func (c *Cache) GetRulesN(rules *[]*models.Rule, offset int, limit int) {
 	for _, v := range c.rules.ItemsN(offset, limit) {
 		rule := v.(*models.Rule)
 		*rules = append(*rules, rule.Copy())

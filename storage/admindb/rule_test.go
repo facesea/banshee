@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func TestRules(t *testing.T) {
+func TestGetRules(t *testing.T) {
 	// Open db.
 	fileName := "db-testing"
 	db, _ := Open(fileName)
@@ -26,7 +26,7 @@ func TestRules(t *testing.T) {
 	assert.Ok(t, nil == db.AddRuleToProject(proj, rule2))
 	// Get rules.
 	var rules []*models.Rule
-	db.Rules(&rules)
+	db.GetRules(&rules)
 	assert.Ok(t, len(rules) == 2)
 	r1, r2 := rules[0], rules[1]
 	assert.Ok(t, (r1.Equal(rule1) && r2.Equal(rule2)) || (r1.Equal(rule2) && r2.Equal(rule1)))
@@ -96,4 +96,8 @@ func TestDeleteRule(t *testing.T) {
 	// Must rule not in db.
 	err := db.persist.DB().Find(&models.Rule{}, rule.ID).Error
 	assert.Ok(t, err == gorm.RecordNotFound)
+}
+
+func TestGetRulesN(t *testing.T) {
+
 }

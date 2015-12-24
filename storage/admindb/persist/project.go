@@ -57,8 +57,8 @@ func (p *Persist) DeleteProject(proj *models.Project) error {
 	return nil
 }
 
-// Projects returns all projects.
-func (p *Persist) Projects(projs *[]*models.Project) error {
+// GetProjects returns all projects.
+func (p *Persist) GetProjects(projs *[]*models.Project) error {
 	var res []models.Project
 	if err := p.db.Find(&res).Error; err != nil {
 		return err

@@ -57,8 +57,8 @@ func (p *Persist) DeleteUser(user *models.User) error {
 	return nil
 }
 
-// Users return all users.
-func (p *Persist) Users(users *[]*models.User) error {
+// GetUsers return all users.
+func (p *Persist) GetUsers(users *[]*models.User) error {
 	var res []models.User
 	if err := p.db.Find(&res).Error; err != nil {
 		switch err {

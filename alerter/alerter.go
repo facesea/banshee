@@ -62,7 +62,7 @@ func (alerter *Alerter) work() {
 		}
 		alerter.stampMap.Set(metric.Name, metric.Stamp)
 		var rules []*models.Rule
-		alerter.db.Admin.Rules(&rules)
+		alerter.db.Admin.GetRules(&rules)
 		for _, rule := range rules {
 			if rule.Test(metric) {
 				proj := &models.Project{ID: rule.ProjectID}
