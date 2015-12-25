@@ -105,7 +105,7 @@ func (c *rulesCache) pushAdded(rule *models.Rule) {
 		select {
 		case ch <- rule:
 		default:
-			log.Error("buffered rule added is full, skipping..")
+			log.Error("buffered added rules chan is full, skipping..")
 		}
 	}
 }
@@ -116,7 +116,7 @@ func (c *rulesCache) pushDeled(rule *models.Rule) {
 		select {
 		case ch <- rule:
 		default:
-			log.Error("buffered rule delete is full, skipping..")
+			log.Error("buffered deleted rules chan is full, skipping..")
 		}
 	}
 }
