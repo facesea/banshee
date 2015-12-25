@@ -13,6 +13,7 @@ import (
 	"github.com/eleme/banshee/filter"
 	"github.com/eleme/banshee/storage"
 	"github.com/eleme/banshee/util/log"
+	"github.com/eleme/banshee/webapp"
 )
 
 func main() {
@@ -49,10 +50,14 @@ func main() {
 	cleaner := cleaner.New(db, cfg.Period[0]*cfg.Period[1])
 	go cleaner.Start()
 	// Filter
-	filter := filter.NewFilter()
+	filter := filter.New()
+	filter.Init(db)
 	// Alerter
 	alerter := alerter.New(cfg, db, filter)
 	alerter.Start()
+	// Webapp
+	webapp.Init(cfg, db)
+	go webapp.Serve()
 	// Detector
 	detector := detector.New(cfg, db, filter)
 	detector.Out(alerter.In)
