@@ -10,6 +10,7 @@ import (
 	"github.com/eleme/banshee/cleaner"
 	"github.com/eleme/banshee/config"
 	"github.com/eleme/banshee/detector"
+	"github.com/eleme/banshee/filter"
 	"github.com/eleme/banshee/storage"
 	"github.com/eleme/banshee/util/log"
 )
@@ -47,11 +48,13 @@ func main() {
 	// Cleaner
 	cleaner := cleaner.New(db, cfg.Period[0]*cfg.Period[1])
 	go cleaner.Start()
+	// Filter
+	filter := filter.NewFilter()
 	// Alerter
-	alerter := alerter.New(cfg, db)
+	alerter := alerter.New(cfg, db, filter)
 	alerter.Start()
 	// Detector
-	detector := detector.New(cfg, db)
+	detector := detector.New(cfg, db, filter)
 	detector.Out(alerter.In)
 	detector.Start()
 }
