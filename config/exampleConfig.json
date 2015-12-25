@@ -11,7 +11,8 @@
   },
   "webapp": {
     "port": 2016,
-    "auth": ["admin", "admin"]
+    "auth": ["admin", "admin"],
+    "static": "static"
   },
   "alerter": {
     "command": "",

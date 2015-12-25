@@ -49,8 +49,9 @@ type configDetector struct {
 }
 
 type configWebapp struct {
-	Port int       `json:"port"`
-	Auth [2]string `json:"auth"`
+	Port   int       `json:"port"`
+	Auth   [2]string `json:"auth"`
+	Static string    `json:"static"`
 }
 
 type configAlerter struct {
@@ -70,6 +71,7 @@ func New() *Config {
 	config.Detector.BlackList = []string{}
 	config.Webapp.Port = 2016
 	config.Webapp.Auth = [2]string{"admin", "admin"}
+	config.Webapp.Static = "static"
 	config.Alerter.Command = ""
 	config.Alerter.Workers = 4
 	return config
