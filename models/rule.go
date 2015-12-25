@@ -2,10 +2,6 @@
 
 package models
 
-import (
-	"github.com/eleme/banshee/util"
-)
-
 // Conditions
 const (
 	WhenTrendUp             = 0x1  // 0b000001
@@ -90,15 +86,10 @@ func (rule *Rule) Equal(r *Rule) bool {
 
 // Test returns true if the metric hits this rule.
 func (rule *Rule) Test(m *Metric) bool {
-	// RLock if shard.
+	// RLock if shared.
 	rule.RLock()
 	defer rule.RUnlock()
-	// Pattern matching
-	if !util.Match(m.Name, rule.Pattern) {
-		// Not match this rule.
-		return false
-	}
-	// Ignore it if it's value small enough to be trust
+	// Ignore it if its value small enough to be trust
 	if m.Value < rule.TrustLine {
 		return false
 	}

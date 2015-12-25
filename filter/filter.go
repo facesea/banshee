@@ -60,27 +60,27 @@ func (c *childFilter) matchedRs(l []string) []*models.Rule {
 	if c.children == nil {
 		return rules
 	}
-	v, e := c.children.Get("*")
-	if e {
+	v, exist := c.children.Get("*")
+	if exist {
 		rules = append(rules, v.(*childFilter).matchedRs(l[1:])...)
 	}
-	v, e = c.children.Get(l[0])
-	if e {
+	v, exist = c.children.Get(l[0])
+	if exist {
 		rules = append(rules, v.(*childFilter).matchedRs(l[1:])...)
 	}
 	return rules
 }
 
-// MatchedRules checks if a metric hit the hitCache, if hit return cache value
+// MatchedRules checks if a metric hit the hitCache, if hit return all hit rules
 func (f *Filter) MatchedRules(m *models.Metric) []*models.Rule {
 	rules := []*models.Rule{}
 	l := strings.Split(m.Name, ".")
-	v, e := f.children.Get("*")
-	if e {
+	v, exist := f.children.Get("*")
+	if exist {
 		rules = append(rules, v.(*childFilter).matchedRs(l[1:])...)
 	}
-	v, e = f.children.Get(l[0])
-	if e {
+	v, exist = f.children.Get(l[0])
+	if exist {
 		rules = append(rules, v.(*childFilter).matchedRs(l[1:])...)
 	}
 	return rules
