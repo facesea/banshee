@@ -16,7 +16,7 @@ type DB struct {
 	// DB
 	db *gorm.DB
 	// Cache
-	rc *rulesCache
+	RulesCache *rulesCache
 }
 
 // Open DB by fileName.
@@ -33,8 +33,8 @@ func Open(fileName string) (*DB, error) {
 		return nil, err
 	}
 	// Cache
-	db.rc = newRulesCache()
-	if err := db.rc.Init(db.db); err != nil {
+	db.RulesCache = newRulesCache()
+	if err := db.RulesCache.Init(db.db); err != nil {
 		return nil, err
 	}
 	return db, nil
@@ -56,9 +56,4 @@ func (db *DB) migrate() error {
 	user := &models.User{}
 	proj := &models.Project{}
 	return db.db.AutoMigrate(rule, user, proj).Error
-}
-
-// RulesCache handle.
-func (db *DB) RulesCache() *rulesCache {
-	return db.rc
 }

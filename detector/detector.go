@@ -39,7 +39,7 @@ func New(cfg *config.Config, db *storage.DB) *Detector {
 	d.cfg = cfg
 	d.db = db
 	d.hitCache = newCache()
-	d.db.Admin.RulesCache().OnChange(d.hitCache.Rc)
+	d.db.Admin.RulesCache.OnChange(d.hitCache.Rc)
 	d.cursor = cursor.New(cfg.Detector.Factor, cfg.LeastC())
 	return d
 }
@@ -121,7 +121,7 @@ func (d *Detector) match(m *models.Metric) bool {
 	// Check rules.
 	//FIXME use channel
 	var rules []*models.Rule
-	d.db.Admin.RulesCache().All(&rules)
+	d.db.Admin.RulesCache.All(&rules)
 	d.hitCache.updateRules()
 
 	// Check cache first.
