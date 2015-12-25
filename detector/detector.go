@@ -12,6 +12,7 @@ import (
 
 	"github.com/eleme/banshee/config"
 	"github.com/eleme/banshee/detector/cursor"
+	"github.com/eleme/banshee/filter"
 	"github.com/eleme/banshee/models"
 	"github.com/eleme/banshee/storage"
 	"github.com/eleme/banshee/storage/statedb"
@@ -26,7 +27,7 @@ type Detector struct {
 	// Storage
 	db *storage.DB
 	// Filter
-	hitCache *cache
+	filter *filter.Filter
 	// Cursor
 	cursor *cursor.Cursor
 	// Output
@@ -34,12 +35,13 @@ type Detector struct {
 }
 
 // New creates a detector.
-func New(cfg *config.Config, db *storage.DB) *Detector {
+func New(cfg *config.Config, db *storage.DB, filter *filter.Filter) *Detector {
 	d := new(Detector)
 	d.cfg = cfg
 	d.db = db
-	d.hitCache = newCache()
-	d.db.Admin.RulesCache.OnChange(d.hitCache.Rc)
+	d.filter = filter
+	d.db.Admin.RulesCache.OnAdd(d.filter.AddRule)
+	d.db.Admin.RulesCache.OnDel(d.filter.DelRule)
 	d.cursor = cursor.New(cfg.Detector.Factor, cfg.LeastC())
 	return d
 }
@@ -127,37 +129,19 @@ func (d *Detector) handle(conn net.Conn) {
 
 // Test whether a metric matches the rules.
 func (d *Detector) match(m *models.Metric) bool {
-	// Check rules.
-	//FIXME use channel
-	var rules []*models.Rule
-	d.db.Admin.RulesCache.All(&rules)
-	d.hitCache.updateRules()
-
-	// Check cache first.
-	hit, v := d.hitCache.hitCache(m)
-	if hit {
-		return v
+	rules := d.filter.MatchedRules(m)
+	if len(rules) == 0 {
+		log.Debug("%s hit no rules", m.Name)
+		return false
 	}
-
 	// Check blacklist.
 	for _, pattern := range d.cfg.Detector.BlackList {
 		if util.Match(pattern, m.Name) {
-			d.hitCache.setCache(m, false)
 			log.Debug("%s hit black pattern %s", m.Name, pattern)
 			return false
 		}
 	}
-
-	for _, rule := range rules {
-		if util.Match(rule.Pattern, m.Name) {
-			d.hitCache.setCache(m, true)
-			return true
-		}
-	}
-	// No rules was hit.
-	log.Debug("%s hit no rules", m.Name)
-	d.hitCache.setCache(m, false)
-	return false
+	return true
 }
 
 // Detect incoming metric with 3-sigma rule and fill the metric.Score.

@@ -13,14 +13,16 @@ type rulesCache struct {
 	// Cache
 	rules *safemap.SafeMap
 	// Listeners
-	lns []chan *models.Rule
+	lnsAdd []chan *models.Rule
+	lnsDel []chan *models.Rule
 }
 
 // newRulesCache creates a rulesCache.
 func newRulesCache() *rulesCache {
 	c := new(rulesCache)
 	c.rules = safemap.New()
-	c.lns = make([]chan *models.Rule, 0)
+	c.lnsAdd = make([]chan *models.Rule, 0)
+	c.lnsDel = make([]chan *models.Rule, 0)
 	return c
 }
 
@@ -65,7 +67,7 @@ func (c *rulesCache) Put(rule *models.Rule) bool {
 	r := rule.Copy()
 	r.Share()
 	c.rules.Set(rule.ID, r)
-	c.pushChanged(rule)
+	c.pushAdded(rule)
 	return true
 }
 
@@ -81,24 +83,40 @@ func (c *rulesCache) All(rules *[]*models.Rule) {
 func (c *rulesCache) Delete(rule *models.Rule) bool {
 	r, ok := c.rules.Pop(rule.ID)
 	if ok {
-		c.pushChanged(r.(*models.Rule).Copy())
+		c.pushDeled(r.(*models.Rule).Copy())
 		return true
 	}
 	return false
 }
 
-// OnChange listens rules changes.
-func (c *rulesCache) OnChange(ch chan *models.Rule) {
-	c.lns = append(c.lns, ch)
+// OnAdd listens rules changes.
+func (c *rulesCache) OnAdd(ch chan *models.Rule) {
+	c.lnsAdd = append(c.lnsAdd, ch)
 }
 
-// pushChanged pushes changed rule to listeners.
-func (c *rulesCache) pushChanged(rule *models.Rule) {
-	for _, ch := range c.lns {
+// OnDel listens rules changes.
+func (c *rulesCache) OnDel(ch chan *models.Rule) {
+	c.lnsDel = append(c.lnsDel, ch)
+}
+
+// pushAdded pushes changed rule to listeners.
+func (c *rulesCache) pushAdded(rule *models.Rule) {
+	for _, ch := range c.lnsAdd {
 		select {
 		case ch <- rule:
 		default:
-			log.Error("buffered rule changes is full, skipping..")
+			log.Error("buffered rule added is full, skipping..")
+		}
+	}
+}
+
+// pushDeled pushes changed rule to listeners.
+func (c *rulesCache) pushDeled(rule *models.Rule) {
+	for _, ch := range c.lnsDel {
+		select {
+		case ch <- rule:
+		default:
+			log.Error("buffered rule delete is full, skipping..")
 		}
 	}
 }
