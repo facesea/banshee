@@ -18,14 +18,6 @@ type Index struct {
 	Average float64
 }
 
-// CopyIfShared returns a copy if the index is shared.
-func (idx *Index) CopyIfShared() *Index {
-	if idx.IsShared() {
-		return idx.Copy()
-	}
-	return idx
-}
-
 // Copy the index.
 func (idx *Index) Copy() *Index {
 	i := &Index{}
@@ -35,10 +27,10 @@ func (idx *Index) Copy() *Index {
 
 // CopyTo copy the index to another.
 func (idx *Index) CopyTo(i *Index) {
-	idx.RLockIfShared()
-	defer idx.RUnlockIfShared()
-	i.LockIfShared()
-	defer i.UnlockIfShared()
+	idx.RLock()
+	defer idx.RUnlock()
+	i.Lock()
+	defer i.Unlock()
 	i.Name = idx.Name
 	i.Stamp = idx.Stamp
 	i.Score = idx.Score
@@ -47,21 +39,12 @@ func (idx *Index) CopyTo(i *Index) {
 
 // Equal tests the equality.
 func (idx *Index) Equal(i *Index) bool {
-	idx.RLockIfShared()
-	defer idx.RUnlockIfShared()
-	i.RLockIfShared()
-	defer i.RUnlockIfShared()
-	if i.Name != idx.Name {
-		return false
-	}
-	if i.Stamp != idx.Stamp {
-		return false
-	}
-	if i.Score != idx.Score {
-		return false
-	}
-	if i.Average != idx.Average {
-		return false
-	}
-	return true
+	idx.RLock()
+	defer idx.RUnlock()
+	i.RLock()
+	defer i.RUnlock()
+	return (idx.Name == i.Name &&
+		idx.Stamp == i.Stamp &&
+		idx.Score == i.Score &&
+		idx.Average == i.Average)
 }

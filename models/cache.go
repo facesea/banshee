@@ -2,53 +2,49 @@
 
 package models
 
-import "sync"
+import (
+	"errors"
+	"sync"
+)
 
-// cache is to guarantee goroutine-safety.
 type cache struct {
-	sync.RWMutex
-	// shared is true if the instance is shared betwen goroutines.
-	// it shouldn't be reset once set, and shouldn't be added to the global
-	// memory until it's set true.
+	lock sync.RWMutex
+	// shared is readonly once set
 	shared bool
 }
 
-// IsShared returns true if the instance is shared between goroutines.
-func (c *cache) IsShared() bool {
-	return c.shared
+// Share the instance between goroutines.
+func (c *cache) Share() {
+	if c.shared {
+		panic(errors.New("cache: instance already shared"))
+	}
+	c.shared = true
 }
 
-// MakeShared makes the instance shared as true.
-func (c *cache) MakeShared() {
-	if !c.IsShared() {
-		c.shared = true
+// Lock locks instance for writing.
+func (c *cache) Lock() {
+	if c.shared {
+		c.lock.Lock()
 	}
 }
 
-// Lock if shared.
-func (c *cache) LockIfShared() {
-	if c.IsShared() {
-		c.Lock()
+// Unlock unlocks instance writing.
+func (c *cache) Unlock() {
+	if c.shared {
+		c.lock.Unlock()
 	}
 }
 
-// Unlock if shared.
-func (c *cache) UnlockIfShared() {
-	if c.IsShared() {
-		c.Unlock()
+// RLock locks instance for reading.
+func (c *cache) RLock() {
+	if c.shared {
+		c.lock.RLock()
 	}
 }
 
-// Rlock if shared.
-func (c *cache) RLockIfShared() {
-	if c.IsShared() {
-		c.RLock()
-	}
-}
-
-// RUnlock if shared.
-func (c *cache) RUnlockIfShared() {
-	if c.IsShared() {
-		c.RUnlock()
+// RUnlock unlocks instance reading.
+func (c *cache) RUnlock() {
+	if c.shared {
+		c.lock.RUnlock()
 	}
 }

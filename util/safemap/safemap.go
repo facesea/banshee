@@ -57,6 +57,18 @@ func (m *SafeMap) Delete(key interface{}) bool {
 	return false
 }
 
+// Pop a value from map by key.
+func (m *SafeMap) Pop(key interface{}) (interface{}, bool) {
+	m.lock.Lock()
+	defer m.lock.Unlock()
+	v, ok := m.m[key]
+	if ok {
+		delete(m.m, key)
+		return v, true
+	}
+	return nil, false
+}
+
 // Items returns all items in the map.
 func (m *SafeMap) Items() map[interface{}]interface{} {
 	m.lock.RLock()

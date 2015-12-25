@@ -79,7 +79,7 @@ func (db *DB) Put(idx *models.Index) error {
 	// Use an copy.
 	idx = idx.Copy()
 	// Add to cache.
-	idx.MakeShared()
+	idx.Share()
 	db.m.Set(idx.Name, idx)
 	return nil
 }

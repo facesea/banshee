@@ -10,6 +10,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// RCache is rules cache.
 type RCache struct {
 	// Cache
 	rules *safemap.SafeMap
@@ -35,7 +36,10 @@ func (c *RCache) Init(db *gorm.DB) error {
 	}
 	// Load
 	for _, rule := range rules {
-		c.rules.Set(rule.ID, &rule)
+		// Share
+		r := &rule
+		r.Share()
+		c.rules.Set(rule.ID, r)
 	}
 	return nil
 }
@@ -51,6 +55,7 @@ func (c *RCache) Get(rule *models.Rule) bool {
 	if !ok {
 		return false
 	}
+	r.(*models.Rule).CopyTo(rule)
 	return true
 }
 
@@ -59,7 +64,9 @@ func (c *RCache) Put(rule *models.Rule) bool {
 	if c.rules.Has(rule.ID) {
 		return false
 	}
-	c.rules.Set(rule.ID, rule)
+	r := rule.Copy()
+	r.Share()
+	c.rules.Set(rule.ID, r)
 	c.pushChanged(rule)
 	return true
 }
@@ -68,21 +75,21 @@ func (c *RCache) Put(rule *models.Rule) bool {
 func (c *RCache) All(rules *[]*models.Rule) {
 	for _, v := range c.rules.Items() {
 		rule := v.(*models.Rule)
-		*rules = append(*rules, rule)
+		*rules = append(*rules, rule.Copy())
 	}
 }
 
 // Delete a rule from cache.
 func (c *RCache) Delete(rule *models.Rule) bool {
-	ok := c.rules.Delete(rule.ID)
+	r, ok := c.rules.Pop(rule.ID)
 	if ok {
-		c.pushChanged(rule)
+		c.pushChanged(r.(*models.Rule).Copy())
 		return true
 	}
 	return false
 }
 
-// OnChanges listens rules changes.
+// OnChange listens rules changes.
 func (c *RCache) OnChange(ch chan *models.Rule) {
 	c.lns = append(c.lns, ch)
 }
