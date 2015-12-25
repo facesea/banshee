@@ -1,5 +1,7 @@
 // Copyright 2015 Eleme Inc. All rights reserved.
 
+// Package filter implements fast wildcard like filtering based on suffix
+// tree.
 package filter
 
 import (
@@ -7,38 +9,51 @@ import (
 	"sync"
 
 	"github.com/eleme/banshee/models"
+	"github.com/eleme/banshee/storage"
 	"github.com/eleme/banshee/util/safemap"
 )
 
-// Filter is a safeMap contain hitCache for Detector
+// Filter is to filter metrics by rules.
 type Filter struct {
-	AddRule chan *models.Rule
-	DelRule chan *models.Rule
-	//children map[string]*childCache
+	// Rule changes
+	addRuleCh chan *models.Rule
+	delRuleCh chan *models.Rule
+	// Children
 	children *safemap.SafeMap
 }
 
-// childFilter is a suffix tree
+// childFilter is a suffix tree.
 type childFilter struct {
 	lock         *sync.RWMutex
 	matchedRules []*models.Rule
-	//children map[string]*childCache
-	children *safemap.SafeMap
+	children     *safemap.SafeMap
 }
 
 // Limit for buffered changed rules
 const bufferedChangedRulesLimit = 1000
 
-// NewFilter creates a new filter
-func NewFilter() (newFilter *Filter) {
-	newFilter = &Filter{
-		AddRule:  make(chan *models.Rule, bufferedChangedRulesLimit),
-		DelRule:  make(chan *models.Rule, bufferedChangedRulesLimit),
-		children: safemap.New(),
+// New creates a filter.
+func New() *Filter {
+	return &Filter{
+		addRuleCh: make(chan *models.Rule, bufferedChangedRulesLimit),
+		delRuleCh: make(chan *models.Rule, bufferedChangedRulesLimit),
+		children:  safemap.New(),
 	}
-	go newFilter.addRules()
-	go newFilter.delRules()
-	return newFilter
+}
+
+// Init from db.
+func (f *Filter) Init(db *storage.DB) {
+	// Listen rules changes.
+	db.Admin.RulesCache.OnAdd(f.addRuleCh)
+	db.Admin.RulesCache.OnDel(f.delRuleCh)
+	go f.addRules()
+	go f.delRules()
+	// Add rules from cache
+	var rules []*models.Rule
+	db.Admin.RulesCache.All(&rules)
+	for _, rule := range rules {
+		f.addRule(rule)
+	}
 }
 
 // newChildCache creates a new childCache
@@ -86,6 +101,7 @@ func (f *Filter) MatchedRules(m *models.Metric) []*models.Rule {
 	return rules
 }
 
+// addRule adds a new rule to the filter.
 func (f *Filter) addRule(rule *models.Rule) {
 	l := strings.Split(rule.Pattern, ".")
 	if !f.children.Has(l[0]) {
@@ -110,6 +126,7 @@ func (f *Filter) addRule(rule *models.Rule) {
 	v.(*childFilter).matchedRules = append(v.(*childFilter).matchedRules, rule)
 }
 
+// delRule deletes a rule from the filter.
 func (f *Filter) delRule(rule *models.Rule) {
 	l := strings.Split(rule.Pattern, ".")
 	if !f.children.Has(l[0]) {
@@ -139,17 +156,18 @@ func (f *Filter) delRule(rule *models.Rule) {
 	v.(*childFilter).matchedRules = rules
 }
 
-// updateRules clean dirty cache
+// addRules waits and add new rule to filter.
 func (f *Filter) addRules() {
 	for {
-		rule := <-f.AddRule
+		rule := <-f.addRuleCh
 		f.addRule(rule)
 	}
 }
 
+// delRules waits and delete rule from filter.
 func (f *Filter) delRules() {
 	for {
-		rule := <-f.DelRule
+		rule := <-f.delRuleCh
 		f.delRule(rule)
 	}
 }
