@@ -40,8 +40,6 @@ func New(cfg *config.Config, db *storage.DB, filter *filter.Filter) *Detector {
 	d.cfg = cfg
 	d.db = db
 	d.filter = filter
-	d.db.Admin.RulesCache.OnAdd(d.filter.AddRule)
-	d.db.Admin.RulesCache.OnDel(d.filter.DelRule)
 	d.cursor = cursor.New(cfg.Detector.Factor, cfg.LeastC())
 	return d
 }
@@ -116,7 +114,7 @@ func (d *Detector) handle(conn net.Conn) {
 				continue
 			}
 			elapsed := time.Since(startAt)
-			log.Debug("name=%s average=%.3f score=%.3f cost=%dμs", m.Name, m.Average, m.Score, elapsed.Nanoseconds()/1000)
+			log.Debug("%s %.3f (%dμs)", m.Name, m.Score, elapsed.Nanoseconds()/1000)
 			// Output
 			d.output(m)
 			// Store
