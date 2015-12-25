@@ -1,6 +1,9 @@
 {
 	"ImportPath": "github.com/eleme/banshee",
 	"GoVersion": "go1.5.2",
+	"Packages": [
+		"./webapp"
+	],
 	"Deps": [
 		{
 			"ImportPath": "github.com/golang/snappy",
@@ -13,6 +16,11 @@
 		{
 			"ImportPath": "github.com/jinzhu/inflection",
 			"Rev": "3272df6c21d04180007eb3349844c89a3856bc25"
+		},
+		{
+			"ImportPath": "github.com/julienschmidt/httprouter",
+			"Comment": "v1.1-10-g77a895a",
+			"Rev": "77a895ad01ebc98a4dc95d8355bc825ce80a56f6"
 		},
 		{
 			"ImportPath": "github.com/lib/pq/hstore",
