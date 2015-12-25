@@ -5,7 +5,6 @@ package admindb
 
 import (
 	"github.com/eleme/banshee/models"
-	"github.com/eleme/banshee/storage/admindb/rcache"
 	"github.com/jinzhu/gorm"
 	_ "github.com/mattn/go-sqlite3" // Import but no use
 )
@@ -17,7 +16,7 @@ type DB struct {
 	// DB
 	db *gorm.DB
 	// Cache
-	rc *rcache.RCache
+	rc *rulesCache
 }
 
 // Open DB by fileName.
@@ -34,7 +33,7 @@ func Open(fileName string) (*DB, error) {
 		return nil, err
 	}
 	// Cache
-	db.rc = rcache.New()
+	db.rc = newRulesCache()
 	if err := db.rc.Init(db.db); err != nil {
 		return nil, err
 	}
@@ -60,6 +59,6 @@ func (db *DB) migrate() error {
 }
 
 // RulesCache handle.
-func (db *DB) RulesCache() *rcache.RCache {
+func (db *DB) RulesCache() *rulesCache {
 	return db.rc
 }
