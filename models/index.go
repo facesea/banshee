@@ -18,6 +18,16 @@ type Index struct {
 	Average float64
 }
 
+// WriteMetric writes metric to index.
+func (idx *Index) WriteMetric(m *Metric) {
+	idx.Lock()
+	defer idx.Unlock()
+	idx.Name = m.Name
+	idx.Stamp = m.Stamp
+	idx.Score = m.Score
+	idx.Average = m.Average
+}
+
 // Copy the index.
 func (idx *Index) Copy() *Index {
 	i := &Index{}

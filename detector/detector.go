@@ -80,6 +80,7 @@ func (d *Detector) Start() {
 // Handle a connection, it will filter the mertics by rules and detect whether
 // the metrics are anomalies.
 func (d *Detector) handle(conn net.Conn) {
+	// New conn
 	addr := conn.RemoteAddr()
 	defer func() {
 		conn.Close()
@@ -94,6 +95,7 @@ func (d *Detector) handle(conn net.Conn) {
 			break
 		}
 		startAt := time.Now()
+		// Parse
 		line := scanner.Text()
 		m, err := parseMetric(line)
 		if err != nil {
@@ -103,7 +105,9 @@ func (d *Detector) handle(conn net.Conn) {
 			log.Error("parse '%s': %v, skipping..", line, err)
 			continue
 		}
+		// Filter
 		if d.match(m) {
+			// Detect
 			err = d.detect(m)
 			if err != nil {
 				log.Error("detect: %v, skipping..", err)
@@ -111,7 +115,12 @@ func (d *Detector) handle(conn net.Conn) {
 			}
 			elapsed := time.Since(startAt)
 			log.Debug("name=%s average=%.3f score=%.3f cost=%dμs", m.Name, m.Average, m.Score, elapsed.Nanoseconds()/1000)
+			// Output
 			d.output(m)
+			// Store
+			if err := d.store(m); err != nil {
+				log.Error("store metric %s: %v, skiping..", m.Name, err)
+			}
 		}
 	}
 }
@@ -167,4 +176,19 @@ func (d *Detector) detect(m *models.Metric) error {
 	}
 	// Put the next state to db.
 	return d.db.State.Put(m, n)
+}
+
+// store detected metrics.
+func (d *Detector) store(m *models.Metric) error {
+	// Metric.
+	if err := d.db.Metric.Put(m); err != nil {
+		return err
+	}
+	// Index.
+	idx := &models.Index{}
+	idx.WriteMetric(m)
+	if err := d.db.Index.Put(idx); err != nil {
+		return err
+	}
+	return nil
 }
