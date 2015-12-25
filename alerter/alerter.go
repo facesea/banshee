@@ -67,7 +67,7 @@ func (al *Alerter) work() {
 		}
 		// Test with rules.
 		var rules []*models.Rule
-		al.db.Admin.RulesCache().All(&rules)
+		al.db.Admin.RulesCache.All(&rules)
 		for _, rule := range rules {
 			// Test
 			if !rule.Test(metric) {
