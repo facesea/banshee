@@ -46,15 +46,9 @@ type Rule struct {
 
 // IsValid returns true if rule.When is valid.
 func (rule *Rule) IsValid() bool {
+	rule.RLock()
+	defer rule.RUnlock()
 	return rule.When >= 0x1 && rule.When <= 0x3F
-}
-
-// CopyIfShared returns a copy if the rule is shared.
-func (rule *Rule) CopyIfShared() *Rule {
-	if rule.IsShared() {
-		return rule.Copy()
-	}
-	return rule
 }
 
 // Copy the rule.
@@ -66,14 +60,10 @@ func (rule *Rule) Copy() *Rule {
 
 // CopyTo copy the rule to another.
 func (rule *Rule) CopyTo(r *Rule) {
-	if rule.IsShared() {
-		rule.RLock()
-		defer rule.RUnlock()
-	}
-	if r.IsShared() {
-		r.Lock()
-		defer r.Unlock()
-	}
+	rule.RLock()
+	defer rule.RUnlock()
+	r.Lock()
+	defer r.Unlock()
 	r.ID = rule.ID
 	r.ProjectID = rule.ProjectID
 	r.Pattern = rule.Pattern
@@ -83,45 +73,27 @@ func (rule *Rule) CopyTo(r *Rule) {
 	r.TrustLine = rule.TrustLine
 }
 
-// Equal tests the equality.
+// Equal tests rule equality
 func (rule *Rule) Equal(r *Rule) bool {
-	rule.RLockIfShared()
-	defer rule.RUnlockIfShared()
-	r.RLockIfShared()
-	defer r.RUnlockIfShared()
-	if rule.ID != r.ID {
-		return false
-	}
-	if rule.ProjectID != r.ProjectID {
-		return false
-	}
-	if rule.Pattern != r.Pattern {
-		return false
-	}
-	if rule.When != r.When {
-		return false
-	}
-	if rule.ThresholdMax != r.ThresholdMax {
-		return false
-	}
-	if rule.ThresholdMin != r.ThresholdMin {
-		return false
-	}
-	if rule.TrustLine != r.TrustLine {
-		return false
-	}
-	return true
-}
-
-// GetProjectID returns the project id of the rule.
-func (rule *Rule) GetProjectID() int {
-	rule.RLockIfShared()
-	defer rule.RUnlockIfShared()
-	return rule.ProjectID
+	rule.RLock()
+	defer rule.RUnlock()
+	r.RLock()
+	defer rule.RUnlock()
+	return (r.ID == rule.ID &&
+		r.ProjectID == rule.ProjectID &&
+		r.Pattern == rule.Pattern &&
+		r.When == rule.When &&
+		r.ThresholdMax == rule.ThresholdMax &&
+		r.ThresholdMin == rule.ThresholdMin &&
+		r.TrustLine == rule.TrustLine)
 }
 
 // Test returns true if the metric hits this rule.
 func (rule *Rule) Test(m *Metric) bool {
+	// RLock if shard.
+	rule.RLock()
+	defer rule.RUnlock()
+	// Pattern matching
 	if !util.Match(m.Name, rule.Pattern) {
 		// Not match this rule.
 		return false

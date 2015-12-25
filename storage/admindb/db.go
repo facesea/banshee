@@ -5,37 +5,61 @@ package admindb
 
 import (
 	"github.com/eleme/banshee/models"
-	"github.com/eleme/banshee/storage/admindb/cache"
-	"github.com/eleme/banshee/storage/admindb/persist"
+	"github.com/eleme/banshee/storage/admindb/rcache"
+	"github.com/jinzhu/gorm"
+	_ "github.com/mattn/go-sqlite3" // Import but no use
 )
+
+const dialect = "sqlite3"
 
 // DB handles admin storage.
 type DB struct {
+	// DB
+	db *gorm.DB
 	// Cache
-	cache *cache.Cache
-	// Persist
-	persist *persist.Persist
-	// Signals
-	ruleChanges []chan *models.Rule
+	rc *rcache.RCache
 }
 
-// Open a DB by fileName.
+// Open DB by fileName.
 func Open(fileName string) (*DB, error) {
-	db := new(DB)
-	db.cache = cache.New()
-	var err error
-	db.persist, err = persist.Open(fileName)
+	// Open
+	gdb, err := gorm.Open(dialect, fileName)
 	if err != nil {
 		return nil, err
 	}
-	// Init cache.
-	if err := db.cache.Init(db.persist); err != nil {
+	db := new(DB)
+	db.db = &gdb
+	// Migration
+	if err := db.migrate(); err != nil {
+		return nil, err
+	}
+	// Cache
+	db.rc = rcache.New()
+	if err := db.rc.Init(db.db); err != nil {
 		return nil, err
 	}
 	return db, nil
 }
 
-// Close the DB.
+// Close DB.
 func (db *DB) Close() error {
-	return db.persist.Close()
+	return db.db.Close()
+}
+
+// DB returns db handle.
+func (db *DB) DB() *gorm.DB {
+	return db.db
+}
+
+// migrate db schema.
+func (db *DB) migrate() error {
+	rule := &models.Rule{}
+	user := &models.User{}
+	proj := &models.Project{}
+	return db.db.AutoMigrate(rule, user, proj).Error
+}
+
+// RulesCache handle.
+func (db *DB) RulesCache() *rcache.RCache {
+	return db.rc
 }

@@ -38,56 +38,69 @@ type msg struct {
 
 // New creates a alerter.
 func New(cfg *config.Config, db *storage.DB) *Alerter {
-	alerter := new(Alerter)
-	alerter.cfg = cfg
-	alerter.db = db
-	alerter.In = make(chan *models.Metric, bufferedMetricResultsLimit)
-	alerter.m = safemap.New()
-	return alerter
+	al := new(Alerter)
+	al.cfg = cfg
+	al.db = db
+	al.In = make(chan *models.Metric, bufferedMetricResultsLimit)
+	al.m = safemap.New()
+	return al
 }
 
 // Start several goroutines to wait for detected metrics, then check each
 // metric with all the rules, the configured shell command will be executed
 // once a rule is hit.
-func (alerter *Alerter) Start() {
-	for i := 0; i < alerter.cfg.Alerter.Workers; i++ {
-		go alerter.work()
+func (al *Alerter) Start() {
+	for i := 0; i < al.cfg.Alerter.Workers; i++ {
+		go al.work()
 	}
 }
 
 // work waits for detected metrics, then check each metric with all the
 // rules, the configured shell command will be executed once a rule is hit.
-func (alerter *Alerter) work() {
+func (al *Alerter) work() {
 	for {
-		metric := <-alerter.In
+		metric := <-al.In
 		// Check interval.
-		v, ok := alerter.m.Get(metric.Name)
-		if ok && metric.Stamp-v.(uint32) < alerter.cfg.Alerter.Interval {
+		v, ok := al.m.Get(metric.Name)
+		if ok && metric.Stamp-v.(uint32) < al.cfg.Alerter.Interval {
 			return
 		}
 		// Test with rules.
-		var projs []*models.Project
-		alerter.db.Admin.GetProjects(&projs)
-		for _, proj := range projs {
-			for _, rule := range proj.Rules {
-				if rule.Test(metric) {
-					// Tested ok.
-					for _, user := range proj.Users {
-						// Send message to each user.
-						d := &msg{
-							Project: proj,
-							Metric:  metric,
-							User:    user,
-						}
-						b, _ := json.Marshal(d)
-						cmd := exec.Command(alerter.cfg.Alerter.Command, string(b))
-						if err := cmd.Run(); err != nil {
-							log.Error("exec %s: %v", alerter.cfg.Alerter.Command, err)
-						}
-					}
-					// Add to stamp map.
-					alerter.m.Set(metric.Name, metric.Stamp)
+		var rules []*models.Rule
+		al.db.Admin.RulesCache().All(&rules)
+		for _, rule := range rules {
+			// Test
+			if !rule.Test(metric) {
+				continue
+			}
+			// Project
+			var proj *models.Project
+			if err := al.db.Admin.DB().Model(rule).Related(proj); err != nil {
+				log.Error("project not found: %v, skiping..", err)
+				continue
+			}
+			// Users
+			var users []models.User
+			if err := al.db.Admin.DB().Model(proj).Related(&users, "Users"); err != nil {
+				log.Error("get users: %v, skiping..", err)
+				continue
+			}
+			// Send
+			for _, user := range users {
+				d := &msg{
+					Project: proj,
+					Metric:  metric,
+					User:    &user,
 				}
+				// Exec
+				b, _ := json.Marshal(d)
+				cmd := exec.Command(al.cfg.Alerter.Command, string(b))
+				if err := cmd.Run(); err != nil {
+					log.Error("exec %s: %v", al.cfg.Alerter.Command, err)
+				}
+			}
+			if len(users) != 0 {
+				al.m.Set(metric.Name, metric.Stamp)
 			}
 		}
 	}
