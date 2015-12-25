@@ -8,6 +8,7 @@ import (
 	"bufio"
 	"fmt"
 	"net"
+	"path/filepath"
 	"time"
 
 	"github.com/eleme/banshee/config"
@@ -16,7 +17,6 @@ import (
 	"github.com/eleme/banshee/models"
 	"github.com/eleme/banshee/storage"
 	"github.com/eleme/banshee/storage/statedb"
-	"github.com/eleme/banshee/util"
 	"github.com/eleme/banshee/util/log"
 )
 
@@ -129,6 +129,7 @@ func (d *Detector) handle(conn net.Conn) {
 
 // Test whether a metric matches the rules.
 func (d *Detector) match(m *models.Metric) bool {
+	// Check rules.
 	rules := d.filter.MatchedRules(m)
 	if len(rules) == 0 {
 		log.Debug("%s hit no rules", m.Name)
@@ -136,7 +137,8 @@ func (d *Detector) match(m *models.Metric) bool {
 	}
 	// Check blacklist.
 	for _, pattern := range d.cfg.Detector.BlackList {
-		if util.Match(pattern, m.Name) {
+		ok, err := filepath.Match(pattern, m.Name)
+		if err == nil && ok {
 			log.Debug("%s hit black pattern %s", m.Name, pattern)
 			return false
 		}

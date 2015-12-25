@@ -5,9 +5,9 @@ package indexdb
 
 import (
 	"github.com/eleme/banshee/models"
-	"github.com/eleme/banshee/util"
 	"github.com/eleme/banshee/util/safemap"
 	"github.com/syndtr/goleveldb/leveldb"
+	"path/filepath"
 )
 
 // DB handles indexes storage.
@@ -110,7 +110,8 @@ func (db *DB) Filter(pattern string) (l []*models.Index) {
 	for k, v := range m {
 		idx := v.(*models.Index)
 		name := k.(string)
-		if util.Match(pattern, name) {
+		ok, err := filepath.Match(pattern, name)
+		if err == nil && ok {
 			l = append(l, idx.Copy())
 		}
 	}

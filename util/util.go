@@ -14,23 +14,6 @@ func ToFixed(n float64, prec int) string {
 	return strings.TrimRight(s, "0")
 }
 
-// Match tests whether a string matches a wildcard pattern.
-// Only one or multiple character "*" are supported.
-func Match(p, s string) bool {
-	l := strings.Split(p, "*")
-	if len(l) == 1 {
-		return s == p
-	}
-	for i, j := 0, 0; i < len(l); i++ {
-		j = strings.Index(s[j:], l[i])
-		if j < 0 {
-			return false
-		}
-		j += len(l[i])
-	}
-	return true
-}
-
 // IsFileExist test whether a filepath is exist.
 func IsFileExist(fileName string) bool {
 	_, err := os.Stat(fileName)
