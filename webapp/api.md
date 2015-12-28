@@ -4,7 +4,7 @@ API
 Config
 ------
 
-1. Get config.
+### Get config.
 
 Request:
 
@@ -41,7 +41,7 @@ Response:
 Project
 -------
 
-1. Get Project
+### Get Project
 
 Request:
 
@@ -58,7 +58,7 @@ Response:
 }
 ```
 
-2. Create project
+### Create project
 
 Request:
 
@@ -69,7 +69,7 @@ POST /api/project -d
 }
 ```
 
-3. Update project
+### Update project
 
 Request:
 
@@ -80,7 +80,7 @@ PATCH /api/project/:id/ -d
 }
 ```
 
-3. Delete Project
+### Delete Project
 
 Request:
 
@@ -88,7 +88,7 @@ Request:
 DELETE /api/project/:id
 ```
 
-4. Get rules of a project.
+### Get rules of a project.
 
 Request:
 
@@ -105,7 +105,7 @@ Response:
 ]
 ```
 
-5. Get users of a project.
+### Get users of a project.
 
 Request:
 
@@ -122,7 +122,7 @@ Response:
 ]
 ```
 
-6. Add user to a project.
+### Add user to a project.
 
 Request:
 
