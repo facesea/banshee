@@ -65,48 +65,65 @@ func newChildFilter() *childFilter {
 	}
 }
 
+// MatchedRules checks if a metric hit, l is the unchecked words list of the metric in order
 func (c *childFilter) matchedRs(l []string) []*models.Rule {
+	// when len(l)==0 means all words are checked and passed, return all matched rules
 	if len(l) == 0 {
 		c.lock.RLock()
 		defer c.lock.RUnlock()
 		return c.matchedRules
 	}
 	rules := []*models.Rule{}
+	//when next level is nil,return empty rules slice
 	if c.children == nil {
 		return rules
 	}
+	//check if this level has a "*" node
 	v, exist := c.children.Get("*")
 	if exist {
+		//when has a "*" node, the suffix tree matched the metric words by now, so goto next
+		// level and append matched rules to slice
 		rules = append(rules, v.(*childFilter).matchedRs(l[1:])...)
 	}
+	//check if this level has a same word node
 	v, exist = c.children.Get(l[0])
 	if exist {
+		//when has the node, matched by now, goto next level and append matched rules to slice
 		rules = append(rules, v.(*childFilter).matchedRs(l[1:])...)
 	}
+	//no matched node return empty rules slice, else return all matched rules
 	return rules
 }
 
 // MatchedRules checks if a metric hit the hitCache, if hit return all hit rules
 func (f *Filter) MatchedRules(m *models.Metric) []*models.Rule {
+	//split the metric into ordered words
 	rules := []*models.Rule{}
 	l := strings.Split(m.Name, ".")
+	//check if root of the rules suffix tree has a "*" node
 	v, exist := f.children.Get("*")
 	if exist {
+		//when root has a "*" node, goto next level
 		rules = append(rules, v.(*childFilter).matchedRs(l[1:])...)
 	}
+	//check if root of the rules suffix tree has the same node to the first word of the metric
 	v, exist = f.children.Get(l[0])
 	if exist {
+		//when has the same word node, goto next level
 		rules = append(rules, v.(*childFilter).matchedRs(l[1:])...)
 	}
 	return rules
 }
 
-// addRule adds a new rule to the filter.
+// addRule add a rule to the suffix tree
 func (f *Filter) addRule(rule *models.Rule) {
+	//split the rule.Pattern into ordered words
 	l := strings.Split(rule.Pattern, ".")
+	//if suffix tree root do not has the same node, add it
 	if !f.children.Has(l[0]) {
 		f.children.Set(l[0], newChildFilter())
 	}
+	//check if suffix has the same word of the pattern by level step, if not add it
 	v, _ := f.children.Get(l[0])
 	l = l[1:]
 	for len(l) > 0 {
@@ -126,7 +143,7 @@ func (f *Filter) addRule(rule *models.Rule) {
 	v.(*childFilter).matchedRules = append(v.(*childFilter).matchedRules, rule)
 }
 
-// delRule deletes a rule from the filter.
+// delRule delete a rule from the suffix tree
 func (f *Filter) delRule(rule *models.Rule) {
 	l := strings.Split(rule.Pattern, ".")
 	if !f.children.Has(l[0]) {
