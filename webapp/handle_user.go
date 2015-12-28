@@ -101,3 +101,29 @@ func createUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		}
 	}
 }
+
+// deleteUser deletes a user.
+func deleteUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	// Params
+	id, err := strconv.Atoi(ps.ByName("id"))
+	if err != nil {
+		ResponseError(w, ErrProjectID)
+		return
+	}
+	// Delete.
+	if err := db.Admin.DB().Delete(&models.User{ID: id}).Error; err != nil {
+		switch err {
+		case gorm.RecordNotFound:
+			ResponseError(w, ErrUserNotFound)
+			return
+		default:
+			ResponseError(w, NewUnexceptedWebError(err))
+			return
+		}
+	}
+}
+
+// updateUser updates a user.
+func updateUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+
+}

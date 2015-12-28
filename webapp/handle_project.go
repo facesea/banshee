@@ -189,6 +189,7 @@ type addProjectUserRequest struct {
 	Name string `json:name`
 }
 
+// addProjectUser adds a user to a project.
 func addProjectUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	// Params
 	id, err := strconv.Atoi(ps.ByName("id"))
@@ -240,4 +241,8 @@ func addProjectUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params
 			return
 		}
 	}
+}
+
+// deleteProjectUser deletes a user from a project.
+func deleteProjectUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 }
