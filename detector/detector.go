@@ -71,7 +71,7 @@ func (d *Detector) Start() {
 	for {
 		conn, err := ln.Accept()
 		if err != nil {
-			log.Fatal("failed to accept new conn: %v", err)
+			log.Fatal("accept conn: %v", err)
 		}
 		go d.handle(conn)
 	}
