@@ -5,7 +5,7 @@ package models
 // User is the alerter message receiver.
 type User struct {
 	// ID in db.
-	ID int `gorm:"primary_key" json:"-"`
+	ID int `gorm:"primary_key" json:"id"`
 	// Name
 	Name string `sql:"not null;unique" json:"name"`
 	// Email

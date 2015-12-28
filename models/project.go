@@ -5,7 +5,7 @@ package models
 // Project is a rules group.
 type Project struct {
 	// ID in db.
-	ID int `json:"-"`
+	ID int `json:"id"`
 	// Name
 	Name string `sql:"not null";unique json:"name"`
 	// Project may have many rules, they shouldn't be shared.
