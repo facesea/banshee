@@ -174,6 +174,13 @@ func getProjectUsers(w http.ResponseWriter, r *http.Request, ps httprouter.Param
 		ResponseError(w, NewUnexceptedWebError(err))
 		return
 	}
+	// Universals
+	var univs []models.User
+	if err := db.Admin.DB().Where("universal = ?", true).Find(&univs).Error; err != nil {
+		ResponseError(w, NewUnexceptedWebError(err))
+		return
+	}
+	users = append(users, univs...)
 	ResponseJSON(w, users)
 }
 
