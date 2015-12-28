@@ -16,4 +16,6 @@ type User struct {
 	EnablePhone bool   `json:"enablePhone"`
 	// Users can subscribe many projects.
 	Projects []*Project `gorm:"many2many:project_users" json:"-"`
+	// Universal
+	Universal bool `sql:"index" json:"universal"`
 }
