@@ -17,27 +17,27 @@ type Rule struct {
 	// Rule may be cached.
 	cache `sql:"-"`
 	// ID in db.
-	ID int `gorm:"primary_key"`
+	ID int `gorm:"primary_key" json:"id"`
 	// Project belongs to
-	ProjectID int `sql:"index;not null"`
+	ProjectID int `sql:"index;not null" json:"projectId"`
 	// Pattern is a wildcard string
-	Pattern string `sql:"size:400;not null;unique"`
+	Pattern string `sql:"size:400;not null;unique" json:"pattern"`
 	// Alerting condition, described as the logic OR result of basic conditions
 	// above:
 	//   When = condition1 | condition2
 	// example:
 	//   0x3 = WhenTrendUp | WhenTrendDown
-	When int
+	When int `json:when`
 	// Optional thresholds data, only used if the rule condition is about
 	// threshold. Although we really don't need any thresholds for trending
 	// analyzation and alertings, but we still offer a way to alert by
 	// thresholds.
-	ThresholdMax float64
-	ThresholdMin float64
+	ThresholdMax float64 `json:"thresholdMax"`
+	ThresholdMin float64 `json:thresholdMin`
 	// Never alert for values below this line. The mainly reason to provide
 	// this option is to ignore the volatility of values with a very small
 	// average level.
-	TrustLine float64
+	TrustLine float64 `json:trustLine`
 }
 
 // IsValid returns true if rule.When is valid.
