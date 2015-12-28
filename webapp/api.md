@@ -100,9 +100,8 @@ Response:
 
 ```json
 [
-  {id: 1, when: 1,...},
-  {id: 2, when: 1,...},
-  ...
+  {"id": 1, "when": 1,...},
+  {"id": 2, "when": 1,...}
 ]
 ```
 
@@ -119,7 +118,7 @@ Response:
 ```json
 [
   {"id": 1, "name": "xiaoming"},
-  ...
+  {"id": 2, "name": "xiaohong"}
 ]
 ```
 
