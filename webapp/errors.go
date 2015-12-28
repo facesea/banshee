@@ -32,6 +32,8 @@ var (
 	// User errors.
 	ErrUserID            = NewWebErrorWithText(http.StatusBadRequest, "Bad user id")
 	ErrUserName          = NewWebErrorWithText(http.StatusBadRequest, "Bad user name")
+	ErrUserEmail         = NewWebErrorWithText(http.StatusBadRequest, "Bad user email")
+	ErrUserPhone         = NewWebErrorWithText(http.StatusBadRequest, "Bad user phone")
 	ErrUserNotFound      = NewWebErrorWithText(http.StatusNotFound, "User not found")
 	ErrDuplicateUserName = NewWebErrorWithText(http.StatusForbidden, "Duplicate user name")
 )

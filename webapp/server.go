@@ -40,6 +40,8 @@ func Start(c *config.Config, d *storage.DB) {
 	router.GET("/api/project/:id/rules", getProjectRules)
 	router.GET("/api/project/:id/users", getProjectUsers)
 	router.POST("/api/project/:id/user", addProjectUser)
+	router.GET("/api/user/:id", getUser)
+	router.POST("/api/user", createUser)
 	// Serve
 	addr := fmt.Sprintf("0.0.0.0:%d", cfg.Webapp.Port)
 	log.Info("serve on %s..", addr)
