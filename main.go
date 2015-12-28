@@ -56,8 +56,7 @@ func main() {
 	alerter := alerter.New(cfg, db, filter)
 	alerter.Start()
 	// Webapp
-	webapp.Init(cfg, db)
-	go webapp.Serve()
+	go webapp.Start(cfg, db)
 	// Detector
 	detector := detector.New(cfg, db, filter)
 	detector.Out(alerter.In)
