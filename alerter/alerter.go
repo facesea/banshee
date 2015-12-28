@@ -88,6 +88,13 @@ func (al *Alerter) work() {
 				log.Error("get users: %v, skiping..", err)
 				continue
 			}
+			// Universals
+			var univs []models.User
+			if err := al.db.Admin.DB().Where("universal = ?", true).Find(&univs); err != nil {
+				log.Error("get universal users: %v, skiping..", err)
+				continue
+			}
+			users = append(users, univs...)
 			// Send
 			for _, user := range users {
 				d := &msg{
