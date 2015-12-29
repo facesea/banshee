@@ -133,6 +133,14 @@ POST /api/project/:id/user -d
 }
 ```
 
+### Delete user from a project.
+
+Request:
+
+```
+DELETE /api/project/:id/user/:user_id
+```
+
 User
 ----
 

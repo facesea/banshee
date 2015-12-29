@@ -40,7 +40,7 @@ func Start(c *config.Config, d *storage.DB) {
 	router.GET("/api/project/:id/rules", getProjectRules)
 	router.GET("/api/project/:id/users", getProjectUsers)
 	router.POST("/api/project/:id/user", addProjectUser)
-	router.DELETE("/api/project/:id/user/:user_id", deleteProjectUser) // TODO
+	router.DELETE("/api/project/:id/user/:user_id", deleteProjectUser)
 	router.GET("/api/user/:id", getUser)
 	router.POST("/api/user", createUser)
 	router.DELETE("/api/user/:id", deleteUser)
