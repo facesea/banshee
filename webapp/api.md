@@ -212,3 +212,42 @@ Request:
 ```
 DELETE /api/rule/:id
 ```
+
+Metric
+------
+
+### Get Metric Values
+
+Request:
+
+```
+GET /api/metric/:name/:start/:stop
+```
+
+Response:
+
+```
+[
+    {"name": "timer.mean_90.x", stamp: ..},
+    {"name": "timer.mean_90.x", stamp: ..}
+    ...
+]
+```
+
+### Get Metric Indexes
+
+Request:
+
+```
+GET /api/metric/indexes?limit=50&sort=up&pattern=timer.*
+GET /api/metric/indexes?limit=50&sort=up&project=12
+```
+
+Response:
+
+```
+[
+    {"name": "timer.foo", "score": 1.2},
+    ...
+]
+```
