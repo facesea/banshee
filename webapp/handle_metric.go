@@ -41,6 +41,9 @@ func getMetricIndexes(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 		projID = 0
 	}
 	pattern := r.URL.Query().Get("pattern")
+	if pattern == "" {
+		pattern = "*"
+	}
 	// Index
 	var idxs []*models.Index
 	if projID > 0 {
