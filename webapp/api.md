@@ -41,6 +41,14 @@ Response:
 Project
 -------
 
+### Get all projects
+
+Request:
+
+```
+GET /api/projects
+```
+
 ### Get Project
 
 Request:

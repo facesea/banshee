@@ -33,6 +33,7 @@ func Start(c *config.Config, d *storage.DB) {
 	// Routes
 	router := httprouter.New()
 	router.GET("/api/config", getConfig)
+	router.GET("/api/projects", getProjects)
 	router.GET("/api/project/:id", getProject)
 	router.POST("/api/project", createProject)
 	router.PATCH("/api/project/:id", updateProject)

@@ -11,6 +11,16 @@ import (
 	"strconv"
 )
 
+// getProjects returns all projects.
+func getProjects(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	var projs []models.Project
+	if err := db.Admin.DB().Find(&projs).Error; err != nil {
+		ResponseError(w, NewUnexceptedWebError(err))
+		return
+	}
+	ResponseJSON(w, projs)
+}
+
 // getProject returns project by id.
 func getProject(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	// Params
