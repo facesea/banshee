@@ -82,6 +82,8 @@ func createRule(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 			return
 		}
 	}
+	// Cache
+	db.Admin.RulesCache.Put(rule)
 }
 
 // deleteRule deletes a rule from a project.
@@ -103,4 +105,6 @@ func deleteRule(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 			return
 		}
 	}
+	// Cache
+	db.Admin.RulesCache.Delete(&models.Rule{ID: id})
 }
