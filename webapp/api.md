@@ -185,3 +185,30 @@ POST /api/user -d
 ```
 DELETE /api/user/:id
 ```
+
+Rule
+----
+
+### Create Rule
+
+Request:
+
+```
+POST /api/rule -d
+{
+    "projectID": 12,
+    "pattern": "timer.abc.*",
+    "when": 1,
+    "thresholdMax": 0,
+    "thresholdMin": 0,
+    "trustLine": 1.0
+}
+```
+
+### Delete Rule
+
+Request:
+
+```
+DELETE /api/rule/:id
+```
