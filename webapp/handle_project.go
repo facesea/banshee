@@ -245,4 +245,50 @@ func addProjectUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params
 
 // deleteProjectUser deletes a user from a project.
 func deleteProjectUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	// Params
+	id, err := strconv.Atoi(ps.ByName("id"))
+	if err != nil {
+		ResponseError(w, ErrProjectID)
+		return
+	}
+	userID, err := strconv.Atoi(ps.ByName("user_id"))
+	if err != nil {
+		ResponseError(w, ErrUserID)
+		return
+	}
+	// Find user.
+	user := &models.User{}
+	if err := db.Admin.DB().First(user, userID).Error; err != nil {
+		switch err {
+		case gorm.RecordNotFound:
+			ResponseError(w, ErrUserNotFound)
+			return
+		default:
+			ResponseError(w, NewUnexceptedWebError(err))
+			return
+		}
+	}
+	// Find proj.
+	proj := &models.Project{}
+	if err := db.Admin.DB().First(proj, id).Error; err != nil {
+		switch err {
+		case gorm.RecordNotFound:
+			ResponseError(w, ErrProjectNotFound)
+			return
+		default:
+			ResponseError(w, NewUnexceptedWebError(err))
+			return
+		}
+	}
+	// Delete user.
+	if err := db.Admin.DB().Model(proj).Association("Users").Delete(user).Error; err != nil {
+		switch err {
+		case gorm.RecordNotFound:
+			ResponseError(w, ErrNotFound)
+			return
+		default:
+			ResponseError(w, NewUnexceptedWebError(err))
+			return
+		}
+	}
 }
