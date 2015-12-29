@@ -13,6 +13,16 @@ import (
 	"strings"
 )
 
+// getUsers returns all users.
+func getUsers(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	var users []models.User
+	if err := db.Admin.DB().Find(&users).Error; err != nil {
+		ResponseError(w, NewUnexceptedWebError(err))
+		return
+	}
+	ResponseJSON(w, users)
+}
+
 // getUser returns user by id.
 func getUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	// Params
