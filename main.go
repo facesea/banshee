@@ -4,6 +4,8 @@ package main
 
 import (
 	"flag"
+	"fmt"
+	"os"
 	"runtime"
 
 	"github.com/eleme/banshee/alerter"
@@ -13,6 +15,7 @@ import (
 	"github.com/eleme/banshee/filter"
 	"github.com/eleme/banshee/storage"
 	"github.com/eleme/banshee/util/log"
+	"github.com/eleme/banshee/version"
 	"github.com/eleme/banshee/webapp"
 )
 
@@ -20,7 +23,13 @@ func main() {
 	// Arguments
 	fileName := flag.String("c", "config.json", "config file")
 	debug := flag.Bool("d", false, "debug mode")
+	vers := flag.Bool("v", false, "version")
 	flag.Parse()
+	// Version
+	if *vers {
+		fmt.Fprintln(os.Stderr, version.Version)
+		os.Exit(1)
+	}
 	// Logging
 	log.SetName("banshee")
 	if *debug {
