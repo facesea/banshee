@@ -33,6 +33,7 @@ func Start(c *config.Config, d *storage.DB) {
 	// Routes
 	router := httprouter.New()
 	router.GET("/api/config", getConfig)
+	router.GET("/api/projects", getProjects)
 	router.GET("/api/project/:id", getProject)
 	router.POST("/api/project", createProject)
 	router.PATCH("/api/project/:id", updateProject)
@@ -41,6 +42,7 @@ func Start(c *config.Config, d *storage.DB) {
 	router.GET("/api/project/:id/users", getProjectUsers)
 	router.POST("/api/project/:id/user", addProjectUser)
 	router.DELETE("/api/project/:id/user/:user_id", deleteProjectUser)
+	router.GET("/api/users", getUsers)
 	router.GET("/api/user/:id", getUser)
 	router.POST("/api/user", createUser)
 	router.DELETE("/api/user/:id", deleteUser)

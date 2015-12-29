@@ -41,6 +41,14 @@ Response:
 Project
 -------
 
+### Get all projects
+
+Request:
+
+```
+GET /api/projects
+```
+
 ### Get Project
 
 Request:
@@ -143,6 +151,14 @@ DELETE /api/project/:id/user/:user_id
 
 User
 ----
+
+### Get Users.
+
+Request:
+
+```
+GET /api/users
+```
 
 ### Get User.
 
