@@ -129,6 +129,51 @@ Request:
 ```
 POST /api/project/:id/user -d
 {
-    "id": 1238
+    "name": "xiaoming"
 }
+```
+
+User
+----
+
+### Get User.
+
+Request:
+
+```
+GET /api/user/:id
+```
+
+Response:
+
+```
+{
+    "id": 1,
+    "name": "xiaoming",
+    "email": "xiaoming@ele.me",
+    "enableEmail": true,
+    "phone": "1870989899",
+    "enablePhone": true,
+    "universal": false
+}
+```
+
+### Create User.
+
+```
+POST /api/user -d
+{
+    "name": "linus",
+    "email": "linus@ele.me",
+    "enableEmail": false,
+    "phone": "18718989889",
+    "enablePhone": true,
+    "universal": true
+}
+```
+
+### Delete User.
+
+```
+DELETE /api/user/:id
 ```
