@@ -7,15 +7,15 @@ package models
 // also indexed.
 type Index struct {
 	// Index may be cached.
-	cache
+	cache `json:"-"`
 	// Metric name
-	Name string
+	Name string `json:"name"`
 	// Latest stamp for the metric.
-	Stamp uint32
+	Stamp uint32 `json:"stamp"`
 	// Latest score for the metric.
-	Score float64
+	Score float64 `json:"score"`
 	// Latest average for the metric.
-	Average float64
+	Average float64 `json:"average"`
 }
 
 // WriteMetric writes metric to index.
