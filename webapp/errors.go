@@ -18,24 +18,31 @@ type WebError struct {
 
 // Errors
 var (
-	// Common errors.
+	// Common
 	ErrBadRequest = NewWebErrorWithText(http.StatusBadRequest, "Bad request")
 	ErrNotNull    = NewWebErrorWithText(http.StatusBadRequest, "Null value")
 	ErrPrimaryKey = NewWebErrorWithText(http.StatusForbidden, "Primarykey voilated")
 	ErrUnique     = NewWebErrorWithText(http.StatusForbidden, "Value should be unique")
 	ErrNotFound   = NewWebErrorWithText(http.StatusNotFound, "Not found")
-	// Project errors.
+	// Project
 	ErrProjectID            = NewWebErrorWithText(http.StatusBadRequest, "Bad project id")
 	ErrProjectName          = NewWebErrorWithText(http.StatusBadRequest, "Bad project name")
 	ErrProjectNotFound      = NewWebErrorWithText(http.StatusNotFound, "Project not found")
 	ErrDuplicateProjectName = NewWebErrorWithText(http.StatusForbidden, "Duplicate project name")
-	// User errors.
+	// User
 	ErrUserID            = NewWebErrorWithText(http.StatusBadRequest, "Bad user id")
 	ErrUserName          = NewWebErrorWithText(http.StatusBadRequest, "Bad user name")
 	ErrUserEmail         = NewWebErrorWithText(http.StatusBadRequest, "Bad user email")
 	ErrUserPhone         = NewWebErrorWithText(http.StatusBadRequest, "Bad user phone")
 	ErrUserNotFound      = NewWebErrorWithText(http.StatusNotFound, "User not found")
 	ErrDuplicateUserName = NewWebErrorWithText(http.StatusForbidden, "Duplicate user name")
+	// Rule
+	ErrRuleID               = NewWebErrorWithText(http.StatusBadRequest, "Bad rule id")
+	ErrRulePattern          = NewWebErrorWithText(http.StatusBadRequest, "Bad rule pattern")
+	ErrRuleWhen             = NewWebErrorWithText(http.StatusBadRequest, "Bad rule condition")
+	ErrRuleProjectID        = NewWebErrorWithText(http.StatusBadRequest, "Bad rule project id")
+	ErrDuplicateRulePattern = NewWebErrorWithText(http.StatusForbidden, "Duplicate rule pattern")
+	ErrRuleNotFound         = NewWebErrorWithText(http.StatusNotFound, "Rule not found")
 )
 
 // NewWebError creates a WebError.

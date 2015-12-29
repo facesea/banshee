@@ -45,6 +45,8 @@ func Start(c *config.Config, d *storage.DB) {
 	router.POST("/api/user", createUser)
 	router.DELETE("/api/user/:id", deleteUser)
 	router.PATCH("/api/user/:id", updateUser)
+	router.POST("/api/rule", createRule)
+	router.DELETE("/api/rule/:id", deleteRule)
 	// Serve
 	addr := fmt.Sprintf("0.0.0.0:%d", cfg.Webapp.Port)
 	log.Info("serve on %s..", addr)
