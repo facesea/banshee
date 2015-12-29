@@ -43,6 +43,8 @@ var (
 	ErrRuleProjectID        = NewWebErrorWithText(http.StatusBadRequest, "Bad rule project id")
 	ErrDuplicateRulePattern = NewWebErrorWithText(http.StatusForbidden, "Duplicate rule pattern")
 	ErrRuleNotFound         = NewWebErrorWithText(http.StatusNotFound, "Rule not found")
+	// Metric
+	ErrMetricNotFound = NewWebErrorWithText(http.StatusNotFound, "Metric not found")
 )
 
 // NewWebError creates a WebError.
