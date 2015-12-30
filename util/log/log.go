@@ -115,7 +115,7 @@ func log(l int, format string, a ...interface{}) {
 		msg := fmt.Sprintf(format, a...)
 		var (
 			slevel string = fmt.Sprintf("%-5s", levelNames[l])
-			sname  string = fmt.Sprintf("%s.%-9s", name, pkgName)
+			sname  string = fmt.Sprintf("%s.%-8s", name, pkgName)
 		)
 		if colored {
 			sname = Colored("white", sname)
