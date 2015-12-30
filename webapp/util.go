@@ -4,6 +4,7 @@ package webapp
 
 import (
 	"encoding/json"
+	"github.com/eleme/banshee/util/log"
 	"io"
 	"net/http"
 	"strconv"
@@ -27,6 +28,7 @@ func ResponseJSON(w http.ResponseWriter, code int, v interface{}) error {
 	w.Header().Set("Content-Length", strconv.Itoa(len(s)))
 	w.WriteHeader(code)
 	io.WriteString(w, s)
+	log.Debug("%d - %s", code, s)
 	return nil
 }
 
