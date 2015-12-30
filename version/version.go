@@ -2,4 +2,5 @@
 
 package version
 
+// Version exports
 const Version = "0.1.alpha-1"
