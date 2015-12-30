@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path"
+	"runtime"
 	"time"
 )
 
@@ -103,6 +105,9 @@ func Colored(color string, text string) string {
 // log dose logging.
 func log(l int, format string, a ...interface{}) {
 	if l >= level {
+		// Caller pkg.
+		_, fileName, _, _ := runtime.Caller(2)
+		pkgName := path.Base(path.Dir(fileName))
 		// Datetime and pid.
 		now := time.Now().String()[:23]
 		pid := os.Getpid()
@@ -110,10 +115,10 @@ func log(l int, format string, a ...interface{}) {
 		msg := fmt.Sprintf(format, a...)
 		var (
 			slevel string = fmt.Sprintf("%-5s", levelNames[l])
-			sname  string = name
+			sname  string = fmt.Sprintf("%s.%-9s", name, pkgName)
 		)
 		if colored {
-			sname = Colored("white", name)
+			sname = Colored("white", sname)
 			slevel = Colored(levelColors[l], slevel)
 		}
 		s := fmt.Sprintf("%s %s %s[%d]: %s", now, slevel, sname, pid, msg)
