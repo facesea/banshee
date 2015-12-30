@@ -39,7 +39,7 @@ func main() {
 	// Config
 	cfg := config.New()
 	if flag.NFlag() == 0 || (flag.NFlag() == 1 && *debug == true) {
-		log.Warn("no file specified, using default..")
+		log.Warn("no config file specified, using default..")
 	} else {
 		err := cfg.UpdateWithJSONFile(*fileName)
 		if err != nil {
