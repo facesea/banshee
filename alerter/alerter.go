@@ -104,6 +104,10 @@ func (al *Alerter) work() {
 					User:    &user,
 				}
 				// Exec
+				if len(al.cfg.Alerter.Command) == 0 {
+					log.Warn("alert command not configured")
+					continue
+				}
 				b, _ := json.Marshal(d)
 				cmd := exec.Command(al.cfg.Alerter.Command, string(b))
 				if err := cmd.Run(); err != nil {
