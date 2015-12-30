@@ -69,7 +69,7 @@ func getMetricIndexes(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 		}
 	}
 	// Limit
-	ResponseJSON(w, idxs[:limit])
+	ResponseJSONOK(w, idxs[:limit])
 }
 
 // getMetrics returns metric values.
@@ -92,5 +92,5 @@ func getMetrics(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		ResponseError(w, NewUnexceptedWebError(err))
 		return
 	}
-	ResponseJSON(w, metrics)
+	ResponseJSONOK(w, metrics)
 }

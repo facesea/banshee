@@ -9,5 +9,5 @@ import (
 
 // getConfig returns config.
 func getConfig(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	ResponseJSON(w, cfg)
+	ResponseJSONOK(w, cfg)
 }
