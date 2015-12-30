@@ -7,7 +7,7 @@ type User struct {
 	// ID in db.
 	ID int `gorm:"primary_key" json:"id"`
 	// Name
-	Name string `sql:"not null;unique" json:"name"`
+	Name string `sql:"index;not null;unique" json:"name"`
 	// Email
 	Email       string `json:"email"`
 	EnableEmail bool   `json:"enableEmail"`
