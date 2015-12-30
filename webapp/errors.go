@@ -3,7 +3,6 @@
 package webapp
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 )
@@ -11,58 +10,53 @@ import (
 // WebError is errors for web operations.
 type WebError struct {
 	// HTTP status code
-	code int
-	// Error
-	err error
+	Code int `json:"code"`
+	// Message
+	Msg string `json:"msg"`
 }
 
 // Errors
 var (
 	// Common
-	ErrBadRequest = NewWebErrorWithText(http.StatusBadRequest, "Bad request")
-	ErrNotNull    = NewWebErrorWithText(http.StatusBadRequest, "Null value")
-	ErrPrimaryKey = NewWebErrorWithText(http.StatusForbidden, "Primarykey voilated")
-	ErrUnique     = NewWebErrorWithText(http.StatusForbidden, "Value should be unique")
-	ErrNotFound   = NewWebErrorWithText(http.StatusNotFound, "Not found")
+	ErrBadRequest = NewWebError(http.StatusBadRequest, "Bad request")
+	ErrNotNull    = NewWebError(http.StatusBadRequest, "Null value")
+	ErrPrimaryKey = NewWebError(http.StatusForbidden, "Primarykey voilated")
+	ErrUnique     = NewWebError(http.StatusForbidden, "Value should be unique")
+	ErrNotFound   = NewWebError(http.StatusNotFound, "Not found")
 	// Project
-	ErrProjectID            = NewWebErrorWithText(http.StatusBadRequest, "Bad project id")
-	ErrProjectName          = NewWebErrorWithText(http.StatusBadRequest, "Bad project name")
-	ErrProjectNotFound      = NewWebErrorWithText(http.StatusNotFound, "Project not found")
-	ErrDuplicateProjectName = NewWebErrorWithText(http.StatusForbidden, "Duplicate project name")
+	ErrProjectID            = NewWebError(http.StatusBadRequest, "Bad project id")
+	ErrProjectName          = NewWebError(http.StatusBadRequest, "Bad project name")
+	ErrProjectNotFound      = NewWebError(http.StatusNotFound, "Project not found")
+	ErrDuplicateProjectName = NewWebError(http.StatusForbidden, "Duplicate project name")
 	// User
-	ErrUserID            = NewWebErrorWithText(http.StatusBadRequest, "Bad user id")
-	ErrUserName          = NewWebErrorWithText(http.StatusBadRequest, "Bad user name")
-	ErrUserEmail         = NewWebErrorWithText(http.StatusBadRequest, "Bad user email")
-	ErrUserPhone         = NewWebErrorWithText(http.StatusBadRequest, "Bad user phone")
-	ErrUserNotFound      = NewWebErrorWithText(http.StatusNotFound, "User not found")
-	ErrDuplicateUserName = NewWebErrorWithText(http.StatusForbidden, "Duplicate user name")
+	ErrUserID            = NewWebError(http.StatusBadRequest, "Bad user id")
+	ErrUserName          = NewWebError(http.StatusBadRequest, "Bad user name")
+	ErrUserEmail         = NewWebError(http.StatusBadRequest, "Bad user email")
+	ErrUserPhone         = NewWebError(http.StatusBadRequest, "Bad user phone")
+	ErrUserNotFound      = NewWebError(http.StatusNotFound, "User not found")
+	ErrDuplicateUserName = NewWebError(http.StatusForbidden, "Duplicate user name")
 	// Rule
-	ErrRuleID               = NewWebErrorWithText(http.StatusBadRequest, "Bad rule id")
-	ErrRulePattern          = NewWebErrorWithText(http.StatusBadRequest, "Bad rule pattern")
-	ErrRuleWhen             = NewWebErrorWithText(http.StatusBadRequest, "Bad rule condition")
-	ErrRuleProjectID        = NewWebErrorWithText(http.StatusBadRequest, "Bad rule project id")
-	ErrDuplicateRulePattern = NewWebErrorWithText(http.StatusForbidden, "Duplicate rule pattern")
-	ErrRuleNotFound         = NewWebErrorWithText(http.StatusNotFound, "Rule not found")
+	ErrRuleID               = NewWebError(http.StatusBadRequest, "Bad rule id")
+	ErrRulePattern          = NewWebError(http.StatusBadRequest, "Bad rule pattern")
+	ErrRuleWhen             = NewWebError(http.StatusBadRequest, "Bad rule condition")
+	ErrRuleProjectID        = NewWebError(http.StatusBadRequest, "Bad rule project id")
+	ErrDuplicateRulePattern = NewWebError(http.StatusForbidden, "Duplicate rule pattern")
+	ErrRuleNotFound         = NewWebError(http.StatusNotFound, "Rule not found")
 	// Metric
-	ErrMetricNotFound = NewWebErrorWithText(http.StatusNotFound, "Metric not found")
+	ErrMetricNotFound = NewWebError(http.StatusNotFound, "Metric not found")
 )
 
 // NewWebError creates a WebError.
-func NewWebError(code int, err error) *WebError {
-	return &WebError{code, err}
-}
-
-// NewWebErrorWithText creates a WebError with text.
-func NewWebErrorWithText(code int, text string) *WebError {
-	return &WebError{code, errors.New(text)}
+func NewWebError(code int, text string) *WebError {
+	return &WebError{code, text}
 }
 
 // Error returns the string format of the WebError.
 func (err *WebError) Error() string {
-	return fmt.Sprintf("[%d]: %s", err.code, err.err.Error())
+	return fmt.Sprintf("[%d]: %s", err.Code, err.Msg)
 }
 
 // NewUnexceptedWebError returns an unexcepted WebError.
 func NewUnexceptedWebError(err error) *WebError {
-	return NewWebError(http.StatusInternalServerError, err)
+	return NewWebError(http.StatusInternalServerError, err.Error())
 }

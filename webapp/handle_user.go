@@ -20,7 +20,7 @@ func getUsers(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		ResponseError(w, NewUnexceptedWebError(err))
 		return
 	}
-	ResponseJSON(w, users)
+	ResponseJSONOK(w, users)
 }
 
 // getUser returns user by id.
@@ -43,7 +43,7 @@ func getUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 			return
 		}
 	}
-	ResponseJSON(w, user)
+	ResponseJSONOK(w, user)
 }
 
 // createUser request

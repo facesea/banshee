@@ -18,7 +18,7 @@ func getProjects(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		ResponseError(w, NewUnexceptedWebError(err))
 		return
 	}
-	ResponseJSON(w, projs)
+	ResponseJSONOK(w, projs)
 }
 
 // getProject returns project by id.
@@ -41,7 +41,7 @@ func getProject(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 			return
 		}
 	}
-	ResponseJSON(w, proj)
+	ResponseJSONOK(w, proj)
 }
 
 // createProject request
@@ -167,7 +167,7 @@ func getProjectRules(w http.ResponseWriter, r *http.Request, ps httprouter.Param
 		ResponseError(w, NewUnexceptedWebError(err))
 		return
 	}
-	ResponseJSON(w, rules)
+	ResponseJSONOK(w, rules)
 }
 
 // getProjectUsers gets project users.
@@ -191,7 +191,7 @@ func getProjectUsers(w http.ResponseWriter, r *http.Request, ps httprouter.Param
 		return
 	}
 	users = append(users, univs...)
-	ResponseJSON(w, users)
+	ResponseJSONOK(w, users)
 }
 
 // addUser adds a user to a project by name.
