@@ -51,6 +51,8 @@ func Start(c *config.Config, d *storage.DB) {
 	router.DELETE("/api/rule/:id", deleteRule)
 	router.GET("/api/metric/indexes", getMetricIndexes)
 	router.GET("/api/metric/data/:name/:start/:stop", getMetrics)
+	// Static
+	router.ServeFiles("/static/*filepath", http.Dir(cfg.Webapp.Static))
 	// Serve
 	addr := fmt.Sprintf("0.0.0.0:%d", cfg.Webapp.Port)
 	log.Info("serve on %s..", addr)
