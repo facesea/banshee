@@ -35,15 +35,15 @@ func main() {
 	if *debug {
 		log.SetLevel(log.DEBUG)
 	}
-	log.Debug("using %s, max cpus: %d", runtime.Version(), runtime.GOMAXPROCS(-1))
+	log.Debug("%s, %d cpu", runtime.Version(), runtime.GOMAXPROCS(-1))
 	// Config
 	cfg := config.New()
 	if flag.NFlag() == 0 || (flag.NFlag() == 1 && *debug == true) {
-		log.Warn("no config file specified, using default..")
+		log.Warn("no file specified, using default..")
 	} else {
 		err := cfg.UpdateWithJSONFile(*fileName)
 		if err != nil {
-			log.Fatal("failed to load %s: %s", *fileName, err)
+			log.Fatal("failed to load %s, %s", *fileName, err)
 		}
 	}
 	// Storage

@@ -5,6 +5,7 @@ package indexdb
 
 import (
 	"github.com/eleme/banshee/models"
+	"github.com/eleme/banshee/util/log"
 	"github.com/eleme/banshee/util/safemap"
 	"github.com/syndtr/goleveldb/leveldb"
 	"path/filepath"
@@ -39,6 +40,7 @@ func (db *DB) Close() error {
 
 // load indexes from db to cache.
 func (db *DB) load() {
+	log.Debug("init index from indexdb..")
 	// Scan values to memory.
 	iter := db.db.NewIterator(nil, nil)
 	for iter.Next() {

@@ -55,7 +55,7 @@ func (d *Detector) output(m *models.Metric) {
 		select {
 		case ch <- m:
 		default:
-			log.Error("channel is full, cannot output metric, skipping..")
+			log.Error("output channel is full, skipping..")
 		}
 	}
 }
@@ -67,7 +67,7 @@ func (d *Detector) Start() {
 	if err != nil {
 		log.Fatal("failed to bind tcp://%s: %v", addr, err)
 	}
-	log.Info("listening on tcp://%s..", addr)
+	log.Info("listen on tcp://%s..", addr)
 	for {
 		conn, err := ln.Accept()
 		if err != nil {
@@ -110,11 +110,11 @@ func (d *Detector) handle(conn net.Conn) {
 			// Detect
 			err = d.detect(m)
 			if err != nil {
-				log.Error("detect: %v, skipping..", err)
+				log.Error("failed to detect: %v, skipping..", err)
 				continue
 			}
 			elapsed := time.Since(startAt)
-			log.Debug("%s %.3f (%dμs)", m.Name, m.Score, elapsed.Nanoseconds()/1000)
+			log.Debug("%dμs %s %.3f", elapsed.Nanoseconds()/1000, m.Name, m.Score)
 			// Output
 			d.output(m)
 			// Store
