@@ -10,6 +10,7 @@ import (
 
 	"github.com/eleme/banshee/models"
 	"github.com/eleme/banshee/storage"
+	"github.com/eleme/banshee/util/log"
 	"github.com/eleme/banshee/util/safemap"
 )
 
@@ -43,6 +44,7 @@ func New() *Filter {
 
 // Init from db.
 func (f *Filter) Init(db *storage.DB) {
+	log.Debug("init rules from cache..")
 	// Listen rules changes.
 	db.Admin.RulesCache.OnAdd(f.addRuleCh)
 	db.Admin.RulesCache.OnDel(f.delRuleCh)

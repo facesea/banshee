@@ -5,6 +5,7 @@ package admindb
 
 import (
 	"github.com/eleme/banshee/models"
+	"github.com/eleme/banshee/util/log"
 	"github.com/jinzhu/gorm"
 	_ "github.com/mattn/go-sqlite3" // Import but no use
 )
@@ -52,6 +53,7 @@ func (db *DB) DB() *gorm.DB {
 
 // migrate db schema.
 func (db *DB) migrate() error {
+	log.Debug("migrate db schema..")
 	rule := &models.Rule{}
 	user := &models.User{}
 	proj := &models.Project{}

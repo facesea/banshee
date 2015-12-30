@@ -42,6 +42,7 @@ func New(db *storage.DB, period int) *Cleaner {
 
 // Start a time ticker and wait to check.
 func (c *Cleaner) Start() {
+	log.Info("start with interval %.3fs", c.interval.Seconds())
 	// Check right now.
 	c.clean()
 	for {

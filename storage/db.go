@@ -9,6 +9,7 @@ import (
 	"github.com/eleme/banshee/storage/indexdb"
 	"github.com/eleme/banshee/storage/metricdb"
 	"github.com/eleme/banshee/storage/statedb"
+	"github.com/eleme/banshee/util/log"
 	"os"
 	"path"
 )
@@ -45,6 +46,7 @@ func Open(fileName string, options *Options) (*DB, error) {
 	// Create if not exist
 	_, err := os.Stat(fileName)
 	if os.IsNotExist(err) {
+		log.Debug("create dir %s", fileName)
 		err := os.Mkdir(fileName, filemode)
 		if err != nil {
 			return nil, err
@@ -73,6 +75,7 @@ func Open(fileName string, options *Options) (*DB, error) {
 	if err != nil {
 		return nil, err
 	}
+	log.Debug("admindb, indexdb, metricdb, statedb opened")
 	return db, nil
 }
 

@@ -5,6 +5,7 @@ package config
 
 import (
 	"encoding/json"
+	"github.com/eleme/banshee/util/log"
 	"io/ioutil"
 )
 
@@ -79,6 +80,7 @@ func New() *Config {
 
 // UpdateWithJSONFile update the config from a json file.
 func (config *Config) UpdateWithJSONFile(fileName string) error {
+	log.Debug("read from %s", fileName)
 	b, err := ioutil.ReadFile(fileName)
 	if err != nil {
 		return err
