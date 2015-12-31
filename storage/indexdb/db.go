@@ -86,14 +86,13 @@ func (db *DB) Put(idx *models.Index) error {
 	return nil
 }
 
-// Get an index by index name.
-func (db *DB) Get(idx *models.Index) error {
-	i, ok := db.get(idx.Name)
+// Get an index by name.
+func (db *DB) Get(name string) (*models.Index, error) {
+	i, ok := db.get(name)
 	if !ok {
-		return ErrNotFound
+		return nil, ErrNotFound
 	}
-	i.CopyTo(idx)
-	return nil
+	return i.Copy(), nil
 }
 
 // Delete an index by name.

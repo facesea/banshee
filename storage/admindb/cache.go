@@ -51,13 +51,13 @@ func (c *rulesCache) Len() int {
 }
 
 // Get returns rule.
-func (c *rulesCache) Get(rule *models.Rule) bool {
-	r, ok := c.rules.Get(rule.ID)
+func (c *rulesCache) Get(id int) (*models.Rule, bool) {
+	r, ok := c.rules.Get(id)
 	if !ok {
-		return false
+		return nil, false
 	}
-	r.(*models.Rule).CopyTo(rule)
-	return true
+	rule := r.(*models.Rule)
+	return rule.Copy(), true
 }
 
 // Put a rule into cache.
@@ -73,18 +73,20 @@ func (c *rulesCache) Put(rule *models.Rule) bool {
 }
 
 // All returns all rules.
-func (c *rulesCache) All(rules *[]*models.Rule) {
+func (c *rulesCache) All() (rules []*models.Rule) {
 	for _, v := range c.rules.Items() {
 		rule := v.(*models.Rule)
-		*rules = append(*rules, rule.Copy())
+		rules = append(rules, rule.Copy())
 	}
+	return rules
 }
 
 // Delete a rule from cache.
-func (c *rulesCache) Delete(rule *models.Rule) bool {
-	r, ok := c.rules.Pop(rule.ID)
+func (c *rulesCache) Delete(id int) bool {
+	r, ok := c.rules.Pop(id)
 	if ok {
-		c.pushDeled(r.(*models.Rule).Copy())
+		rule := r.(*models.Rule)
+		c.pushDeled(rule.Copy())
 		return true
 	}
 	return false

@@ -51,8 +51,7 @@ func (f *Filter) Init(db *storage.DB) {
 	go f.addRules()
 	go f.delRules()
 	// Add rules from cache
-	var rules []*models.Rule
-	db.Admin.RulesCache.All(&rules)
+	rules := db.Admin.RulesCache.All()
 	for _, rule := range rules {
 		f.addRule(rule)
 	}
