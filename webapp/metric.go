@@ -64,12 +64,21 @@ func getMetricIndexes(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 	// Sort
 	sort.Sort(indexByScore(idxs))
 	if order == "down" {
+		// Reverse
 		for i := 0; 2*i < len(idxs); i++ {
 			idxs[len(idxs)-1-i], idxs[i] = idxs[i], idxs[len(idxs)-1-i]
 		}
 	}
+	// http://danott.co/posts/json-marshalling-empty-slices-to-empty-arrays-in-go.html
+	if len(idxs) == 0 {
+		idxs = make([]*models.Index, 0)
+	}
 	// Limit
-	ResponseJSONOK(w, idxs[:limit])
+	if limit < len(idxs) {
+		ResponseJSONOK(w, idxs[:limit])
+	} else {
+		ResponseJSONOK(w, idxs)
+	}
 }
 
 // getMetrics returns metric values.
@@ -91,6 +100,10 @@ func getMetrics(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	if err != nil {
 		ResponseError(w, NewUnexceptedWebError(err))
 		return
+	}
+	// http://danott.co/posts/json-marshalling-empty-slices-to-empty-arrays-in-go.html
+	if len(metrics) == 0 {
+		metrics = make([]*models.Metric, 0)
 	}
 	ResponseJSONOK(w, metrics)
 }
