@@ -53,7 +53,7 @@ func Start(c *config.Config, d *storage.DB) {
 	router.GET("/api/metric/indexes", getMetricIndexes)
 	router.GET("/api/metric/data/:name/:start/:stop", getMetrics)
 	// Static
-	router.NotFound = http.FileServer(http.Dir(cfg.Webapp.Static))
+	router.NotFound = newStaticHandler(http.Dir(cfg.Webapp.Static))
 	// Serve
 	addr := fmt.Sprintf("0.0.0.0:%d", cfg.Webapp.Port)
 	log.Info("listen and serve on %s..", addr)
