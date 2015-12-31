@@ -9,5 +9,8 @@ import (
 
 // getConfig returns config.
 func getConfig(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	ResponseJSONOK(w, cfg)
+	c := cfg.Copy()
+	c.Webapp.Auth[0] = "******"
+	c.Webapp.Auth[1] = "******"
+	ResponseJSONOK(w, c)
 }
