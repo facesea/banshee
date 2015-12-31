@@ -85,13 +85,15 @@ func (c *childFilter) matchedRs(l []string) []*models.Rule {
 	if exist {
 		//when has a "*" node, the suffix tree matched the metric words by now, so goto next
 		// level and append matched rules to slice
-		rules = append(rules, v.(*childFilter).matchedRs(l[1:])...)
+		ch := v.(*childFilter)
+		rules = append(rules, ch.matchedRs(l[1:])...)
 	}
 	//check if this level has a same word node
 	v, exist = c.children.Get(l[0])
 	if exist {
 		//when has the node, matched by now, goto next level and append matched rules to slice
-		rules = append(rules, v.(*childFilter).matchedRs(l[1:])...)
+		ch := v.(*childFilter)
+		rules = append(rules, ch.matchedRs(l[1:])...)
 	}
 	//no matched node return empty rules slice, else return all matched rules
 	return rules
@@ -106,13 +108,15 @@ func (f *Filter) MatchedRules(m *models.Metric) []*models.Rule {
 	v, exist := f.children.Get("*")
 	if exist {
 		//when root has a "*" node, goto next level
-		rules = append(rules, v.(*childFilter).matchedRs(l[1:])...)
+		ch := v.(*childFilter)
+		rules = append(rules, ch.matchedRs(l[1:])...)
 	}
 	//check if root of the rules suffix tree has the same node to the first word of the metric
 	v, exist = f.children.Get(l[0])
 	if exist {
 		//when has the same word node, goto next level
-		rules = append(rules, v.(*childFilter).matchedRs(l[1:])...)
+		ch := v.(*childFilter)
+		rules = append(rules, ch.matchedRs(l[1:])...)
 	}
 	return rules
 }
@@ -127,22 +131,25 @@ func (f *Filter) addRule(rule *models.Rule) {
 	}
 	//check if suffix has the same word of the pattern by level step, if not add it
 	v, _ := f.children.Get(l[0])
+	ch := v.(*childFilter)
 	l = l[1:]
 	for len(l) > 0 {
-		if v.(*childFilter).children == nil {
-			v.(*childFilter).children = safemap.New()
+		if ch.children == nil {
+			ch.children = safemap.New()
 		}
-		if v.(*childFilter).children.Has(l[0]) {
-			v, _ = v.(*childFilter).children.Get(l[0])
+		if ch.children.Has(l[0]) {
+			v, _ = ch.children.Get(l[0])
+			ch = v.(*childFilter)
 		} else {
-			v.(*childFilter).children.Set(l[0], newChildFilter())
-			v, _ = v.(*childFilter).children.Get(l[0])
+			ch.children.Set(l[0], newChildFilter())
+			v, _ = ch.children.Get(l[0])
+			ch = v.(*childFilter)
 		}
 		l = l[1:]
 	}
-	v.(*childFilter).lock.Lock()
-	defer v.(*childFilter).lock.Unlock()
-	v.(*childFilter).matchedRules = append(v.(*childFilter).matchedRules, rule)
+	ch.lock.Lock()
+	defer ch.lock.Unlock()
+	ch.matchedRules = append(ch.matchedRules, rule)
 }
 
 // delRule delete a rule from the suffix tree
@@ -152,27 +159,29 @@ func (f *Filter) delRule(rule *models.Rule) {
 		return
 	}
 	v, _ := f.children.Get(l[0])
+	ch := v.(*childFilter)
 	l = l[1:]
 	for len(l) > 0 {
-		if v.(*childFilter).children == nil {
+		if ch.children == nil {
 			return
 		}
-		if v.(*childFilter).children.Has(l[0]) {
-			v, _ = v.(*childFilter).children.Get(l[0])
+		if ch.children.Has(l[0]) {
+			v, _ = ch.children.Get(l[0])
+			ch = v.(*childFilter)
 		} else {
 			return
 		}
 		l = l[1:]
 	}
-	v.(*childFilter).lock.Lock()
-	defer v.(*childFilter).lock.Unlock()
+	ch.lock.Lock()
+	defer ch.lock.Unlock()
 	rules := []*models.Rule{}
 	for _, r := range v.(*childFilter).matchedRules {
 		if !rule.Equal(r) {
 			rules = append(rules, r)
 		}
 	}
-	v.(*childFilter).matchedRules = rules
+	ch.matchedRules = rules
 }
 
 // addRules waits and add new rule to filter.
