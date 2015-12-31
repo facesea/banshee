@@ -102,3 +102,20 @@ func (config *Config) LeastC() int {
 	}
 	return leastCountMin
 }
+
+// Copy config.
+func (config *Config) Copy() *Config {
+	c := New()
+	c.Interval = config.Interval
+	c.Period = config.Period
+	c.Storage.Path = config.Storage.Path
+	c.Detector.Port = config.Detector.Port
+	c.Detector.Factor = config.Detector.Factor
+	c.Detector.BlackList = config.Detector.BlackList
+	c.Webapp.Port = config.Webapp.Port
+	c.Webapp.Auth = config.Webapp.Auth
+	c.Webapp.Static = config.Webapp.Static
+	c.Alerter.Command = config.Alerter.Command
+	c.Alerter.Workers = config.Alerter.Workers
+	return c
+}
