@@ -30,30 +30,32 @@ func Start(c *config.Config, d *storage.DB) {
 	// Init globals.
 	cfg = c
 	db = d
+	// Auth
+	auth := newAuthHandler(cfg.Webapp.Auth[0], cfg.Webapp.Auth[1])
 	// Routes
 	router := httprouter.New()
 	// Api
-	router.GET("/api/config", getConfig)
+	router.GET("/api/config", auth.handler(getConfig))
 	router.GET("/api/projects", getProjects)
 	router.GET("/api/project/:id", getProject)
-	router.POST("/api/project", createProject)
-	router.PATCH("/api/project/:id", updateProject)
-	router.DELETE("/api/projects/:id", deleteProject)
-	router.GET("/api/project/:id/rules", getProjectRules)
-	router.GET("/api/project/:id/users", getProjectUsers)
-	router.POST("/api/project/:id/user", addProjectUser)
-	router.DELETE("/api/project/:id/user/:user_id", deleteProjectUser)
-	router.GET("/api/users", getUsers)
-	router.GET("/api/user/:id", getUser)
-	router.POST("/api/user", createUser)
-	router.DELETE("/api/user/:id", deleteUser)
-	router.PATCH("/api/user/:id", updateUser)
-	router.POST("/api/rule", createRule)
-	router.DELETE("/api/rule/:id", deleteRule)
+	router.POST("/api/project", auth.handler(createProject))
+	router.PATCH("/api/project/:id", auth.handler(updateProject))
+	router.DELETE("/api/projects/:id", auth.handler(deleteProject))
+	router.GET("/api/project/:id/rules", auth.handler(getProjectRules))
+	router.GET("/api/project/:id/users", auth.handler(getProjectUsers))
+	router.POST("/api/project/:id/user", auth.handler(addProjectUser))
+	router.DELETE("/api/project/:id/user/:user_id", auth.handler(deleteProjectUser))
+	router.GET("/api/users", auth.handler(getUsers))
+	router.GET("/api/user/:id", auth.handler(getUser))
+	router.POST("/api/user", auth.handler(createUser))
+	router.DELETE("/api/user/:id", auth.handler(deleteUser))
+	router.PATCH("/api/user/:id", auth.handler(updateUser))
+	router.POST("/api/rule", auth.handler(createRule))
+	router.DELETE("/api/rule/:id", auth.handler(deleteRule))
 	router.GET("/api/metric/indexes", getMetricIndexes)
 	router.GET("/api/metric/data/:name/:start/:stop", getMetrics)
 	// Static
-	router.NotFound = http.FileServer(http.Dir(cfg.Webapp.Static))
+	router.NotFound = newStaticHandler(http.Dir(cfg.Webapp.Static), auth)
 	// Serve
 	addr := fmt.Sprintf("0.0.0.0:%d", cfg.Webapp.Port)
 	log.Info("listen and serve on %s..", addr)
