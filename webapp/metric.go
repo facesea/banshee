@@ -64,12 +64,17 @@ func getMetricIndexes(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 	// Sort
 	sort.Sort(indexByScore(idxs))
 	if order == "down" {
+		// Reverse
 		for i := 0; 2*i < len(idxs); i++ {
 			idxs[len(idxs)-1-i], idxs[i] = idxs[i], idxs[len(idxs)-1-i]
 		}
 	}
 	// Limit
-	ResponseJSONOK(w, idxs[:limit])
+	if limit < len(idxs) {
+		ResponseJSONOK(w, idxs[:limit])
+	} else {
+		ResponseJSONOK(w, idxs)
+	}
 }
 
 // getMetrics returns metric values.
