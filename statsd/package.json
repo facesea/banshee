@@ -11,8 +11,6 @@
     "type": "git",
     "url": "git://github.com/eleme/banshee.git"
   },
-  "dependencies": {
-    "minimatch": "3.0.0"
-  },
+  "dependencies": {},
   "license": "MIT"
 }
