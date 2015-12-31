@@ -13,13 +13,17 @@ Features
 * Detection result visualization.
 * Built for a large quantity of metrics.
 
+Requirements
+------------
+
+* [Go](https://golang.org/)>=1.4
+* [godep](https://github.com/tools/godep)
+
 Get Started
 -----------
 
-1. Install [go](https://golang.org/).
-2. Install [godep](https://github.com/tools/godep).
-3. Run `make`.
-4. Run `./banshee -c <path/to/config.json>`.
+1. Run `make`.
+2. Run `./banshee -c <path/to/config.json>`.
 
 Configuration
 -------------
