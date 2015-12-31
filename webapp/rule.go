@@ -106,5 +106,5 @@ func deleteRule(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		}
 	}
 	// Cache
-	db.Admin.RulesCache.Delete(&models.Rule{ID: id})
+	db.Admin.RulesCache.Delete(id)
 }
