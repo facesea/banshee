@@ -79,11 +79,13 @@ func (c *childFilter) matchedRs(l []string) []*models.Rule {
 	}
 	v, exist := c.children.Get("*")
 	if exist {
-		rules = append(rules, v.(*childFilter).matchedRs(l[1:])...)
+		ch := v.(*childFilter)
+		rules = append(rules, ch.matchedRs(l[1:])...)
 	}
 	v, exist = c.children.Get(l[0])
 	if exist {
-		rules = append(rules, v.(*childFilter).matchedRs(l[1:])...)
+		ch := v.(*childFilter)
+		rules = append(rules, ch.matchedRs(l[1:])...)
 	}
 	return rules
 }
@@ -94,11 +96,13 @@ func (f *Filter) MatchedRules(m *models.Metric) []*models.Rule {
 	l := strings.Split(m.Name, ".")
 	v, exist := f.children.Get("*")
 	if exist {
-		rules = append(rules, v.(*childFilter).matchedRs(l[1:])...)
+		ch := v.(*childFilter)
+		rules = append(rules, ch.matchedRs(l[1:])...)
 	}
 	v, exist = f.children.Get(l[0])
 	if exist {
-		rules = append(rules, v.(*childFilter).matchedRs(l[1:])...)
+		ch := v.(*childFilter)
+		rules = append(rules, ch.matchedRs(l[1:])...)
 	}
 	return rules
 }
@@ -110,22 +114,25 @@ func (f *Filter) addRule(rule *models.Rule) {
 		f.children.Set(l[0], newChildFilter())
 	}
 	v, _ := f.children.Get(l[0])
+	ch := v.(*childFilter)
 	l = l[1:]
 	for len(l) > 0 {
-		if v.(*childFilter).children == nil {
-			v.(*childFilter).children = safemap.New()
+		if ch.children == nil {
+			ch.children = safemap.New()
 		}
-		if v.(*childFilter).children.Has(l[0]) {
-			v, _ = v.(*childFilter).children.Get(l[0])
+		if ch.children.Has(l[0]) {
+			v, _ = ch.children.Get(l[0])
+			ch = v.(*childFilter)
 		} else {
-			v.(*childFilter).children.Set(l[0], newChildFilter())
-			v, _ = v.(*childFilter).children.Get(l[0])
+			ch.children.Set(l[0], newChildFilter())
+			v, _ = ch.children.Get(l[0])
+			ch = v.(*childFilter)
 		}
 		l = l[1:]
 	}
-	v.(*childFilter).lock.Lock()
-	defer v.(*childFilter).lock.Unlock()
-	v.(*childFilter).matchedRules = append(v.(*childFilter).matchedRules, rule)
+	ch.lock.Lock()
+	defer ch.lock.Unlock()
+	ch.matchedRules = append(ch.matchedRules, rule)
 }
 
 // delRule deletes a rule from the filter.
@@ -135,27 +142,29 @@ func (f *Filter) delRule(rule *models.Rule) {
 		return
 	}
 	v, _ := f.children.Get(l[0])
+	ch := v.(*childFilter)
 	l = l[1:]
 	for len(l) > 0 {
-		if v.(*childFilter).children == nil {
+		if ch.children == nil {
 			return
 		}
-		if v.(*childFilter).children.Has(l[0]) {
-			v, _ = v.(*childFilter).children.Get(l[0])
+		if ch.children.Has(l[0]) {
+			v, _ = ch.children.Get(l[0])
+			ch = v.(*childFilter)
 		} else {
 			return
 		}
 		l = l[1:]
 	}
-	v.(*childFilter).lock.Lock()
-	defer v.(*childFilter).lock.Unlock()
+	ch.lock.Lock()
+	defer ch.lock.Unlock()
 	rules := []*models.Rule{}
 	for _, r := range v.(*childFilter).matchedRules {
 		if !rule.Equal(r) {
 			rules = append(rules, r)
 		}
 	}
-	v.(*childFilter).matchedRules = rules
+	ch.matchedRules = rules
 }
 
 // addRules waits and add new rule to filter.
