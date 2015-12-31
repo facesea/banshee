@@ -69,13 +69,14 @@ func TestGet(t *testing.T) {
 	defer db.Close()
 	defer os.RemoveAll(fileName)
 	// Not found.
-	assert.Ok(t, ErrNotFound == db.Get(&models.Index{Name: "Not-Exist"}))
+	_, err := db.Get("Not-exist")
+	assert.Ok(t, ErrNotFound == err)
 	// Put one.
 	idx := &models.Index{Name: "foo", Stamp: 1450430837, Score: 0.3, Average: 100}
 	db.Put(idx)
 	// Get it from cache.
-	i := &models.Index{Name: idx.Name}
-	assert.Ok(t, nil == db.Get(i))
+	i, err := db.Get(idx.Name)
+	assert.Ok(t, nil == err)
 	assert.Ok(t, i.Equal(idx))
 }
 
@@ -99,7 +100,8 @@ func TestDelete(t *testing.T) {
 	_, err = db.db.Get([]byte(idx.Name), nil)
 	assert.Ok(t, err == leveldb.ErrNotFound)
 	// Cant get again.
-	assert.Ok(t, ErrNotFound == db.Get(idx))
+	_, err = db.Get(idx.Name)
+	assert.Ok(t, ErrNotFound == err)
 }
 
 func TestFilter(t *testing.T) {
