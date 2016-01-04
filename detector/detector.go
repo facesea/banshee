@@ -67,7 +67,7 @@ func (d *Detector) Start() {
 	if err != nil {
 		log.Fatal("failed to bind tcp://%s: %v", addr, err)
 	}
-	log.Info("listen on tcp://%s..", addr)
+	log.Info("detector is listening on tcp://%s..", addr)
 	for {
 		conn, err := ln.Accept()
 		if err != nil {

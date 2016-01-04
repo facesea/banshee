@@ -54,7 +54,7 @@ func New(cfg *config.Config, db *storage.DB, filter *filter.Filter) *Alerter {
 // metric with all the rules, the configured shell command will be executed
 // once a rule is hit.
 func (al *Alerter) Start() {
-	log.Info("start %d workers..", al.cfg.Alerter.Workers)
+	log.Info("start %d alerter workers..", al.cfg.Alerter.Workers)
 	for i := 0; i < al.cfg.Alerter.Workers; i++ {
 		go al.work()
 	}
