@@ -44,6 +44,7 @@ gulp.task('css-app', function() {
 gulp.task('js-lib', function() {
   var files = [
     'node_modules/angular/angular.js',
+    'node_modules/angular-ui-router/release/angular-ui-router.js',
     'node_modules/bootstrap/dist/js/bootstrap.js',
     'node_modules/d3/d3.js',
     'node_modules/cubism/cubism.v1.js',
