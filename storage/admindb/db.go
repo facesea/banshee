@@ -53,7 +53,7 @@ func (db *DB) DB() *gorm.DB {
 
 // migrate db schema.
 func (db *DB) migrate() error {
-	log.Debug("migrate db schema..")
+	log.Debug("migrate sql schemas..")
 	rule := &models.Rule{}
 	user := &models.User{}
 	proj := &models.Project{}

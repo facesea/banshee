@@ -58,6 +58,6 @@ func Start(c *config.Config, d *storage.DB) {
 	router.NotFound = newStaticHandler(http.Dir(cfg.Webapp.Static), auth)
 	// Serve
 	addr := fmt.Sprintf("0.0.0.0:%d", cfg.Webapp.Port)
-	log.Info("listen and serve on %s..", addr)
+	log.Info("webapp is listening and serving on %s..", addr)
 	http.ListenAndServe(addr, router)
 }

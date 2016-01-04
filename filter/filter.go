@@ -44,7 +44,7 @@ func New() *Filter {
 
 // Init from db.
 func (f *Filter) Init(db *storage.DB) {
-	log.Debug("init rules from cache..")
+	log.Debug("init filter's rules from cache..")
 	// Listen rules changes.
 	db.Admin.RulesCache.OnAdd(f.addRuleCh)
 	db.Admin.RulesCache.OnDel(f.delRuleCh)

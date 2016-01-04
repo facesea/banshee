@@ -28,7 +28,7 @@ func newRulesCache() *rulesCache {
 
 // Init cache from db.
 func (c *rulesCache) Init(db *gorm.DB) error {
-	log.Debug("init rules from sqlite..")
+	log.Debug("init rules from admindb..")
 	// Query
 	var rules []models.Rule
 	err := db.Find(&rules).Error

@@ -75,7 +75,7 @@ func Open(fileName string, options *Options) (*DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	log.Debug("admindb, indexdb, metricdb, statedb opened")
+	log.Debug("storage is opened successfully")
 	return db, nil
 }
 
