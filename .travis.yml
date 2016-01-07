@@ -4,4 +4,7 @@ go:
   - 1.4.2
   - 1.5.2
 
-script: make test
+install:
+    - go get github.com/tools/godep
+
+script: godep go test ./...
