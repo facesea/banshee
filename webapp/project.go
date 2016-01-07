@@ -196,7 +196,7 @@ func getProjectUsers(w http.ResponseWriter, r *http.Request, ps httprouter.Param
 
 // addUser adds a user to a project by name.
 type addProjectUserRequest struct {
-	Name string `json:name`
+	Name string `json:"name"`
 }
 
 // addProjectUser adds a user to a project.

@@ -1,5 +1,4 @@
 #!/bin/bash
-
 test -f ./banshee || abort "binary not found"
 mkdir -p release
 cp ./banshee release/
