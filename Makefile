@@ -8,6 +8,3 @@ test: lint
 
 build:
 	godep go build
-
-linux:
-	GOOS=linux GOARCH=amd64 godep go build
