@@ -27,7 +27,7 @@ func main() {
 	flag.Parse()
 	// Version
 	if *vers {
-		fmt.Fprintln(os.Stderr, version.Version)
+		fmt.Fprintln(os.Stdout, version.Version)
 		os.Exit(1)
 	}
 	// Logging
