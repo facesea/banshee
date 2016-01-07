@@ -7,3 +7,7 @@ storage/index
 storage/admin
 test-config.json
 test-storage
+
+# front-end
+static/node_modules
+static/dist
