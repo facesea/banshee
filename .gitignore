@@ -7,3 +7,4 @@ storage/index
 storage/admin
 test-config.json
 test-storage
+*.tar.gz
