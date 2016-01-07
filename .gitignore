@@ -8,3 +8,6 @@ storage/admin
 test-config.json
 test-storage
 *.tar.gz
+# front-end
+static/node_modules
+static/dist
