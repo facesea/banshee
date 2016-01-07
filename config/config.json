@@ -1,0 +1,22 @@
+{
+  "interval": 10,
+  "period": [288, 300],
+  "storage": {
+    "path": "storage/"
+  },
+  "detector": {
+    "port": 2015,
+    "factor": 0.05,
+    "blacklist": []
+  },
+  "webapp": {
+    "port": 2016,
+    "auth": ["admin", "admin"],
+    "static": "static/dist"
+  },
+  "alerter": {
+    "command": "",
+    "workers": 4,
+    "interval": 1200
+  }
+}
