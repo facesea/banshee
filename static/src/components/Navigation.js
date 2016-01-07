@@ -6,7 +6,7 @@ import ActionBuild from 'material-ui/lib/svg-icons/action/build'
 
 import MobileTearSheet from './MobileTearSheet';
 
-export default class BellNavigation extends React.Component {
+export default class Navigation extends React.Component {
 
   constructor(props) {
     super(props)

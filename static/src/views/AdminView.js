@@ -2,7 +2,7 @@ import { Link } from 'react-router'
 import { Paper } from 'material-ui'
 import ClearFix from 'material-ui/lib/clearfix'
 
-import BellNavigation from '../components/BellNavigation'
+import Navigation from '../components/Navigation'
 import AdminTable from '../components/AdminTable'
 
 export class AboutView extends React.Component {
@@ -38,7 +38,7 @@ export class AboutView extends React.Component {
     return (
       <div className='container-admin' style={styles.container}>
         <ClearFix style={styles.clearfix}>
-          <BellNavigation />
+          <Navigation />
         </ClearFix>
         <Paper style={styles.paper}>
           <AdminTable />
