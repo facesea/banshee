@@ -3,62 +3,36 @@ import {
   Table,
   TableBody,
   TableHeader,
-  TableFooter,
   TableRow,
   TableHeaderColumn,
-  TableRowColumn,
-  TextField,
-  Toggle,
+  TableRowColumn
 } from 'material-ui'
 
 export class AdminTable extends React.Component {
   render () {
-    const navList = [
-      {
-        name: 'Project',
-        link: '/admin/project'
-      },
-      {
-        name: 'Receiver',
-        link: '/admin/receiver'
-      },
-      {
-        name: 'Configuration',
-        link: '/admin/configuration'
-      }
-    ];
-
-    const styles = {
-      container: {
-        padding: 20
-      }
-    };
-
     return (
       <Table
         height={'300px'}
-        fixedHeader={true}
-        fixedFooter={true}
-        selectable={true}
-        multiSelectable={false}
+        fixedHeader
+        fixedFooter
+        selectable
         >
-        <TableHeader enableSelectAll={true}>
+        <TableHeader enableSelectAll>
           <TableRow>
-            <TableHeaderColumn colSpan="3" tooltip="Super Header" style={{textAlign: 'center'}}>
+            <TableHeaderColumn colSpan='3' tooltip='Super Header' style={{textAlign: 'center'}}>
               Projects
             </TableHeaderColumn>
           </TableRow>
           <TableRow>
-            <TableHeaderColumn tooltip="ID">ID</TableHeaderColumn>
-            <TableHeaderColumn tooltip="Project Name">Name</TableHeaderColumn>
-            <TableHeaderColumn tooltip="opt">Opt</TableHeaderColumn>
+            <TableHeaderColumn tooltip='ID'>ID</TableHeaderColumn>
+            <TableHeaderColumn tooltip='Project Name'>Name</TableHeaderColumn>
+            <TableHeaderColumn tooltip='opt'>Opt</TableHeaderColumn>
           </TableRow>
         </TableHeader>
         <TableBody
-          deselectOnClickaway={false}
-          showRowHover={true}
-          stripedRows={true}>
-          <TableRow selected={true}>
+          showRowHover
+          stripedRows>
+          <TableRow selected>
             <TableRowColumn>1</TableRowColumn>
             <TableRowColumn>John Smith</TableRowColumn>
             <TableRowColumn>del</TableRowColumn>
