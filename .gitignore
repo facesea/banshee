@@ -11,3 +11,4 @@ test-storage
 # front-end
 static/node_modules
 static/dist
+static/npm-debug.log
