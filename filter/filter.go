@@ -89,7 +89,7 @@ func (f *Filter) matchedRs(c *childFilter, prefix string, l []string) []*models.
 		v, exist := f.hitCounters.Get(prefix)
 		if exist {
 			f.hitCounters.Set(prefix, v.(int)+1)
-			if v.(int) >= intervalHitLimit {
+			if v.(int) >= f.intervalHitLimit {
 				return []*models.Rule{}
 			}
 		} else {
