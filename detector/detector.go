@@ -16,6 +16,7 @@ import (
 	"github.com/eleme/banshee/filter"
 	"github.com/eleme/banshee/models"
 	"github.com/eleme/banshee/storage"
+	"github.com/eleme/banshee/storage/indexdb"
 	"github.com/eleme/banshee/storage/statedb"
 	"github.com/eleme/banshee/util/log"
 )
@@ -148,18 +149,27 @@ func (d *Detector) match(m *models.Metric) bool {
 func (d *Detector) detect(m *models.Metric) error {
 	// Get pervious state.
 	s, err := d.db.State.Get(m)
-	if err != nil && err != statedb.ErrNotFound {
-		return err
+	if err != nil {
+		if err == statedb.ErrNotFound {
+			s = nil
+		} else {
+			return err
+		}
+	}
+	// Fill blank with zeros.
+	for pattern := range d.cfg.Detector.FillBlankZeros {
+		if ok, _ := filepath.Match(pattern, m.Name); ok {
+			// Need to fill zeros.
+			if s, err = d.fillBlankZeros(m, s); err != nil {
+				return err
+			}
+			break
+		}
 	}
 	// Move state next.
-	var n *models.State
-	if err == statedb.ErrNotFound {
-		n = d.cursor.Next(nil, m)
-	} else {
-		n = d.cursor.Next(s, m)
-	}
+	s = d.cursor.Next(s, m)
 	// Put the next state to db.
-	return d.db.State.Put(m, n)
+	return d.db.State.Put(m, s)
 }
 
 // store detected metrics.
@@ -175,4 +185,36 @@ func (d *Detector) store(m *models.Metric) error {
 		return err
 	}
 	return nil
+}
+
+// fillBlankZeros moves the state with zero on blanks.
+func (d *Detector) fillBlankZeros(m *models.Metric, s *models.State) (*models.State, error) {
+	// Get index.
+	idx, err := d.db.Index.Get(m.Name)
+	if err != nil {
+		if err == indexdb.ErrNotFound {
+			// Not found, the metric is first time seen and s must be nil.
+			// And the metric will be trusted since its state is nil.
+			return s, nil
+		}
+		return nil, err
+	}
+	// Get its grid.
+	period := cfg.Period[0] * cfg.Period[1]
+	gridStart := m.Stamp % uint32(period)
+	gridLen := cfg.Period[1]
+	// Move state with zeros.
+	start := gridStart
+	for start-period >= idx.Stamp {
+		start -= period
+	}
+	if start <= idx.Stamp {
+		start = idx.Stamp + cfg.Interval
+	}
+	for ; start < m.Stamp; start += period {
+		for stamp := start; stamp < gridLen+start && stamp < m.Stamp; stamp += cfg.Interval {
+			s = d.cursor.Next(s, &models.Metric{Stamp: stamp})
+		}
+	}
+	return s, nil
 }
