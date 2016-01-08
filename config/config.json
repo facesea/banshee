@@ -9,7 +9,8 @@
     "factor": 0.05,
     "blacklist": [],
     "intervalHitLimit": 100,
-    "defaultTrustLines": {}
+    "defaultTrustLines": {},
+    "fillBlankZeros": []
   },
   "webapp": {
     "port": 2016,
