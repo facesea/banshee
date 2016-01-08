@@ -62,9 +62,9 @@ func (f *Filter) Init(db *storage.DB, cfg *config.Config) {
 		f.addRule(rule)
 	}
 
-	ticker := time.NewTicker(time.Second * cfg.Interval)
+	ticker := time.NewTicker(time.Second * time.Duration(cfg.Interval))
 	go func() {
-		for _ := range ticker.C {
+		for _ = range ticker.C {
 			f.counter = safemap.New()
 		}
 	}()
@@ -87,7 +87,7 @@ func (f *Filter) matchedRs(c *childFilter, prefix string, l []string) []*models.
 		v, exist := f.counter.Get(prefix)
 		if exist {
 			f.counter.Set(prefix, v.(int)+1)
-			if v >= intervalHitLimit {
+			if v.(int) >= intervalHitLimit {
 				return []*models.Rule{}
 			}
 		} else {
