@@ -95,20 +95,19 @@ func (rule *Rule) Test(m *Metric, cfg *config.Config) bool {
 	rule.RLock()
 	defer rule.RUnlock()
 	// Ignore it if its value small enough to be trust
-	if rule.TrustLine == 0 {
+	trustLine := rule.TrustLine
+	if trustLine == 0 {
 		// Check default trustlines
-		for pattern, trustLine := range cfg.Detector.DefaultTrustLines {
-			if ok, _ := filepath.Match(pattern, m.Name); ok {
-				if m.Value < trustLine {
-					return false
-				}
+		for pattern, value := range cfg.Detector.DefaultTrustLines {
+			if ok, _ := filepath.Match(pattern, m.Name); ok && value != 0 {
+				trustLine = value
+				break
 			}
 		}
-	} else {
-		// Use rule's trustline
-		if m.Value < rule.TrustLine {
-			return false
-		}
+	}
+	// Use rule's trustline
+	if m.Value < trustLine {
+		return false
 	}
 	// Match conditions.
 	ok := false
