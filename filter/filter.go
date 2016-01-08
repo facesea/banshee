@@ -7,7 +7,9 @@ package filter
 import (
 	"strings"
 	"sync"
+	"time"
 
+	"github.com/eleme/banshee/config"
 	"github.com/eleme/banshee/models"
 	"github.com/eleme/banshee/storage"
 	"github.com/eleme/banshee/util/log"
@@ -21,6 +23,7 @@ type Filter struct {
 	delRuleCh chan *models.Rule
 	// Children
 	children *safemap.SafeMap
+	counter  *safemap.SafeMap
 }
 
 // childFilter is a suffix tree.
@@ -33,6 +36,9 @@ type childFilter struct {
 // Limit for buffered changed rules
 const bufferedChangedRulesLimit = 1000
 
+// Limit for a rule hits in an interval time
+const intervalHitLimit = 100
+
 // New creates a filter.
 func New() *Filter {
 	return &Filter{
@@ -43,7 +49,7 @@ func New() *Filter {
 }
 
 // Init from db.
-func (f *Filter) Init(db *storage.DB) {
+func (f *Filter) Init(db *storage.DB, cfg *config.Config) {
 	log.Debug("init filter's rules from cache..")
 	// Listen rules changes.
 	db.Admin.RulesCache.OnAdd(f.addRuleCh)
@@ -55,6 +61,14 @@ func (f *Filter) Init(db *storage.DB) {
 	for _, rule := range rules {
 		f.addRule(rule)
 	}
+
+	ticker := time.NewTicker(time.Second * cfg.Interval)
+	go func() {
+		for _ := range ticker.C {
+			f.counter = safemap.New()
+		}
+	}()
+
 }
 
 // newChildCache creates a new childCache
@@ -67,13 +81,23 @@ func newChildFilter() *childFilter {
 }
 
 // MatchedRules checks if a metric hit, l is the unchecked words list of the metric in order
-func (c *childFilter) matchedRs(l []string) []*models.Rule {
+func (f *Filter) matchedRs(c *childFilter, prefix string, l []string) []*models.Rule {
 	// when len(l)==0 means all words are checked and passed, return all matched rules
 	if len(l) == 0 {
+		v, exist := f.counter.Get(prefix)
+		if exist {
+			f.counter.Set(prefix, v.(int)+1)
+			if v >= intervalHitLimit {
+				return []*models.Rule{}
+			}
+		} else {
+			f.counter.Set(prefix, 1)
+		}
 		c.lock.RLock()
 		defer c.lock.RUnlock()
 		return c.matchedRules
 	}
+
 	rules := []*models.Rule{}
 	//when next level is nil,return empty rules slice
 	if c.children == nil {
@@ -85,14 +109,14 @@ func (c *childFilter) matchedRs(l []string) []*models.Rule {
 		//when has a "*" node, the suffix tree matched the metric words by now, so goto next
 		// level and append matched rules to slice
 		ch := v.(*childFilter)
-		rules = append(rules, ch.matchedRs(l[1:])...)
+		rules = append(rules, f.matchedRs(ch, prefix+l[0], l[1:])...)
 	}
 	//check if this level has a same word node
 	v, exist = c.children.Get(l[0])
 	if exist {
 		//when has the node, matched by now, goto next level and append matched rules to slice
 		ch := v.(*childFilter)
-		rules = append(rules, ch.matchedRs(l[1:])...)
+		rules = append(rules, f.matchedRs(ch, prefix+l[0], l[1:])...)
 	}
 	//no matched node return empty rules slice, else return all matched rules
 	return rules
@@ -108,14 +132,14 @@ func (f *Filter) MatchedRules(m *models.Metric) []*models.Rule {
 	if exist {
 		//when root has a "*" node, goto next level
 		ch := v.(*childFilter)
-		rules = append(rules, ch.matchedRs(l[1:])...)
+		rules = append(rules, f.matchedRs(ch, l[0], l[1:])...)
 	}
 	//check if root of the rules suffix tree has the same node to the first word of the metric
 	v, exist = f.children.Get(l[0])
 	if exist {
 		//when has the same word node, goto next level
 		ch := v.(*childFilter)
-		rules = append(rules, ch.matchedRs(l[1:])...)
+		rules = append(rules, f.matchedRs(ch, l[0], l[1:])...)
 	}
 	return rules
 }

@@ -60,7 +60,7 @@ func main() {
 	go cleaner.Start()
 	// Filter
 	filter := filter.New()
-	filter.Init(db)
+	filter.Init(db, cfg)
 	// Alerter
 	alerter := alerter.New(cfg, db, filter)
 	alerter.Start()
