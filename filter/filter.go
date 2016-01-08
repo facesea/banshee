@@ -24,6 +24,8 @@ type Filter struct {
 	// Children
 	children    *safemap.SafeMap
 	hitCounters *safemap.SafeMap
+	// Limit for a rule hits in an interval time
+	intervalHitLimit int
 }
 
 // childFilter is a suffix tree.
@@ -36,22 +38,21 @@ type childFilter struct {
 // Limit for buffered changed rules
 const bufferedChangedRulesLimit = 1000
 
-// Limit for a rule hits in an interval time
-const intervalHitLimit = 100
-
 // New creates a filter.
 func New() *Filter {
 	return &Filter{
-		addRuleCh:   make(chan *models.Rule, bufferedChangedRulesLimit),
-		delRuleCh:   make(chan *models.Rule, bufferedChangedRulesLimit),
-		children:    safemap.New(),
-		hitCounters: safemap.New(),
+		addRuleCh:        make(chan *models.Rule, bufferedChangedRulesLimit),
+		delRuleCh:        make(chan *models.Rule, bufferedChangedRulesLimit),
+		children:         safemap.New(),
+		hitCounters:      safemap.New(),
+		intervalHitLimit: 100,
 	}
 }
 
 // Init from db.
 func (f *Filter) Init(db *storage.DB, cfg *config.Config) {
 	log.Debug("init filter's rules from cache..")
+	f.intervalHitLimit = cfg.IntervalHitLimit
 	// Listen rules changes.
 	db.Admin.RulesCache.OnAdd(f.addRuleCh)
 	db.Admin.RulesCache.OnDel(f.delRuleCh)
@@ -62,7 +63,7 @@ func (f *Filter) Init(db *storage.DB, cfg *config.Config) {
 	for _, rule := range rules {
 		f.addRule(rule)
 	}
-
+	// Start to check number of matched metrics
 	ticker := time.NewTicker(time.Second * time.Duration(cfg.Interval))
 	go func() {
 		for _ = range ticker.C {
