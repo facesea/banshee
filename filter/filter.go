@@ -22,8 +22,8 @@ type Filter struct {
 	addRuleCh chan *models.Rule
 	delRuleCh chan *models.Rule
 	// Children
-	children *safemap.SafeMap
-	counter  *safemap.SafeMap
+	children    *safemap.SafeMap
+	hitCounters *safemap.SafeMap
 }
 
 // childFilter is a suffix tree.
@@ -42,9 +42,10 @@ const intervalHitLimit = 100
 // New creates a filter.
 func New() *Filter {
 	return &Filter{
-		addRuleCh: make(chan *models.Rule, bufferedChangedRulesLimit),
-		delRuleCh: make(chan *models.Rule, bufferedChangedRulesLimit),
-		children:  safemap.New(),
+		addRuleCh:   make(chan *models.Rule, bufferedChangedRulesLimit),
+		delRuleCh:   make(chan *models.Rule, bufferedChangedRulesLimit),
+		children:    safemap.New(),
+		hitCounters: safemap.New(),
 	}
 }
 
@@ -65,7 +66,7 @@ func (f *Filter) Init(db *storage.DB, cfg *config.Config) {
 	ticker := time.NewTicker(time.Second * time.Duration(cfg.Interval))
 	go func() {
 		for _ = range ticker.C {
-			f.counter = safemap.New()
+			f.hitCounters = safemap.New()
 		}
 	}()
 
@@ -84,14 +85,14 @@ func newChildFilter() *childFilter {
 func (f *Filter) matchedRs(c *childFilter, prefix string, l []string) []*models.Rule {
 	// when len(l)==0 means all words are checked and passed, return all matched rules
 	if len(l) == 0 {
-		v, exist := f.counter.Get(prefix)
+		v, exist := f.hitCounters.Get(prefix)
 		if exist {
-			f.counter.Set(prefix, v.(int)+1)
+			f.hitCounters.Set(prefix, v.(int)+1)
 			if v.(int) >= intervalHitLimit {
 				return []*models.Rule{}
 			}
 		} else {
-			f.counter.Set(prefix, 1)
+			f.hitCounters.Set(prefix, 1)
 		}
 		c.lock.RLock()
 		defer c.lock.RUnlock()
