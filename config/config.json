@@ -1,6 +1,6 @@
 {
   "interval": 10,
-  "intervalHitLimit":100,
+  "intervalHitLimit": 100,
   "period": [288, 300],
   "storage": {
     "path": "storage/"
