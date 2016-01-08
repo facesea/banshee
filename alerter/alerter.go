@@ -74,7 +74,7 @@ func (al *Alerter) work() {
 		rules := al.filter.MatchedRules(metric)
 		for _, rule := range rules {
 			// Test
-			if !rule.Test(metric) {
+			if !rule.Test(metric, al.cfg) {
 				continue
 			}
 			// Project

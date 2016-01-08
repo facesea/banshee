@@ -46,10 +46,11 @@ type configStorage struct {
 }
 
 type configDetector struct {
-	Port             int      `json:"port"`
-	Factor           float64  `json:"factor"`
-	BlackList        []string `json:"blackList"`
-	IntervalHitLimit int      `json: "intervalHitLimit"`
+	Port              int                `json:"port"`
+	Factor            float64            `json:"factor"`
+	BlackList         []string           `json:"blackList"`
+	IntervalHitLimit  int                `json:"intervalHitLimit"`
+	DefaultTrustLines map[string]float64 `json:"defaultTrustLines"`
 }
 
 type configWebapp struct {
@@ -74,6 +75,7 @@ func New() *Config {
 	config.Detector.Factor = DefaultWeightFactor
 	config.Detector.BlackList = []string{}
 	config.Detector.IntervalHitLimit = DefaultIntervalHitLimit
+	config.Detector.DefaultTrustLines = make(map[string]float64, 0)
 	config.Webapp.Port = 2016
 	config.Webapp.Auth = [2]string{"admin", "admin"}
 	config.Webapp.Static = "static"
