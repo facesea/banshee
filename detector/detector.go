@@ -157,7 +157,7 @@ func (d *Detector) detect(m *models.Metric) error {
 		}
 	}
 	// Fill blank with zeros.
-	for pattern := range d.cfg.Detector.FillBlankZeros {
+	for _, pattern := range d.cfg.Detector.FillBlankZeros {
 		if ok, _ := filepath.Match(pattern, m.Name); ok {
 			// Need to fill zeros.
 			if s, err = d.fillBlankZeros(m, s); err != nil {
@@ -193,27 +193,27 @@ func (d *Detector) fillBlankZeros(m *models.Metric, s *models.State) (*models.St
 	idx, err := d.db.Index.Get(m.Name)
 	if err != nil {
 		if err == indexdb.ErrNotFound {
-			// Not found, the metric is first time seen and s must be nil.
-			// And the metric will be trusted since its state is nil.
+			// Not found, the metric is the first time seen and s must be nil.
+			// The metric will be trusted since its state is nil.
 			return s, nil
 		}
 		return nil, err
 	}
-	// Get its grid.
-	period := cfg.Period[0] * cfg.Period[1]
-	gridStart := m.Stamp % uint32(period)
-	gridLen := cfg.Period[1]
-	// Move state with zeros.
-	start := gridStart
-	for start-period >= idx.Stamp {
-		start -= period
+	numGrid := d.cfg.Period[0]
+	gridLen := d.cfg.Period[1]
+	period := numGrid * gridLen
+	periodNo := m.Stamp / uint32(period)
+	gridNo := int(m.Stamp%uint32(period)) / gridLen
+	gridStart := uint32(gridNo*gridLen) + periodNo*uint32(period)
+	for gridStart-uint32(period) >= idx.Stamp {
+		gridStart -= uint32(period)
 	}
-	if start <= idx.Stamp {
-		start = idx.Stamp + cfg.Interval
-	}
-	for ; start < m.Stamp; start += period {
-		for stamp := start; stamp < gridLen+start && stamp < m.Stamp; stamp += cfg.Interval {
-			s = d.cursor.Next(s, &models.Metric{Stamp: stamp})
+	for ; gridStart < m.Stamp; gridStart += uint32(period) {
+		for stamp := gridStart; stamp < gridStart+uint32(gridLen) && stamp < m.Stamp; stamp += uint32(d.cfg.Interval) {
+			if stamp > idx.Stamp {
+				// Move state with zero.
+				s = d.cursor.Next(s, &models.Metric{Stamp: stamp})
+			}
 		}
 	}
 	return s, nil
