@@ -7,6 +7,7 @@ package filter
 import (
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/eleme/banshee/config"
@@ -88,13 +89,15 @@ func (f *Filter) matchedRs(c *childFilter, prefix string, l []string) []*models.
 	if len(l) == 0 {
 		v, exist := f.hitCounters.Get(prefix)
 		if exist {
-			//no necessary to use atomic
-			f.hitCounters.Set(prefix, v.(int)+1)
-			if v.(int) >= f.intervalHitLimit {
+			//use atomic
+			atomic.AddInt32(v.(*int32), 1)
+			if atomic.LoadInt32(v.(*int32)) >= int32(f.intervalHitLimit) {
+				log.Info("hits over intervalHitLimit, metric: %s", prefix)
 				return []*models.Rule{}
 			}
 		} else {
-			f.hitCounters.Set(prefix, 1)
+			var counter int32 = 1
+			f.hitCounters.Set(prefix, &counter)
 		}
 		c.lock.RLock()
 		defer c.lock.RUnlock()
@@ -112,14 +115,14 @@ func (f *Filter) matchedRs(c *childFilter, prefix string, l []string) []*models.
 		//when has a "*" node, the suffix tree matched the metric words by now, so goto next
 		// level and append matched rules to slice
 		ch := v.(*childFilter)
-		rules = append(rules, f.matchedRs(ch, prefix+l[0], l[1:])...)
+		rules = append(rules, f.matchedRs(ch, prefix+"."+l[0], l[1:])...)
 	}
 	//check if this level has a same word node
 	v, exist = c.children.Get(l[0])
 	if exist {
 		//when has the node, matched by now, goto next level and append matched rules to slice
 		ch := v.(*childFilter)
-		rules = append(rules, f.matchedRs(ch, prefix+l[0], l[1:])...)
+		rules = append(rules, f.matchedRs(ch, prefix+"."+l[0], l[1:])...)
 	}
 	//no matched node return empty rules slice, else return all matched rules
 	return rules
