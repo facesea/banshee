@@ -51,6 +51,7 @@ type configDetector struct {
 	BlackList         []string           `json:"blackList"`
 	IntervalHitLimit  int                `json:"intervalHitLimit"`
 	DefaultTrustLines map[string]float64 `json:"defaultTrustLines"`
+	FillBlankZeros    []string           `json:"fillBlankZeros"`
 }
 
 type configWebapp struct {
@@ -76,6 +77,7 @@ func New() *Config {
 	config.Detector.BlackList = []string{}
 	config.Detector.IntervalHitLimit = DefaultIntervalHitLimit
 	config.Detector.DefaultTrustLines = make(map[string]float64, 0)
+	config.Detector.FillBlankZeros = []string{}
 	config.Webapp.Port = 2016
 	config.Webapp.Auth = [2]string{"admin", "admin"}
 	config.Webapp.Static = "static"
@@ -119,6 +121,8 @@ func (config *Config) Copy() *Config {
 	c.Detector.Port = config.Detector.Port
 	c.Detector.Factor = config.Detector.Factor
 	c.Detector.BlackList = config.Detector.BlackList
+	c.Detector.DefaultTrustLines = config.Detector.DefaultTrustLines
+	c.Detector.FillBlankZeros = config.Detector.FillBlankZeros
 	c.Webapp.Port = config.Webapp.Port
 	c.Webapp.Auth = config.Webapp.Auth
 	c.Webapp.Static = config.Webapp.Static
