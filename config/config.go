@@ -33,13 +33,12 @@ const (
 
 // Config is the configuration container.
 type Config struct {
-	Interval         int            `json:"interval"`
-	IntervalHitLimit int            `json: "intervalHitLimit"`
-	Period           [2]int         `json:"period"`
-	Storage          configStorage  `json:"storage"`
-	Detector         configDetector `json:"detector"`
-	Webapp           configWebapp   `json:"webapp"`
-	Alerter          configAlerter  `json:"alerter"`
+	Interval int            `json:"interval"`
+	Period   [2]int         `json:"period"`
+	Storage  configStorage  `json:"storage"`
+	Detector configDetector `json:"detector"`
+	Webapp   configWebapp   `json:"webapp"`
+	Alerter  configAlerter  `json:"alerter"`
 }
 
 type configStorage struct {
@@ -47,9 +46,10 @@ type configStorage struct {
 }
 
 type configDetector struct {
-	Port      int      `json:"port"`
-	Factor    float64  `json:"factor"`
-	BlackList []string `json:"blackList"`
+	Port             int      `json:"port"`
+	Factor           float64  `json:"factor"`
+	BlackList        []string `json:"blackList"`
+	IntervalHitLimit int      `json: "intervalHitLimit"`
 }
 
 type configWebapp struct {
@@ -68,12 +68,12 @@ type configAlerter struct {
 func New() *Config {
 	config := new(Config)
 	config.Interval = DefaultInterval
-	config.IntervalHitLimit = DefaultIntervalHitLimit
 	config.Period = [2]int{DefaultNumGrid, DefaultGridLen}
 	config.Storage.Path = "storage/"
 	config.Detector.Port = 2015
 	config.Detector.Factor = DefaultWeightFactor
 	config.Detector.BlackList = []string{}
+	config.Detector.IntervalHitLimit = DefaultIntervalHitLimit
 	config.Webapp.Port = 2016
 	config.Webapp.Auth = [2]string{"admin", "admin"}
 	config.Webapp.Static = "static"
@@ -111,7 +111,7 @@ func (config *Config) LeastC() int {
 func (config *Config) Copy() *Config {
 	c := New()
 	c.Interval = config.Interval
-	c.IntervalHitLimit = config.IntervalHitLimit
+	c.Detector.IntervalHitLimit = config.Detector.IntervalHitLimit
 	c.Period = config.Period
 	c.Storage.Path = config.Storage.Path
 	c.Detector.Port = config.Detector.Port
