@@ -13,6 +13,8 @@ import (
 const (
 	// Default time interval for all metrics in seconds.
 	DefaultInterval int = 10
+	// Default hit limit to a rule in an interval
+	DefaultIntervalHitLimit int = 100
 	// Default number of grids in one period.
 	DefaultNumGrid int = 288
 	// Default grid length in seconds.
@@ -31,12 +33,13 @@ const (
 
 // Config is the configuration container.
 type Config struct {
-	Interval int            `json:"interval"`
-	Period   [2]int         `json:"period"`
-	Storage  configStorage  `json:"storage"`
-	Detector configDetector `json:"detector"`
-	Webapp   configWebapp   `json:"webapp"`
-	Alerter  configAlerter  `json:"alerter"`
+	Interval         int            `json:"interval"`
+	IntervalHitLimit int            `json: "intervalHitLimit"`
+	Period           [2]int         `json:"period"`
+	Storage          configStorage  `json:"storage"`
+	Detector         configDetector `json:"detector"`
+	Webapp           configWebapp   `json:"webapp"`
+	Alerter          configAlerter  `json:"alerter"`
 }
 
 type configStorage struct {
@@ -65,6 +68,7 @@ type configAlerter struct {
 func New() *Config {
 	config := new(Config)
 	config.Interval = DefaultInterval
+	config.IntervalHitLimit = DefaultIntervalHitLimit
 	config.Period = [2]int{DefaultNumGrid, DefaultGridLen}
 	config.Storage.Path = "storage/"
 	config.Detector.Port = 2015
@@ -107,6 +111,7 @@ func (config *Config) LeastC() int {
 func (config *Config) Copy() *Config {
 	c := New()
 	c.Interval = config.Interval
+	c.IntervalHitLimit = config.IntervalHitLimit
 	c.Period = config.Period
 	c.Storage.Path = config.Storage.Path
 	c.Detector.Port = config.Detector.Port
