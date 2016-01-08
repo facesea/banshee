@@ -52,7 +52,7 @@ func New() *Filter {
 // Init from db.
 func (f *Filter) Init(db *storage.DB, cfg *config.Config) {
 	log.Debug("init filter's rules from cache..")
-	f.intervalHitLimit = cfg.IntervalHitLimit
+	f.intervalHitLimit = cfg.Detector.IntervalHitLimit
 	// Listen rules changes.
 	db.Admin.RulesCache.OnAdd(f.addRuleCh)
 	db.Admin.RulesCache.OnDel(f.delRuleCh)
