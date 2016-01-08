@@ -36,7 +36,7 @@ func main() {
 		log.SetLevel(log.DEBUG)
 	}
 	log.Debug("using %s, max %d cpu", runtime.Version(), runtime.GOMAXPROCS(-1))
-	// Config
+	// Config parsing.
 	cfg := config.New()
 	if flag.NFlag() == 0 || (flag.NFlag() == 1 && *debug == true) {
 		log.Warn("no config file specified, using default..")
@@ -45,6 +45,13 @@ func main() {
 		if err != nil {
 			log.Fatal("failed to load %s, %s", *fileName, err)
 		}
+	}
+	// Config validation.
+	err := cfg.Validate()
+	if err == config.ErrAlerterCommandEmpty {
+		log.Warn("config: %s", err)
+	} else {
+		log.Fatal("config: %s", err)
 	}
 	// Storage
 	options := &storage.Options{

@@ -9,26 +9,45 @@ import (
 	"io/ioutil"
 )
 
+// Measures
+const (
+	// Time
+	Second = 1
+	Minute = 60 * Second
+	Hour   = 60 * Minute
+	Day    = 24 * Hour
+)
+
 // Defaults
 const (
 	// Default time interval for all metrics in seconds.
-	DefaultInterval int = 10
+	DefaultInterval int = 10 * Second
 	// Default hit limit to a rule in an interval
 	DefaultIntervalHitLimit int = 100
-	// Default number of grids in one period.
-	DefaultNumGrid int = 288
 	// Default grid length in seconds.
-	DefaultGridLen int = 300
+	DefaultGridLen int = 5 * Minute
+	// Default number of grids in one period.
+	DefaultNumGrid int = 1 * Day / DefaultGridLen
 	// Default weight factor for moving average and standard deviation.
 	DefaultWeightFactor float64 = 0.05
+	// Default value of alerting interval.
+	DefaultAlerterInterval uint32 = 20 * Minute
 )
 
 // Least count.
 const (
-	// Percentage the leastC in one grid.
-	leastCountGridPercent float64 = 0.6
 	// Min value of leastC.
-	leastCountMin int = 18
+	leastCountMin int = 3 * Minute / DefaultInterval
+	// Percentage the leastC in one grid.
+	leastCountGridPercent float64 = float64(leastCountMin) / float64(DefaultGridLen)
+)
+
+// Limitations
+const (
+	// Max value for the number of DefaultTrustLines.
+	MaxDefaltTrustLinesLen = 8
+	// Max value for the number of FillBlankZeros.
+	MaxFillBlankZerosLen = 8
 )
 
 // Config is the configuration container.
@@ -83,6 +102,7 @@ func New() *Config {
 	config.Webapp.Static = "static"
 	config.Alerter.Command = ""
 	config.Alerter.Workers = 4
+	config.Alerter.Interval = DefaultAlerterInterval
 	return config
 }
 
@@ -128,5 +148,50 @@ func (config *Config) Copy() *Config {
 	c.Webapp.Static = config.Webapp.Static
 	c.Alerter.Command = config.Alerter.Command
 	c.Alerter.Workers = config.Alerter.Workers
+	c.Alerter.Interval = config.Alerter.Interval
 	return c
+}
+
+// Validate config
+func (config *Config) Validate() error {
+	// Globals
+	if config.Interval < 1*Second || config.Interval > 5*Minute {
+		return ErrInterval
+	}
+	if config.Period[0] < 1 {
+		return ErrPeriodNumGrid
+	}
+	if config.Period[1] < 3*Minute {
+		return ErrPeriodGridLen
+	}
+	// Detector
+	if config.Detector.Port < 1 || config.Detector.Port > 65535 {
+		return ErrDetectorPort
+	}
+	if config.Detector.Factor < 0 || config.Detector.Factor > 1 {
+		return ErrDetectorFactor
+	}
+	if len(config.Detector.DefaultTrustLines) > MaxDefaltTrustLinesLen {
+		return ErrDetectorDefaultTrustLinesLen
+	}
+	for _, value := range config.Detector.DefaultTrustLines {
+		if value == 0 {
+			return ErrDetectorDefaultTrustLineZero
+		}
+	}
+	if len(config.Detector.FillBlankZeros) > MaxFillBlankZerosLen {
+		return ErrDetectorFillBlankZerosLen
+	}
+	// Webapp
+	if config.Webapp.Port < 1 || config.Webapp.Port > 65535 {
+		return ErrWebappPort
+	}
+	// Alerter
+	if len(config.Alerter.Command) == 0 {
+		return ErrAlerterCommandEmpty
+	}
+	if config.Alerter.Interval <= 0 {
+		return ErrAlerterInterval
+	}
+	return nil
 }
