@@ -1,6 +1,5 @@
 {
   "interval": 10,
-  "intervalHitLimit": 100,
   "period": [288, 300],
   "storage": {
     "path": "storage/"
@@ -8,7 +7,8 @@
   "detector": {
     "port": 2015,
     "factor": 0.05,
-    "blacklist": []
+    "blacklist": [],
+    "intervalHitLimit": 100
   },
   "webapp": {
     "port": 2016,
