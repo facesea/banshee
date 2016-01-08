@@ -8,7 +8,8 @@
     "port": 2015,
     "factor": 0.05,
     "blacklist": [],
-    "intervalHitLimit": 100
+    "intervalHitLimit": 100,
+    "defaultTrustLines": {}
   },
   "webapp": {
     "port": 2016,

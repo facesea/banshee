@@ -2,6 +2,11 @@
 
 package models
 
+import (
+	"github.com/eleme/banshee/config"
+	"path/filepath"
+)
+
 // Conditions
 const (
 	WhenTrendUp             = 0x1  // 0b000001
@@ -85,13 +90,25 @@ func (rule *Rule) Equal(r *Rule) bool {
 }
 
 // Test returns true if the metric hits this rule.
-func (rule *Rule) Test(m *Metric) bool {
+func (rule *Rule) Test(m *Metric, cfg *config.Config) bool {
 	// RLock if shared.
 	rule.RLock()
 	defer rule.RUnlock()
 	// Ignore it if its value small enough to be trust
-	if m.Value < rule.TrustLine {
-		return false
+	if rule.TrustLine == 0 {
+		// Check default trustlines
+		for pattern, trustLine := range cfg.Detector.DefaultTrustLines {
+			if ok, _ := filepath.Match(pattern, m.Name); ok {
+				if m.Value < trustLine {
+					return false
+				}
+			}
+		}
+	} else {
+		// Use rule's trustline
+		if m.Value < rule.TrustLine {
+			return false
+		}
 	}
 	// Match conditions.
 	ok := false
