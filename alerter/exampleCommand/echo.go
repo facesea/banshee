@@ -1,6 +1,27 @@
 // Copyright 2015 Eleme Inc. All rights reserved.
 
 // Example alerter command to echo message to console.
+//
+// This command will be called with a JSON-formatted argument:
+//   $ ./echo <JSON-string>
+// JSON argument example
+//   {
+//     "project": {"name": "foo"},
+//     "user": {
+//        "name": "jack",
+//        "email": "jack@gmail.com",
+//        "enableEmail": true,
+//        "enablePhone": true,
+//        "phone": "18735121212"
+//      },
+//     "metric": {
+//       "name": "timer.count_ps.api",
+//       "score": 1.02,
+//       "stamp": 1452494901,
+//       "value": 139.1
+//     }
+//   }
+//
 package main
 
 import (

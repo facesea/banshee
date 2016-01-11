@@ -19,28 +19,42 @@ import (
 	"github.com/eleme/banshee/webapp"
 )
 
-func main() {
+var (
 	// Arguments
-	fileName := flag.String("c", "config.json", "config file")
-	debug := flag.Bool("d", false, "debug mode")
-	vers := flag.Bool("v", false, "version")
-	flag.Parse()
-	// Version
-	if *vers {
-		fmt.Fprintln(os.Stdout, version.Version)
-		os.Exit(1)
-	}
-	// Logging
+	debug       = flag.Bool("d", false, "debug mode")
+	fileName    = flag.String("c", "config.json", "config file path")
+	showVersion = flag.Bool("v", false, "show version")
+	// Variables
+	cfg             = config.New()
+	db  *storage.DB = nil
+	flt             = filter.New()
+)
+
+func usage() {
+	fmt.Fprintf(os.Stderr, "usage: banshee [-c config] [-d] [-v]\n")
+	flag.PrintDefaults()
+	fmt.Fprintf(os.Stderr, "copyright eleme https://github.com/eleme/banshee.\n")
+	os.Exit(2)
+}
+
+func initLog() {
 	log.SetName("banshee")
 	if *debug {
 		log.SetLevel(log.DEBUG)
 	}
-	log.Debug("using %s banshee%s max %d cpu", runtime.Version(), version.Version, runtime.GOMAXPROCS(-1))
+	goVs := runtime.Version()
+	nCpu := runtime.GOMAXPROCS(-1)
+	vers := version.Version
+	log.Debug("banshee%s %s %d cpu", vers, goVs, nCpu)
+}
+
+func initConfig() {
 	// Config parsing.
-	cfg := config.New()
-	if flag.NFlag() == 0 || (flag.NFlag() == 1 && *debug == true) {
-		log.Warn("no config file specified, using default..")
+	if flag.NFlag() == 0 || (flag.NFlag() == 1 && *debug) {
+		// Case ./program [-d]
+		log.Warn("no config specified, using default..")
 	} else {
+		// Update config.
 		err := cfg.UpdateWithJSONFile(*fileName)
 		if err != nil {
 			log.Fatal("failed to load %s, %s", *fileName, err)
@@ -49,33 +63,55 @@ func main() {
 	// Config validation.
 	err := cfg.Validate()
 	if err == config.ErrAlerterCommandEmpty {
+		// Ignore alerter command empty.
 		log.Warn("config: %s", err)
 	} else {
 		log.Fatal("config: %s", err)
 	}
-	// Storage
+}
+
+func initDB() {
 	options := &storage.Options{
 		NumGrid: cfg.Period[0],
 		GridLen: cfg.Period[1],
 	}
-	db, err := storage.Open(cfg.Storage.Path, options)
+	path := cfg.Storage.Path
+	var err error
+	db, err = storage.Open(path, options)
 	if err != nil {
-		log.Fatal("failed to open %s: %v", cfg.Storage.Path, err)
+		log.Fatal("failed to open %s: %v", path, err)
 	}
-	// Cleaner
+}
+
+func initFilter() {
+	flt.Init(db)
+	flt.SetHitLimit(cfg)
+}
+
+func main() {
+	// Arguments
+	flag.Usage = usage
+	flag.Parse()
+	if *showVersion {
+		fmt.Fprintln(os.Stdout, version.Version)
+		os.Exit(1)
+	}
+	// Init
+	initLog()
+	initConfig()
+	initDB()
+	initFilter()
+
+	// Service
 	cleaner := cleaner.New(db, cfg.Period[0]*cfg.Period[1])
 	go cleaner.Start()
-	// Filter
-	filter := filter.New()
-	filter.Init(db)
-	filter.SetHitLimit(cfg)
-	// Alerter
-	alerter := alerter.New(cfg, db, filter)
+
+	alerter := alerter.New(cfg, db, flt)
 	alerter.Start()
-	// Webapp
+
 	go webapp.Start(cfg, db)
-	// Detector
-	detector := detector.New(cfg, db, filter)
+
+	detector := detector.New(cfg, db, flt)
 	detector.Out(alerter.In)
 	detector.Start()
 }
