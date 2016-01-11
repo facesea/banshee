@@ -84,7 +84,8 @@ func initDB() {
 }
 
 func initFilter() {
-	flt.Init(db, cfg)
+	flt.Init(db)
+	flt.SetHitLimit(cfg)
 }
 
 func main() {
