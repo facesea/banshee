@@ -11,8 +11,8 @@ import (
 
 // Options is for db opening.
 type Options struct {
-	NumGrid int
-	GridLen int
+	NumGrid uint32
+	GridLen uint32
 }
 
 // DB handles the states storage for detection.
@@ -20,8 +20,8 @@ type DB struct {
 	// LevelDB
 	db *leveldb.DB
 	// Period
-	numGrid int
-	gridLen int
+	numGrid uint32
+	gridLen uint32
 }
 
 // Open a DB by fileName and options.

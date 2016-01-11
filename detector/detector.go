@@ -149,7 +149,7 @@ func (d *Detector) match(m *models.Metric) bool {
 func (d *Detector) detect(m *models.Metric) error {
 	// Get pervious state.
 	s, err := d.db.State.Get(m)
-	if err != nil && s != statedb.ErrNotFound {
+	if err != nil && err != statedb.ErrNotFound {
 		return err
 	}
 	if err == statedb.ErrNotFound {
@@ -201,14 +201,14 @@ func (d *Detector) fillBlankZeros(m *models.Metric, s *models.State) (*models.St
 	numGrid := d.cfg.Period[0]
 	gridLen := d.cfg.Period[1]
 	period := numGrid * gridLen
-	periodNo := m.Stamp / uint32(period)
-	gridNo := int(m.Stamp%uint32(period)) / gridLen
-	gridStart := uint32(gridNo*gridLen) + periodNo*uint32(period)
-	for gridStart-uint32(period) >= idx.Stamp {
-		gridStart -= uint32(period)
+	periodNo := m.Stamp / period
+	gridNo := (m.Stamp % period) / gridLen
+	gridStart := gridNo*gridLen + periodNo*period
+	for gridStart-period >= idx.Stamp {
+		gridStart -= period
 	}
-	for ; gridStart < m.Stamp; gridStart += uint32(period) {
-		for stamp := gridStart; stamp < gridStart+uint32(gridLen) && stamp < m.Stamp; stamp += uint32(d.cfg.Interval) {
+	for ; gridStart < m.Stamp; gridStart += period {
+		for stamp := gridStart; stamp < gridStart+gridLen && stamp < m.Stamp; stamp += d.cfg.Interval {
 			if stamp > idx.Stamp {
 				// Move state with zero.
 				s = d.cursor.Next(s, &models.Metric{Stamp: stamp})
