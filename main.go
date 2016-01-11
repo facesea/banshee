@@ -35,7 +35,7 @@ func main() {
 	if *debug {
 		log.SetLevel(log.DEBUG)
 	}
-	log.Debug("using %s, max %d cpu", runtime.Version(), runtime.GOMAXPROCS(-1))
+	log.Debug("using %s banshee%s max %d cpu", runtime.Version(), version.Version, runtime.GOMAXPROCS(-1))
 	// Config parsing.
 	cfg := config.New()
 	if flag.NFlag() == 0 || (flag.NFlag() == 1 && *debug == true) {

@@ -84,6 +84,8 @@ func createRule(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	}
 	// Cache
 	db.Admin.RulesCache.Put(rule)
+	// Response
+	ResponseJSONOK(w, rule)
 }
 
 // deleteRule deletes a rule from a project.

@@ -63,7 +63,8 @@ func createProject(w http.ResponseWriter, r *http.Request, _ httprouter.Params) 
 		return
 	}
 	// Save.
-	if err := db.Admin.DB().Create(&models.Project{Name: req.Name}).Error; err != nil {
+	proj := &models.Project{Name: req.Name}
+	if err := db.Admin.DB().Create(proj).Error; err != nil {
 		switch err {
 		case sqlite3.ErrConstraintNotNull:
 			ResponseError(w, ErrNotNull)
@@ -79,6 +80,7 @@ func createProject(w http.ResponseWriter, r *http.Request, _ httprouter.Params) 
 			return
 		}
 	}
+	ResponseJSONOK(w, proj)
 }
 
 // updateProject request
@@ -130,6 +132,7 @@ func updateProject(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
 			return
 		}
 	}
+	ResponseJSONOK(w, proj)
 }
 
 // deleteProject deletes a project.
