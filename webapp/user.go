@@ -110,6 +110,7 @@ func createUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 			return
 		}
 	}
+	ResponseJSONOK(w, user)
 }
 
 // deleteUser deletes a user.
@@ -192,4 +193,5 @@ func updateUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 			return
 		}
 	}
+	ResponseJSONOK(w, user)
 }
