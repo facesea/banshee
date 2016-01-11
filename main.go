@@ -25,17 +25,20 @@ func main() {
 	debug := flag.Bool("d", false, "debug mode")
 	vers := flag.Bool("v", false, "version")
 	flag.Parse()
+
 	// Version
 	if *vers {
 		fmt.Fprintln(os.Stdout, version.Version)
 		os.Exit(1)
 	}
+
 	// Logging
 	log.SetName("banshee")
 	if *debug {
 		log.SetLevel(log.DEBUG)
 	}
 	log.Debug("using %s banshee%s max %d cpu", runtime.Version(), version.Version, runtime.GOMAXPROCS(-1))
+
 	// Config parsing.
 	cfg := config.New()
 	if flag.NFlag() == 0 || (flag.NFlag() == 1 && *debug == true) {
@@ -46,6 +49,7 @@ func main() {
 			log.Fatal("failed to load %s, %s", *fileName, err)
 		}
 	}
+
 	// Config validation.
 	err := cfg.Validate()
 	if err == config.ErrAlerterCommandEmpty {
@@ -53,6 +57,7 @@ func main() {
 	} else {
 		log.Fatal("config: %s", err)
 	}
+
 	// Storage
 	options := &storage.Options{
 		NumGrid: cfg.Period[0],
@@ -62,17 +67,22 @@ func main() {
 	if err != nil {
 		log.Fatal("failed to open %s: %v", cfg.Storage.Path, err)
 	}
+
 	// Cleaner
 	cleaner := cleaner.New(db, cfg.Period[0]*cfg.Period[1])
 	go cleaner.Start()
+
 	// Filter
 	filter := filter.New()
 	filter.Init(db, cfg)
+
 	// Alerter
 	alerter := alerter.New(cfg, db, filter)
 	alerter.Start()
+
 	// Webapp
 	go webapp.Start(cfg, db)
+
 	// Detector
 	detector := detector.New(cfg, db, filter)
 	detector.Out(alerter.In)
