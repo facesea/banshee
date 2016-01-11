@@ -9,7 +9,6 @@ from 'redux-actions'
 export const SET_ALL_PROJECTS = 'SET_ALL_PROJECTS'
 export const DIALOG_OPEN = 'DIALOG_OPEN'
 export const DIALOG_CLOSE = 'DIALOG_CLOSE'
-// export const INPUT_ON_CHANGE = 'INPUT_ON_CHANGE'
 export const CREATE_PROJECT_SUCCESS = 'CREATE_PROJECT_SUCCESS'
 export const HANDLE_INPUT_CHANGE = 'HANDLE_INPUT_CHANGE'
 
@@ -18,7 +17,6 @@ export const HANDLE_INPUT_CHANGE = 'HANDLE_INPUT_CHANGE'
 // ------------------------------------
 export const dialogOpen = createAction(DIALOG_OPEN, () => true)
 export const dialogClose = createAction(DIALOG_CLOSE, () => false)
-// export const inputOnChange = createAction(INPUT_ON_CHANGE, () => getState().projectName)
 export const setProjects = createAction(SET_ALL_PROJECTS, (projects = []) => projects)
 export const createProjectSuccess = createAction(CREATE_PROJECT_SUCCESS, () => true)
 export const handleInputChange = createAction(HANDLE_INPUT_CHANGE, (e) => e.target.value)
@@ -84,11 +82,6 @@ export default handleActions(
     [DIALOG_CLOSE]: (state, { payload }) => {
       return Object.assign({}, state, {
         open: payload
-      })
-    },
-    [INPUT_ON_CHANGE]: (state, { payload }) => {
-      return Object.assign({}, state, {
-        errorText: payload ? '' : 'This field is required'
       })
     },
     [CREATE_PROJECT_SUCCESS]: (state, { payload }) => {
