@@ -58,7 +58,6 @@ export class AdminTable extends React.Component {
         color: Colors.lightGreen500
       }
     }
-    console.log('state:', this.state, 'this.props:', this.props)
     const actions = [
       <FlatButton
         label='Cancel'

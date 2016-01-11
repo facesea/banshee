@@ -35,6 +35,7 @@ export const getAllProjects = () => {
 
 export const createProject = () => {
   return (dispatch, getState) => {
+    let state = getState().project;
     return fetch('/api/project',
       {
         method: 'POST',
@@ -42,7 +43,7 @@ export const createProject = () => {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ name: getState().projectName })
+        body: JSON.stringify({ name: state.projectName })
       })
       .then(response => {
         return response.json()
@@ -87,6 +88,11 @@ export default handleActions(
     [CREATE_PROJECT_SUCCESS]: (state, { payload }) => {
       return Object.assign({}, state, {
         errorText: payload ? '' : 'This field is required'
+      })
+    },
+    [HANDLE_INPUT_CHANGE]: (state, { payload }) => {
+      return Object.assign({}, state, {
+        projectName: payload
       })
     }
   },
