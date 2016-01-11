@@ -67,7 +67,8 @@ func main() {
 	go cleaner.Start()
 	// Filter
 	filter := filter.New()
-	filter.Init(db, cfg)
+	filter.Init(db)
+	filter.SetHitLimit(cfg)
 	// Alerter
 	alerter := alerter.New(cfg, db, filter)
 	alerter.Start()

@@ -3,10 +3,12 @@
 package filter
 
 import (
+	"github.com/eleme/banshee/config"
 	"github.com/eleme/banshee/models"
 	"github.com/eleme/banshee/util/assert"
 	"path/filepath"
 	"testing"
+	"time"
 )
 
 func TestSimple(t *testing.T) {
@@ -30,6 +32,30 @@ func TestSimple(t *testing.T) {
 
 	rules4 := filter.MatchedRules(&models.Metric{Name: "a.b.c.d"})
 	assert.Ok(t, 2 == len(rules4))
+}
+
+func TestHitLimit(t *testing.T) {
+	//New and add rules.
+	config := config.New()
+	config.Interval = 1
+	rule1 := &models.Rule{Pattern: "a.*.c.d"}
+	filter := New()
+	filter.addRule(rule1)
+	filter.SetHitLimit(config)
+
+	for i := 0; i < config.Detector.IntervalHitLimit; i++ {
+		//hit rule when counter < intervalHitLimit
+		rules := filter.MatchedRules(&models.Metric{Name: "a.b.c.d"})
+		assert.Ok(t, 1 == len(rules))
+
+	}
+	//counter over limit, matched rules = 0
+	rules := filter.MatchedRules(&models.Metric{Name: "a.b.c.d"})
+	assert.Ok(t, 0 == len(rules))
+	time.Sleep(time.Second * 2)
+	//after interval counter is cleared, matched rules = 1
+	rules = filter.MatchedRules(&models.Metric{Name: "a.b.c.d"})
+	assert.Ok(t, 1 == len(rules))
 }
 
 func BenchmarkRules1KNativeBest(b *testing.B) {
