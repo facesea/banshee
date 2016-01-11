@@ -18,22 +18,22 @@ type msg struct {
 }
 
 func main() {
+	// Parse json from command line argv#1
 	str := os.Args[1]
 	res := msg{}
 	json.Unmarshal([]byte(str), &res)
 	// Email
 	if res.User.EnableEmail {
-		fmt.Printf("Alert metric - project:%s metric:%s value:%5f average:%5f score:%5f timestamp:%d",
+		fmt.Printf("Alert metric - project:%s metric:%s value:%.3f average:%.3f score:%.3f timestamp:%d\n",
 			res.Project.Name, res.Metric.Name, res.Metric.Value, res.Metric.Average, res.Metric.Score,
 			res.Metric.Stamp)
-		fmt.Printf("User info - name:%s email:%s", res.User.Name, res.User.Email)
+		fmt.Printf("User info - name:%s email:%s\n", res.User.Name, res.User.Email)
 	}
 	// Phone
 	if res.User.EnablePhone {
-		fmt.Printf("Alert metric - project:%s metric:%s value:%5f average:%5f score:%5f timestamp:%d",
+		fmt.Printf("Alert metric - project:%s metric:%s value:%.3f average:%.3f score:%.3f timestamp:%d\n",
 			res.Project.Name, res.Metric.Name, res.Metric.Value, res.Metric.Average, res.Metric.Score,
 			res.Metric.Stamp)
-		fmt.Printf("User info - name:%s email:%s", res.User.Name, res.User.Phone)
+		fmt.Printf("User info - name:%s phone:%s\n", res.User.Name, res.User.Phone)
 	}
-
 }
