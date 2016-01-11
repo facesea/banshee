@@ -149,12 +149,11 @@ func (d *Detector) match(m *models.Metric) bool {
 func (d *Detector) detect(m *models.Metric) error {
 	// Get pervious state.
 	s, err := d.db.State.Get(m)
-	if err != nil {
-		if err == statedb.ErrNotFound {
-			s = nil
-		} else {
-			return err
-		}
+	if err != nil && s != statedb.ErrNotFound {
+		return err
+	}
+	if err == statedb.ErrNotFound {
+		s = nil
 	}
 	// Fill blank with zeros.
 	for _, pattern := range d.cfg.Detector.FillBlankZeros {
@@ -191,13 +190,13 @@ func (d *Detector) store(m *models.Metric) error {
 func (d *Detector) fillBlankZeros(m *models.Metric, s *models.State) (*models.State, error) {
 	// Get index.
 	idx, err := d.db.Index.Get(m.Name)
-	if err != nil {
-		if err == indexdb.ErrNotFound {
-			// Not found, the metric is the first time seen and s must be nil.
-			// The metric will be trusted since its state is nil.
-			return s, nil
-		}
+	if err != nil && err != indexdb.ErrNotFound {
 		return nil, err
+	}
+	if err == indexdb.ErrNotFound {
+		// Not found, the metric is the first time seen and s must be nil.
+		// The metric will be trusted since its state is nil.
+		return s, nil
 	}
 	numGrid := d.cfg.Period[0]
 	gridLen := d.cfg.Period[1]
