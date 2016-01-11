@@ -4,10 +4,17 @@ import webpackConfig from '../build/webpack.config'
 import serve from 'koa-static'
 import _debug from 'debug'
 import config from '../config'
+import proxy from 'koa-proxy'
 
 const debug = _debug('app:server')
 const paths = config.utils_paths
 const app = koa()
+
+// Proxy localhost 2016 for dev purpose.
+app.use(proxy({
+  host: "http://localhost:2016",
+  match: /^\/api\//,
+}))
 
 // This rewrites all routes requests to the root /index.html file
 // (ignoring file requests). If you want to implement isomorphic
