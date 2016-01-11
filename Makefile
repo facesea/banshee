@@ -8,3 +8,8 @@ test: lint
 
 build:
 	godep go build
+
+changelog:
+	git log --first-parent --pretty="format:* %b" v`./banshee -v`..
+
+.PHONY: changelog
