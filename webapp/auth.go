@@ -28,6 +28,10 @@ func (a *authHandler) handler(h httprouter.Handle) httprouter.Handle {
 }
 
 func (a *authHandler) auth(w http.ResponseWriter, r *http.Request) bool {
+	if len(a.user) == 0 {
+		// Config auth user length 0 for no auth.
+		return true
+	}
 	user, pass, ok := r.BasicAuth()
 	if ok && user == a.user && pass == a.pass {
 		// Ok
