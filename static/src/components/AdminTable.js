@@ -13,6 +13,7 @@ import Dialog from 'material-ui/lib/dialog'
 import FlatButton from 'material-ui/lib/flat-button'
 import IconButton from 'material-ui/lib/icon-button'
 import TextField from 'material-ui/lib/text-field'
+import Snackbar from 'material-ui/lib/snackbar'
 import ContentAddBox from 'material-ui/lib/svg-icons/content/add-box'
 import { Colors } from 'material-ui/lib/styles'
 
@@ -22,7 +23,9 @@ const mapStateToProps = (state) => ({
   projects: state.project.projects,
   open: state.project.open,
   projectName: state.project.projectName,
-  errorText: state.project.errorText
+  errorText: state.project.errorText,
+  snackbarMessage: state.project.snackbarMessage,
+  snackbarOpen: state.project.snackbarOpen
 })
 export class AdminTable extends React.Component {
   static propTypes = {
@@ -34,7 +37,10 @@ export class AdminTable extends React.Component {
     dialogOpen: React.PropTypes.func.isRequired,
     dialogClose: React.PropTypes.func.isRequired,
     handleInputChange: React.PropTypes.func.isRequired,
-    createProject: React.PropTypes.func.isRequired
+    handleSnackbarClose: React.PropTypes.func.isRequired,
+    createProject: React.PropTypes.func.isRequired,
+    snackbarOpen: React.PropTypes.bool.isRequired,
+    snackbarMessage: React.PropTypes.string.isRequired
   }
 
   componentDidMount () {
@@ -58,7 +64,6 @@ export class AdminTable extends React.Component {
         color: Colors.lightGreen500
       }
     }
-    console.log('state:', this.state, 'this.props:', this.props)
     const actions = [
       <FlatButton
         label='Cancel'
@@ -69,16 +74,13 @@ export class AdminTable extends React.Component {
         primary
         onTouchTap={this.props.createProject} />
     ]
-
     return (
       <div>
         <Table
-          height={'300px'}
+          height={'500px'}
           fixedHeader
-          fixedFooter
-          selectable
-          >
-          <TableHeader enableSelectAll>
+          fixedFooter>
+          <TableHeader>
             <TableRow>
               <TableHeaderColumn colSpan='3' style={{textAlign: 'center'}}>
                 Projects
@@ -96,16 +98,20 @@ export class AdminTable extends React.Component {
           <TableBody
             showRowHover
             stripedRows
-            deselectOnClickaway={false}
-            >
-            <TableRow selected>
-              <TableRowColumn>{this.props.projects}</TableRowColumn>
-              <TableRowColumn>John Smith</TableRowColumn>
-              <TableRowColumn style={styles.column}>
-                <RaisedButton fullWidth={false} label='View' primary style={styles.btnPrimary} onTouchTap={this.props.getAllProjects}/>
-                <RaisedButton label='Edit' secondary style={styles.btnPrimary}/>
-              </TableRowColumn>
-            </TableRow>
+            selectable={false}
+            deselectOnClickaway={false}>
+            {
+              this.props.projects.map((el, index) => {
+                return <TableRow selectable={false} key={el.id}>
+                    <TableRowColumn>{el.id}</TableRowColumn>
+                    <TableRowColumn>{el.name}</TableRowColumn>
+                    <TableRowColumn style={styles.column}>
+                      <RaisedButton fullWidth={false} label='View' primary style={styles.btnPrimary} onTouchTap={this.props.getAllProjects}/>
+                      <RaisedButton label='Edit' secondary style={styles.btnPrimary}/>
+                    </TableRowColumn>
+                  </TableRow>
+              })
+            }
           </TableBody>
         </Table>
         <Dialog
@@ -119,6 +125,13 @@ export class AdminTable extends React.Component {
             onChange={this.props.handleInputChange}
             errorText={this.props.errorText}/>
         </Dialog>
+        <Snackbar
+          open={this.props.snackbarOpen}
+          message={this.props.snackbarMessage}
+          autoHideDuration={2000}
+          action='ERROR'
+          onRequestClose={this.props.handleSnackbarClose}
+        />
       </div>
     )
   }

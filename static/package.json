@@ -39,6 +39,7 @@
     "redux-actions": "^0.9.0",
     "redux-simple-router": "^1.0.1",
     "redux-thunk": "^1.0.0",
+    "superagent": "^1.6.1",
     "url": "^0.11.0",
     "yargs": "^3.18.0"
   },
