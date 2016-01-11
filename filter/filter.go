@@ -51,9 +51,8 @@ func New() *Filter {
 }
 
 // Init from db.
-func (f *Filter) Init(db *storage.DB, cfg *config.Config) {
+func (f *Filter) Init(db *storage.DB) {
 	log.Debug("init filter's rules from cache..")
-	f.intervalHitLimit = cfg.Detector.IntervalHitLimit
 	// Listen rules changes.
 	db.Admin.RulesCache.OnAdd(f.addRuleCh)
 	db.Admin.RulesCache.OnDel(f.delRuleCh)
@@ -64,6 +63,11 @@ func (f *Filter) Init(db *storage.DB, cfg *config.Config) {
 	for _, rule := range rules {
 		f.addRule(rule)
 	}
+}
+
+// SetHitLimit start to clear hitCounters by Interval
+func (f *Filter) SetHitLimit(cfg *config.Config) {
+	f.intervalHitLimit = cfg.Detector.IntervalHitLimit
 	// Start to check number of matched metrics
 	ticker := time.NewTicker(time.Second * time.Duration(cfg.Interval))
 	go func() {
@@ -71,7 +75,6 @@ func (f *Filter) Init(db *storage.DB, cfg *config.Config) {
 			f.hitCounters.Clear()
 		}
 	}()
-
 }
 
 // newChildCache creates a new childCache
@@ -91,7 +94,7 @@ func (f *Filter) matchedRs(c *childFilter, prefix string, l []string) []*models.
 		if exist {
 			//use atomic
 			atomic.AddInt32(v.(*int32), 1)
-			if atomic.LoadInt32(v.(*int32)) >= int32(f.intervalHitLimit) {
+			if atomic.LoadInt32(v.(*int32)) > int32(f.intervalHitLimit) {
 				log.Info("hits over intervalHitLimit, metric: %s", prefix)
 				return []*models.Rule{}
 			}
