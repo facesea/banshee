@@ -12,22 +12,22 @@ import (
 // Measures
 const (
 	// Time
-	Second = 1
-	Minute = 60 * Second
-	Hour   = 60 * Minute
-	Day    = 24 * Hour
+	Second uint32 = 1
+	Minute        = 60 * Second
+	Hour          = 60 * Minute
+	Day           = 24 * Hour
 )
 
 // Defaults
 const (
 	// Default time interval for all metrics in seconds.
-	DefaultInterval int = 10 * Second
+	DefaultInterval uint32 = 10 * Second
 	// Default hit limit to a rule in an interval
 	DefaultIntervalHitLimit int = 100
 	// Default grid length in seconds.
-	DefaultGridLen int = 5 * Minute
+	DefaultGridLen uint32 = 5 * Minute
 	// Default number of grids in one period.
-	DefaultNumGrid int = 1 * Day / DefaultGridLen
+	DefaultNumGrid uint32 = 1 * Day / DefaultGridLen
 	// Default weight factor for moving average and standard deviation.
 	DefaultWeightFactor float64 = 0.05
 	// Default value of alerting interval.
@@ -37,7 +37,7 @@ const (
 // Least count.
 const (
 	// Min value of leastC.
-	leastCountMin int = 3 * Minute / DefaultInterval
+	leastCountMin uint32 = 3 * Minute / DefaultInterval
 	// Percentage the leastC in one grid.
 	leastCountGridPercent float64 = float64(leastCountMin) / float64(DefaultGridLen)
 )
@@ -52,8 +52,8 @@ const (
 
 // Config is the configuration container.
 type Config struct {
-	Interval int            `json:"interval"`
-	Period   [2]int         `json:"period"`
+	Interval uint32         `json:"interval"`
+	Period   [2]uint32      `json:"period"`
 	Storage  configStorage  `json:"storage"`
 	Detector configDetector `json:"detector"`
 	Webapp   configWebapp   `json:"webapp"`
@@ -89,7 +89,7 @@ type configAlerter struct {
 func New() *Config {
 	config := new(Config)
 	config.Interval = DefaultInterval
-	config.Period = [2]int{DefaultNumGrid, DefaultGridLen}
+	config.Period = [2]uint32{DefaultNumGrid, DefaultGridLen}
 	config.Storage.Path = "storage/"
 	config.Detector.Port = 2015
 	config.Detector.Factor = DefaultWeightFactor
@@ -123,8 +123,8 @@ func (config *Config) UpdateWithJSONFile(fileName string) error {
 // LeastC returns the least count to start detection, if the count of a metric
 // is less than this value, it will be trusted without an calculation on its
 // score.
-func (config *Config) LeastC() int {
-	c := int((float64(config.Period[1]) / float64(config.Interval)) * leastCountGridPercent)
+func (config *Config) LeastC() uint32 {
+	c := uint32((float64(config.Period[1]) / float64(config.Interval)) * leastCountGridPercent)
 	if c > leastCountMin {
 		return c
 	}

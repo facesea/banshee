@@ -11,10 +11,10 @@ import (
 )
 
 // Help to generate random numbers between min and max.
-func genMetrics(min, max float64, count int) []*models.Metric {
+func genMetrics(min, max float64, count uint32) []*models.Metric {
 	var arr []*models.Metric
 	delta := max - min
-	for i := 0; i < count; i++ {
+	for i := uint32(0); i < count; i++ {
 		value := rand.Float64()*delta + min
 		m := &models.Metric{Value: value}
 		arr = append(arr, m)
@@ -37,7 +37,7 @@ func genMetricsAroundTrendUpline(min, max, randomRange float64, count int) []*mo
 // Case as first
 func TestAsFirst(t *testing.T) {
 	wf := 0.05
-	leastC := 18
+	leastC := uint32(18)
 	c := New(wf, leastC)
 	m := &models.Metric{Value: 1.32}
 	s := c.Next(nil, m)
@@ -50,7 +50,7 @@ func TestAsFirst(t *testing.T) {
 // Case count not enough
 func TestNotEnough(t *testing.T) {
 	wf := 0.05
-	leastC := 18
+	leastC := uint32(18)
 	c := New(wf, leastC)
 	s := &models.State{Count: leastC - 1, Average: 0.1, StdDev: 0.1}
 	m := &models.Metric{Value: 0.1}
@@ -62,7 +62,7 @@ func TestNotEnough(t *testing.T) {
 // Simple case.
 func TestSimple(t *testing.T) {
 	wf := 0.05
-	leastC := 18
+	leastC := uint32(18)
 	c := New(wf, leastC)
 	l := genMetrics(120.0, 140.0, leastC)
 	var s *models.State
@@ -89,7 +89,7 @@ func TestSimple(t *testing.T) {
 // Case anomaly after an anomaly.
 func TestAnomalyAfterBigAnomaly(t *testing.T) {
 	wf := 0.05
-	leastC := 18
+	leastC := uint32(18)
 	c := New(wf, leastC)
 	l := genMetrics(120.0, 140.0, 100)
 	var s *models.State
@@ -117,7 +117,7 @@ func TestAnomalyAfterBigAnomaly(t *testing.T) {
 // Case test random value range cover negative zone
 func TestNegativeValue(t *testing.T) {
 	wf := 0.05
-	leastC := 18
+	leastC := uint32(18)
 	c := New(wf, leastC)
 	l := genMetrics(-210.0, -190.0, 60)
 	var s *models.State
@@ -135,7 +135,7 @@ func TestNegativeValue(t *testing.T) {
 // Case slowly trending up.
 func TestSlowlyTrendingUp(t *testing.T) {
 	wf := 0.05
-	leastC := 18
+	leastC := uint32(18)
 	c := New(wf, leastC)
 	l := genMetricsAroundTrendUpline(100.0, 200.0, 10.0, 60)
 	var s *models.State
@@ -149,7 +149,7 @@ func TestSlowlyTrendingUp(t *testing.T) {
 // banshee should not alert forever or for a long time
 func TestAnomalyLowToHigh(t *testing.T) {
 	wf := 0.05
-	leastC := 18
+	leastC := uint32(18)
 	c := New(wf, leastC)
 	l := genMetrics(120.0, 140.0, 100)
 	var s *models.State
@@ -172,7 +172,7 @@ func TestAnomalyLowToHigh(t *testing.T) {
 // banshee should not alert forever or for a long time
 func TestAnomalyHighToLow(t *testing.T) {
 	wf := 0.05
-	leastC := 18
+	leastC := uint32(18)
 	c := New(wf, leastC)
 	l := genMetrics(220.0, 240.0, 100)
 	var s *models.State

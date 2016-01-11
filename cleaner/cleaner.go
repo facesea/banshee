@@ -31,7 +31,7 @@ type Cleaner struct {
 }
 
 // New creates a cleaner.
-func New(db *storage.DB, period int) *Cleaner {
+func New(db *storage.DB, period uint32) *Cleaner {
 	c := new(Cleaner)
 	c.db = db
 	c.expiration = time.Duration(uint32(expirationNumToPeriod*float32(period))) * time.Second

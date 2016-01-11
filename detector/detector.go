@@ -16,6 +16,7 @@ import (
 	"github.com/eleme/banshee/filter"
 	"github.com/eleme/banshee/models"
 	"github.com/eleme/banshee/storage"
+	"github.com/eleme/banshee/storage/indexdb"
 	"github.com/eleme/banshee/storage/statedb"
 	"github.com/eleme/banshee/util/log"
 )
@@ -151,15 +152,23 @@ func (d *Detector) detect(m *models.Metric) error {
 	if err != nil && err != statedb.ErrNotFound {
 		return err
 	}
-	// Move state next.
-	var n *models.State
 	if err == statedb.ErrNotFound {
-		n = d.cursor.Next(nil, m)
-	} else {
-		n = d.cursor.Next(s, m)
+		s = nil
 	}
+	// Fill blank with zeros.
+	for _, pattern := range d.cfg.Detector.FillBlankZeros {
+		if ok, _ := filepath.Match(pattern, m.Name); ok {
+			// Need to fill zeros.
+			if s, err = d.fillBlankZeros(m, s); err != nil {
+				return err
+			}
+			break
+		}
+	}
+	// Move state next.
+	s = d.cursor.Next(s, m)
 	// Put the next state to db.
-	return d.db.State.Put(m, n)
+	return d.db.State.Put(m, s)
 }
 
 // store detected metrics.
@@ -175,4 +184,36 @@ func (d *Detector) store(m *models.Metric) error {
 		return err
 	}
 	return nil
+}
+
+// fillBlankZeros moves the state with zero on blanks.
+func (d *Detector) fillBlankZeros(m *models.Metric, s *models.State) (*models.State, error) {
+	// Get index.
+	idx, err := d.db.Index.Get(m.Name)
+	if err != nil && err != indexdb.ErrNotFound {
+		return nil, err
+	}
+	if err == indexdb.ErrNotFound {
+		// Not found, the metric is the first time seen and s must be nil.
+		// The metric will be trusted since its state is nil.
+		return s, nil
+	}
+	numGrid := d.cfg.Period[0]
+	gridLen := d.cfg.Period[1]
+	period := numGrid * gridLen
+	periodNo := m.Stamp / period
+	gridNo := (m.Stamp % period) / gridLen
+	gridStart := gridNo*gridLen + periodNo*period
+	for gridStart-period >= idx.Stamp {
+		gridStart -= period
+	}
+	for ; gridStart < m.Stamp; gridStart += period {
+		for stamp := gridStart; stamp < gridStart+gridLen && stamp < m.Stamp; stamp += d.cfg.Interval {
+			if stamp > idx.Stamp {
+				// Move state with zero.
+				s = d.cursor.Next(s, &models.Metric{Stamp: stamp})
+			}
+		}
+	}
+	return s, nil
 }

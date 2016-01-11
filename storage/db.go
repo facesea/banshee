@@ -28,8 +28,8 @@ const (
 // Options is for db opening.
 type Options struct {
 	// statedb
-	NumGrid int
-	GridLen int
+	NumGrid uint32
+	GridLen uint32
 }
 
 // DB handles the storage on leveldb.

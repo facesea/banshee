@@ -17,11 +17,11 @@ type Cursor struct {
 	wf float64
 	// The least count for a metric to start the detection, 3-sigma rule will
 	// not start to work until the metric's count is large enough.
-	leastC int
+	leastC uint32
 }
 
 // New create a cursor.
-func New(wf float64, leastC int) *Cursor {
+func New(wf float64, leastC uint32) *Cursor {
 	return &Cursor{wf, leastC}
 }
 
