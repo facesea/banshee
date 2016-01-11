@@ -97,14 +97,18 @@ export class AdminTable extends React.Component {
             stripedRows
             deselectOnClickaway={false}
             >
-            <TableRow selected>
-              <TableRowColumn>{this.props.projects}</TableRowColumn>
-              <TableRowColumn>John Smith</TableRowColumn>
-              <TableRowColumn style={styles.column}>
-                <RaisedButton fullWidth={false} label='View' primary style={styles.btnPrimary} onTouchTap={this.props.getAllProjects}/>
-                <RaisedButton label='Edit' secondary style={styles.btnPrimary}/>
-              </TableRowColumn>
-            </TableRow>
+            {
+              this.props.projects.map((el, index) => {
+                return <TableRow selected key={el.id}>
+                    <TableRowColumn>{el.id}</TableRowColumn>
+                    <TableRowColumn>{el.Name}</TableRowColumn>
+                    <TableRowColumn style={styles.column}>
+                      <RaisedButton fullWidth={false} label='View' primary style={styles.btnPrimary} onTouchTap={this.props.getAllProjects}/>
+                      <RaisedButton label='Edit' secondary style={styles.btnPrimary}/>
+                    </TableRowColumn>
+                  </TableRow>
+              })
+            }
           </TableBody>
         </Table>
         <Dialog

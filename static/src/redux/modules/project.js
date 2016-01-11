@@ -35,7 +35,7 @@ export const getAllProjects = () => {
 
 export const createProject = () => {
   return (dispatch, getState) => {
-    let state = getState().project;
+    let state = getState().project
     return fetch('/api/project',
       {
         method: 'POST',
@@ -46,6 +46,7 @@ export const createProject = () => {
         body: JSON.stringify({ name: state.projectName })
       })
       .then(response => {
+        console.log('response:', response)
         return response.json()
       })
       .then(json => {
