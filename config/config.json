@@ -7,7 +7,10 @@
   "detector": {
     "port": 2015,
     "factor": 0.05,
-    "blacklist": []
+    "blacklist": [],
+    "intervalHitLimit": 100,
+    "defaultTrustLines": {},
+    "fillBlankZeros": []
   },
   "webapp": {
     "port": 2016,

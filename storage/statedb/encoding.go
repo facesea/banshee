@@ -9,10 +9,10 @@ import (
 )
 
 // getGirdNo returns the grid number for the metric.
-func (db *DB) getGridNo(m *models.Metric) int {
+func (db *DB) getGridNo(m *models.Metric) uint32 {
 	// GirdNo = (Stamp % Period) / GirdLen
 	period := db.numGrid * db.gridLen
-	return int(m.Stamp%uint32(period)) / db.gridLen
+	return (m.Stamp % period) / db.gridLen
 }
 
 // encodeKey encodes state key by metric.

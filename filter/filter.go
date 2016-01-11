@@ -7,7 +7,10 @@ package filter
 import (
 	"strings"
 	"sync"
+	"sync/atomic"
+	"time"
 
+	"github.com/eleme/banshee/config"
 	"github.com/eleme/banshee/models"
 	"github.com/eleme/banshee/storage"
 	"github.com/eleme/banshee/util/log"
@@ -20,7 +23,10 @@ type Filter struct {
 	addRuleCh chan *models.Rule
 	delRuleCh chan *models.Rule
 	// Children
-	children *safemap.SafeMap
+	children    *safemap.SafeMap
+	hitCounters *safemap.SafeMap
+	// Limit for a rule hits in an interval time
+	intervalHitLimit int
 }
 
 // childFilter is a suffix tree.
@@ -36,15 +42,18 @@ const bufferedChangedRulesLimit = 1000
 // New creates a filter.
 func New() *Filter {
 	return &Filter{
-		addRuleCh: make(chan *models.Rule, bufferedChangedRulesLimit),
-		delRuleCh: make(chan *models.Rule, bufferedChangedRulesLimit),
-		children:  safemap.New(),
+		addRuleCh:        make(chan *models.Rule, bufferedChangedRulesLimit),
+		delRuleCh:        make(chan *models.Rule, bufferedChangedRulesLimit),
+		children:         safemap.New(),
+		hitCounters:      safemap.New(),
+		intervalHitLimit: 100,
 	}
 }
 
 // Init from db.
-func (f *Filter) Init(db *storage.DB) {
+func (f *Filter) Init(db *storage.DB, cfg *config.Config) {
 	log.Debug("init filter's rules from cache..")
+	f.intervalHitLimit = cfg.Detector.IntervalHitLimit
 	// Listen rules changes.
 	db.Admin.RulesCache.OnAdd(f.addRuleCh)
 	db.Admin.RulesCache.OnDel(f.delRuleCh)
@@ -55,6 +64,14 @@ func (f *Filter) Init(db *storage.DB) {
 	for _, rule := range rules {
 		f.addRule(rule)
 	}
+	// Start to check number of matched metrics
+	ticker := time.NewTicker(time.Second * time.Duration(cfg.Interval))
+	go func() {
+		for _ = range ticker.C {
+			f.hitCounters.Clear()
+		}
+	}()
+
 }
 
 // newChildCache creates a new childCache
@@ -67,13 +84,26 @@ func newChildFilter() *childFilter {
 }
 
 // MatchedRules checks if a metric hit, l is the unchecked words list of the metric in order
-func (c *childFilter) matchedRs(l []string) []*models.Rule {
+func (f *Filter) matchedRs(c *childFilter, prefix string, l []string) []*models.Rule {
 	// when len(l)==0 means all words are checked and passed, return all matched rules
 	if len(l) == 0 {
+		v, exist := f.hitCounters.Get(prefix)
+		if exist {
+			//use atomic
+			atomic.AddInt32(v.(*int32), 1)
+			if atomic.LoadInt32(v.(*int32)) >= int32(f.intervalHitLimit) {
+				log.Info("hits over intervalHitLimit, metric: %s", prefix)
+				return []*models.Rule{}
+			}
+		} else {
+			var counter int32 = 1
+			f.hitCounters.Set(prefix, &counter)
+		}
 		c.lock.RLock()
 		defer c.lock.RUnlock()
 		return c.matchedRules
 	}
+
 	rules := []*models.Rule{}
 	//when next level is nil,return empty rules slice
 	if c.children == nil {
@@ -85,14 +115,14 @@ func (c *childFilter) matchedRs(l []string) []*models.Rule {
 		//when has a "*" node, the suffix tree matched the metric words by now, so goto next
 		// level and append matched rules to slice
 		ch := v.(*childFilter)
-		rules = append(rules, ch.matchedRs(l[1:])...)
+		rules = append(rules, f.matchedRs(ch, prefix+"."+l[0], l[1:])...)
 	}
 	//check if this level has a same word node
 	v, exist = c.children.Get(l[0])
 	if exist {
 		//when has the node, matched by now, goto next level and append matched rules to slice
 		ch := v.(*childFilter)
-		rules = append(rules, ch.matchedRs(l[1:])...)
+		rules = append(rules, f.matchedRs(ch, prefix+"."+l[0], l[1:])...)
 	}
 	//no matched node return empty rules slice, else return all matched rules
 	return rules
@@ -108,14 +138,14 @@ func (f *Filter) MatchedRules(m *models.Metric) []*models.Rule {
 	if exist {
 		//when root has a "*" node, goto next level
 		ch := v.(*childFilter)
-		rules = append(rules, ch.matchedRs(l[1:])...)
+		rules = append(rules, f.matchedRs(ch, l[0], l[1:])...)
 	}
 	//check if root of the rules suffix tree has the same node to the first word of the metric
 	v, exist = f.children.Get(l[0])
 	if exist {
 		//when has the same word node, goto next level
 		ch := v.(*childFilter)
-		rules = append(rules, ch.matchedRs(l[1:])...)
+		rules = append(rules, f.matchedRs(ch, l[0], l[1:])...)
 	}
 	return rules
 }
