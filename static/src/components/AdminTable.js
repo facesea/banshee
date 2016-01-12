@@ -41,7 +41,7 @@ export class AdminTable extends React.Component {
     createProject: React.PropTypes.func.isRequired,
     snackbarOpen: React.PropTypes.bool.isRequired,
     snackbarMessage: React.PropTypes.string.isRequired
-  }
+  };
 
   componentDidMount () {
     this.props.getAllProjects()
