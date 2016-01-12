@@ -13,36 +13,56 @@ import (
 
 // createRule request
 type createRuleRequest struct {
-	ProjectID    int     `json:"projectID"`
-	Pattern      string  `json:"pattern"`
-	When         int     `json:"when"`
-	ThresholdMax float64 `json:"thresholdMax"`
-	ThresholdMin float64 `json:"thresholdMin"`
-	TrustLine    float64 `json:"trustLine"`
+	ProjectID             int     `json:"projectID"`
+	Pattern               string  `json:"pattern"`
+	OnTrendUp             bool    `json:"onTrendUp"`
+	OnTrendDown           bool    `json:"onTrendDown"`
+	OnValueGt             bool    `json:"onValueGt"`
+	OnValueLt             bool    `json:"onValueLt"`
+	OnTrendUpAndValueGt   bool    `json:"onTrendUpAndValueGt"`
+	OnTrendDownAndValueLt bool    `json:"onTrendDownAndValueLt"`
+	ThresholdMax          float64 `json:"thresholdMax"`
+	ThresholdMin          float64 `json:"thresholdMin"`
+	TrustLine             float64 `json:"trustLine"`
 }
 
 // createRule creates a rule.
 func createRule(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	// Request
-	req := &createRuleRequest{
-		When:      models.WhenTrendUp | models.WhenTrendDown,
-		TrustLine: 0,
-	}
+	req := &createRuleRequest{}
 	if err := RequestBind(r, req); err != nil {
 		ResponseError(w, ErrBadRequest)
 		return
 	}
 	// Validate
 	if len(req.Pattern) <= 0 {
+		// Pattern is empty.
 		ResponseError(w, ErrRulePattern)
 		return
 	}
-	if req.When <= 0x1 || req.When >= 0x3f {
-		ResponseError(w, ErrRuleWhen)
+	if req.ProjectID <= 0 {
+		// ProjectID is invalid.
+		ResponseError(w, ErrRuleProjectID)
 		return
 	}
-	if req.ProjectID <= 0 {
-		ResponseError(w, ErrRuleProjectID)
+	if !req.OnTrendUp &&
+		!req.OnTrendDown &&
+		!req.OnValueGt &&
+		!req.OnValueLt &&
+		!req.OnTrendUpAndValueGt &&
+		!req.OnTrendDownAndValueLt {
+		// No condition
+		ResponseError(w, ErrRuleNoCondition)
+		return
+	}
+	if (req.OnValueGt || req.OnTrendUpAndValueGt) && req.ThresholdMax == 0 {
+		// ThresholdMax should not be 0.
+		ResponseError(w, ErrRuleThresholdMaxRequired)
+		return
+	}
+	if (req.OnValueLt || req.OnTrendDownAndValueLt) && req.ThresholdMin == 0 {
+		// ThresholdMin should not be 0.
+		ResponseError(w, ErrRuleThresholdMinRequired)
 		return
 	}
 	// Find project.
@@ -57,11 +77,31 @@ func createRule(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 			return
 		}
 	}
+	// When
+	when := 0
+	if req.OnTrendUp {
+		when = when | models.WhenTrendUp
+	}
+	if req.OnTrendDown {
+		when = when | models.WhenTrendDown
+	}
+	if req.OnValueGt {
+		when = when | models.WhenValueGt
+	}
+	if req.OnValueLt {
+		when = when | models.WhenValueLt
+	}
+	if req.OnTrendUpAndValueGt {
+		when = when | models.WhenTrendUpAndValueGt
+	}
+	if req.OnTrendDownAndValueLt {
+		when = when | models.WhenTrendDownAndValueLt
+	}
 	// Create rule.
 	rule := &models.Rule{
 		ProjectID:    req.ProjectID,
 		Pattern:      req.Pattern,
-		When:         req.When,
+		When:         when,
 		ThresholdMax: req.ThresholdMax,
 		ThresholdMin: req.ThresholdMin,
 		TrustLine:    req.TrustLine,
