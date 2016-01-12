@@ -32,6 +32,8 @@ const (
 	DefaultWeightFactor float64 = 0.05
 	// Default value of alerting interval.
 	DefaultAlerterInterval uint32 = 20 * Minute
+	// Default value of alert times limit in one day for the same metric
+	DefaultAlerterOneDayLimit uint32 = 5
 )
 
 // Least count.
@@ -80,9 +82,10 @@ type configWebapp struct {
 }
 
 type configAlerter struct {
-	Command  string `json:"command"`
-	Workers  int    `json:"workers"`
-	Interval uint32 `json:"inteval"`
+	Command     string `json:"command"`
+	Workers     int    `json:"workers"`
+	Interval    uint32 `json:"inteval"`
+	OneDayLimit uint32 `json:"oneDayLimit"`
 }
 
 // New creates a Config with default values.
@@ -103,6 +106,7 @@ func New() *Config {
 	config.Alerter.Command = ""
 	config.Alerter.Workers = 4
 	config.Alerter.Interval = DefaultAlerterInterval
+	config.Alerter.OneDayLimit = DefaultAlerterOneDayLimit
 	return config
 }
 
@@ -192,6 +196,9 @@ func (config *Config) Validate() error {
 	}
 	if config.Alerter.Interval <= 0 {
 		return ErrAlerterInterval
+	}
+	if config.Alerter.OneDayLimit <= 0 {
+		return ErrAlerterOneDayLimit
 	}
 	return nil
 }
