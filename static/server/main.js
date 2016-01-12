@@ -12,8 +12,8 @@ const app = koa()
 
 // Proxy localhost 2016 for dev purpose.
 app.use(proxy({
-  host: "http://localhost:2016",
-  match: /^\/api\//,
+  host: 'http://localhost:2016',
+  match: /^\/api\//
 }))
 
 // This rewrites all routes requests to the root /index.html file
