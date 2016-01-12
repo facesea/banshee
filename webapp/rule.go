@@ -45,16 +45,6 @@ func createRule(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		ResponseError(w, ErrRuleProjectID)
 		return
 	}
-	if !req.OnTrendUp &&
-		!req.OnTrendDown &&
-		!req.OnValueGt &&
-		!req.OnValueLt &&
-		!req.OnTrendUpAndValueGt &&
-		!req.OnTrendDownAndValueLt {
-		// No condition
-		ResponseError(w, ErrRuleNoCondition)
-		return
-	}
 	if (req.OnValueGt || req.OnTrendUpAndValueGt) && req.ThresholdMax == 0 {
 		// ThresholdMax should not be 0.
 		ResponseError(w, ErrRuleThresholdMaxRequired)
@@ -64,18 +54,6 @@ func createRule(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		// ThresholdMin should not be 0.
 		ResponseError(w, ErrRuleThresholdMinRequired)
 		return
-	}
-	// Find project.
-	proj := &models.Project{}
-	if err := db.Admin.DB().First(proj, req.ProjectID).Error; err != nil {
-		switch err {
-		case gorm.RecordNotFound:
-			ResponseError(w, ErrProjectNotFound)
-			return
-		default:
-			ResponseError(w, NewUnexceptedWebError(err))
-			return
-		}
 	}
 	// When
 	when := 0
@@ -96,6 +74,23 @@ func createRule(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	}
 	if req.OnTrendDownAndValueLt {
 		when = when | models.WhenTrendDownAndValueLt
+	}
+	if when == 0 {
+		// No condition
+		ResponseError(w, ErrRuleNoCondition)
+		return
+	}
+	// Find project.
+	proj := &models.Project{}
+	if err := db.Admin.DB().First(proj, req.ProjectID).Error; err != nil {
+		switch err {
+		case gorm.RecordNotFound:
+			ResponseError(w, ErrProjectNotFound)
+			return
+		default:
+			ResponseError(w, NewUnexceptedWebError(err))
+			return
+		}
 	}
 	// Create rule.
 	rule := &models.Rule{
