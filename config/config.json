@@ -20,6 +20,7 @@
   "alerter": {
     "command": "",
     "workers": 4,
-    "interval": 1200
+    "interval": 1200,
+    "oneDayLimit": 5
   }
 }

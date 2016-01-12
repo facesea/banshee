@@ -15,6 +15,7 @@ var (
 	ErrDetectorFillBlankZerosLen    = errors.New("detector.fillBlankZeros should have up to 8 items")
 	ErrWebappPort                   = errors.New("invalid webapp.port")
 	ErrAlerterInterval              = errors.New("alerter.interval should be greater than 0")
+	ErrAlerterOneDayLimit           = errors.New("alerter.oneDayLimit should be greater than 0")
 	// Warn
 	ErrAlerterCommandEmpty = errors.New("alerter.command is empty")
 )

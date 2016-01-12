@@ -5,6 +5,8 @@ package alerter
 import (
 	"encoding/json"
 	"os/exec"
+	"sync/atomic"
+	"time"
 
 	"github.com/eleme/banshee/config"
 	"github.com/eleme/banshee/filter"
@@ -30,6 +32,8 @@ type Alerter struct {
 	In chan *models.Metric
 	// Alertings stamps
 	m *safemap.SafeMap
+	// Alertings counters
+	c *safemap.SafeMap
 }
 
 // Alerting message.
@@ -47,6 +51,7 @@ func New(cfg *config.Config, db *storage.DB, filter *filter.Filter) *Alerter {
 	al.filter = filter
 	al.In = make(chan *models.Metric, bufferedMetricResultsLimit)
 	al.m = safemap.New()
+	al.c = safemap.New()
 	return al
 }
 
@@ -58,6 +63,12 @@ func (al *Alerter) Start() {
 	for i := 0; i < al.cfg.Alerter.Workers; i++ {
 		go al.work()
 	}
+	go func() {
+		ticker := time.NewTicker(time.Hour * 24)
+		for _ = range ticker.C {
+			al.c.Clear()
+		}
+	}()
 }
 
 // work waits for detected metrics, then check each metric with all the
@@ -69,6 +80,18 @@ func (al *Alerter) work() {
 		v, ok := al.m.Get(metric.Name)
 		if ok && metric.Stamp-v.(uint32) < al.cfg.Alerter.Interval {
 			return
+		}
+		// Check alert times in one day
+		v, ok = al.c.Get(metric.Name)
+		if ok && atomic.LoadUint32(v.(*uint32)) > al.cfg.Alerter.OneDayLimit {
+			return
+		}
+		if !ok {
+			var newCounter uint32
+			newCounter = 1
+			al.m.Set(metric.Name, &newCounter)
+		} else {
+			atomic.AddUint32(v.(*uint32), 1)
 		}
 		// Test with rules.
 		rules := al.filter.MatchedRules(metric)
