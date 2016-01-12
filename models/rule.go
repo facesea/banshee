@@ -3,8 +3,11 @@
 package models
 
 import (
+	"fmt"
 	"github.com/eleme/banshee/config"
+	"github.com/eleme/banshee/util"
 	"path/filepath"
+	"strings"
 )
 
 // Conditions
@@ -43,6 +46,8 @@ type Rule struct {
 	// this option is to ignore the volatility of values with a very small
 	// average level.
 	TrustLine float64 `json:"trustLine"`
+	// String representation.
+	Repr string `sql:"-" json:"repr"`
 }
 
 // IsValid returns true if rule.When is valid.
@@ -130,4 +135,32 @@ func (rule *Rule) Test(m *Metric, cfg *config.Config) bool {
 		ok = m.IsAnomalousTrendDown() && m.Value <= rule.ThresholdMin
 	}
 	return ok
+}
+
+// InitRepr initializes the rule's string repr.
+func (rule *Rule) BuildRepr() {
+	var parts []string
+	if rule.When&WhenTrendUp != 0 {
+		parts = append(parts, "trend ↑")
+	}
+	if rule.When&WhenTrendDown != 0 {
+		parts = append(parts, "trend ↓")
+	}
+	if rule.When&WhenValueGt != 0 {
+		s := fmt.Sprintf("value >= %s", util.ToFixed(rule.ThresholdMax, 3))
+		parts = append(parts, s)
+	}
+	if rule.When&WhenValueLt != 0 {
+		s := fmt.Sprintf("value <= %s", util.ToFixed(rule.ThresholdMin, 3))
+		parts = append(parts, s)
+	}
+	if rule.When&WhenTrendUpAndValueGt != 0 {
+		s := fmt.Sprintf("(trend ↑ && value >= %s)", util.ToFixed(rule.ThresholdMax, 3))
+		parts = append(parts, s)
+	}
+	if rule.When&WhenTrendDownAndValueLt != 0 {
+		s := fmt.Sprintf("(trend ↓ && value <= %s)", util.ToFixed(rule.ThresholdMin, 3))
+		parts = append(parts, s)
+	}
+	rule.Repr = strings.Join(parts, " || ")
 }
