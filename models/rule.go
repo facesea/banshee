@@ -137,7 +137,7 @@ func (rule *Rule) Test(m *Metric, cfg *config.Config) bool {
 	return ok
 }
 
-// InitRepr initializes the rule's string repr.
+// BuildRepr initializes the rule's string repr.
 func (rule *Rule) BuildRepr() {
 	var parts []string
 	if rule.When&WhenTrendUp != 0 {
