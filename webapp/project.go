@@ -256,7 +256,7 @@ func addProjectUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params
 		}
 		// Duplicate primay key.
 		sqliteErr, ok := err.(sqlite3.Error)
-		if ok && sqliteErr.ExtendedCode == ErrConstraintPrimaryKey {
+		if ok && sqliteErr.ExtendedCode == sqlite3.ErrConstraintPrimaryKey {
 			ResponseError(w, ErrPrimaryKey)
 			return
 		}
