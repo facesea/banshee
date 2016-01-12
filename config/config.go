@@ -153,6 +153,7 @@ func (config *Config) Copy() *Config {
 	c.Alerter.Command = config.Alerter.Command
 	c.Alerter.Workers = config.Alerter.Workers
 	c.Alerter.Interval = config.Alerter.Interval
+	c.Alerter.OneDayLimit = config.Alerter.OneDayLimit
 	return c
 }
 
