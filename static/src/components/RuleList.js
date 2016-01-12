@@ -15,6 +15,7 @@ import FlatButton from 'material-ui/lib/flat-button'
 import TextField from 'material-ui/lib/text-field'
 import Dialog from 'material-ui/lib/dialog'
 import Checkbox from 'material-ui/lib/checkbox'
+import Snackbar from 'material-ui/lib/snackbar'
 
 import ActionDelete from 'material-ui/lib/svg-icons/action/delete'
 
@@ -29,22 +30,26 @@ const mapStateToProps = (state) => ({
   ruleOpen: state.projectDetail.ruleOpen,
   submitDisabled: state.projectDetail.submitDisabled,
   patternErrorText: state.projectDetail.patternErrorText,
-  onTrendingUp: state.projectDetail.onTrendingUp,
-  onTrendingDown: state.projectDetail.onTrendingDown,
+  onTrendUp: state.projectDetail.onTrendUp,
+  onTrendDown: state.projectDetail.onTrendDown,
   onValueGt: state.projectDetail.onValueGt,
   onValueLt: state.projectDetail.onValueLt,
-  onTrendingUpAndValueGt: state.projectDetail.onTrendingUpAndValueGt,
-  onTrendingDownAndValueLt: state.projectDetail.onTrendingDownAndValueLt,
+  onTrendUpAndValueGt: state.projectDetail.onTrendUpAndValueGt,
+  onTrendDownAndValueLt: state.projectDetail.onTrendDownAndValueLt,
   thresholdMax: state.projectDetail.thresholdMax,
   thresholdMin: state.projectDetail.thresholdMin,
   trustline: state.projectDetail.trustline,
   thresholdMaxErrorText: state.projectDetail.thresholdMaxErrorText,
   thresholdMinErrorText: state.projectDetail.thresholdMinErrorText,
-  trustlineErrorText: state.projectDetail.trustlineErrorText
+  trustlineErrorText: state.projectDetail.trustlineErrorText,
+
+  snackbarOpen: state.projectDetail.snackbarOpen,
+  snackbarMessage: state.projectDetail.snackbarMessage
 })
 
 export class RuleList extends React.Component {
   static propTypes = {
+    rules: React.PropTypes.array.isRequired,
     getProjectById: React.PropTypes.func.isRequired,
     getAllRules: React.PropTypes.func.isRequired,
     ruleDialogClose: React.PropTypes.func.isRequired,
@@ -52,18 +57,22 @@ export class RuleList extends React.Component {
     ruleOpen: React.PropTypes.bool.isRequired,
     addRule: React.PropTypes.func.isRequired,
     project: React.PropTypes.object.isRequired,
+    snackbarOpen: React.PropTypes.bool.isRequired,
+    snackbarMessage: React.PropTypes.string.isRequired,
 
     handlePatternChange: React.PropTypes.func.isRequired,
     handleCheck: React.PropTypes.func.isRequired,
     handleInput: React.PropTypes.func.isRequired,
+    handleSnackbarClose: React.PropTypes.func.isRequired,
+    ruleDialogOpen: React.PropTypes.func.isRequired,
 
     submitDisabled: React.PropTypes.bool.isRequired,
-    onTrendingUp: React.PropTypes.bool.isRequired,
-    onTrendingDown: React.PropTypes.bool.isRequired,
+    onTrendUp: React.PropTypes.bool.isRequired,
+    onTrendDown: React.PropTypes.bool.isRequired,
     onValueGt: React.PropTypes.bool.isRequired,
     onValueLt: React.PropTypes.bool.isRequired,
-    onTrendingUpAndValueGt: React.PropTypes.bool.isRequired,
-    onTrendingDownAndValueLt: React.PropTypes.bool.isRequired,
+    onTrendUpAndValueGt: React.PropTypes.bool.isRequired,
+    onTrendDownAndValueLt: React.PropTypes.bool.isRequired,
     thresholdMax: React.PropTypes.number,
     thresholdMin: React.PropTypes.number,
     trustline: React.PropTypes.number,
@@ -130,20 +139,25 @@ export class RuleList extends React.Component {
           <ToolbarGroup float='right'>
             <RaisedButton label='Edit Name' primary style={styles.leftBtn}/>
             <ToolbarSeparator />
-            <RaisedButton label='Add Rule' primary/>
+            <RaisedButton label='Add Rule' primary onTouchTap={this.props.ruleDialogOpen}/>
           </ToolbarGroup>
         </Toolbar>
         <List>
-          <ListItem
-            primaryText={<Link className={ruleStyles.link} to='/'> project name</Link>}
-            secondaryText='Change your Google+ profile photo'
-            rightIconButton={rightIconButton}/>
+          {
+            this.props.rules.map((el) => {
+              <ListItem
+                primaryText={<Link className={ruleStyles.link} to='/'>rule name</Link>}
+                secondaryText='Change your Google+ profile photo'
+                rightIconButton={rightIconButton}/>
+            })
+          }
+
         </List>
         <Dialog
           title='Add Rule'
           actions={ruleActions}
           modal={false}
-          open
+          open={this.props.ruleOpen}
           onRequestClose={this.props.ruleDialogClose}>
             <form id='form' onSubmit={this.props.addRule}>
               <div className={ruleStyles.row}>
@@ -161,11 +175,11 @@ export class RuleList extends React.Component {
                 <label className={ruleStyles.label}>Alerting:</label>
                 <div className={ruleStyles.rightPart}>
                   <Checkbox
-                    onCheck={(e, checked) => { this.props.handleCheck('onTrendingUp', checked) }}
-                    label='On trending up'/>
+                    onCheck={(e, checked) => { this.props.handleCheck('onTrendUp', checked) }}
+                    label='On Trend up'/>
                   <Checkbox
-                    onCheck={(e, checked) => { this.props.handleCheck('onTrendingDown', checked) }}
-                    label='On trending down'/>
+                    onCheck={(e, checked) => { this.props.handleCheck('onTrendDown', checked) }}
+                    label='On Trend down'/>
                   <Checkbox
                     onCheck={(e, checked) => { this.props.handleCheck('onValueGt', checked) }}
                     label='On value >= thresholdMax'/>
@@ -173,11 +187,11 @@ export class RuleList extends React.Component {
                     onCheck={(e, checked) => { this.props.handleCheck('onValueLt', checked) }}
                     label='On value <= thresholdMin'/>
                   <Checkbox
-                    onCheck={(e, checked) => { this.props.handleCheck('onTrendingUpAndValueGt', checked) }}
-                    label='On trending up and value >= thresholdMax'/>
+                    onCheck={(e, checked) => { this.props.handleCheck('onTrendUpAndValueGt', checked) }}
+                    label='On Trend up and value >= thresholdMax'/>
                   <Checkbox
-                    onCheck={(e, checked) => { this.props.handleCheck('onTrendingDownAndValueLt', checked) }}
-                    label='On trending down and value <= thresholdMin'/>
+                    onCheck={(e, checked) => { this.props.handleCheck('onTrendDownAndValueLt', checked) }}
+                    label='On Trend down and value <= thresholdMin'/>
                   <div>
                     <label>thresholdMax:</label>
                     <TextField
@@ -211,6 +225,14 @@ export class RuleList extends React.Component {
 
             </form>
         </Dialog>
+
+        <Snackbar
+          open={this.props.snackbarOpen}
+          message={this.props.snackbarMessage}
+          autoHideDuration={2000}
+          action='ERROR'
+          onRequestClose={this.props.handleSnackbarClose}
+        />
       </Paper>
     )
   }

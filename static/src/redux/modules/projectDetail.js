@@ -17,22 +17,26 @@ export const HANDLE_CHECK = 'HANDLE_CHECK'
 export const HANDLE_INPUT = 'HANDLE_INPUT'
 export const ADD_RULE_SUCCESS = 'ADD_RULE_SUCCESS'
 export const ADD_RULE_FAIL = 'ADD_RULE_FAIL'
+export const RULE_DIALOG_OPEN = 'RULE_DIALOG_OPEN'
+export const HANDLE_SNACKBAR_CLOSE = 'HANDLE_SNACKBAR_CLOSE'
 
 export const INIT_STATE = {
   project: {},
   rules: [],
   ruleOpen: false,
   submitDisabled: false,
-  onTrendingUp: false,
-  onTrendingDown: false,
+  onTrendUp: false,
+  onTrendDown: false,
   onValueGt: false,
   onValueLt: false,
-  onTrendingUpAndValueGt: false,
-  onTrendingDownAndValueLt: false,
+  onTrendUpAndValueGt: false,
+  onTrendDownAndValueLt: false,
   patternErrorText: '',
   thresholdMaxErrorText: '',
   thresholdMinErrorText: '',
-  trustlineErrorText: ''
+  trustlineErrorText: '',
+  snackbarOpen: false,
+  snackbarMessage: ''
 }
 
 // ------------------------------------
@@ -41,11 +45,13 @@ export const INIT_STATE = {
 export const setProject = createAction(SET_PROJECT, (project) => project)
 export const setAllRules = createAction(SET_ALL_RULES, (rules) => rules)
 export const ruleDialogClose = createAction(RULE_DIALOG_CLOSE, () => false)
+export const ruleDialogOpen = createAction(RULE_DIALOG_OPEN, () => true)
 export const handlePatternChange = createAction(HANDLE_PATTERN_CHANGE, (e) => e.target.value)
 export const handleCheck = createAction(HANDLE_CHECK, (name, checked) => ({name: name, checked: checked}))
 export const handleInput = createAction(HANDLE_INPUT, (name, val) => ({name: name, val: val}))
-export const addRuleFail = createAction(ADD_RULE_FAIL, () => false)
+export const addRuleFail = createAction(ADD_RULE_FAIL, (msg) => msg)
 export const addRuleSuccess = createAction(ADD_RULE_SUCCESS, (rule) => rule)
+export const handleSnackbarClose = createAction(HANDLE_SNACKBAR_CLOSE, () => false)
 
 export const getProjectById = (id) => {
   return (dispatch, getState) => {
@@ -77,26 +83,25 @@ export const getAllRules = (id) => {
 
 export const addRule = () => {
   return (dispatch, getState) => {
-    const state = getState()
+    const state = getState().projectDetail
     const params = {
       'pattern': state.pattern,
-      'projectID': state.id,
-      'onTrendingUp': state.onTrendingUp,
-      'onTrendingDown': state.onTrendingDown,
+      'onTrendUp': state.onTrendUp,
+      'onTrendDown': state.onTrendDown,
       'onValueGt': state.onValueGt,
       'onValueLt': state.onValueLt,
-      'onTrendingUpAndValueGt': state.onTrendingUpAndValueGt,
-      'onTrendingDownAndValueLt': state.onTrendingDownAndValueLt,
+      'onTrendUpAndValueGt': state.onTrendUpAndValueGt,
+      'onTrendDownAndValueLt': state.onTrendDownAndValueLt,
       'thresholdMax': state.thresholdMax,
       'thresholdMin': state.thresholdMin,
       'trustline': state.trustline
     }
     request
-      .post('/api/rule')
+      .post('/api/project/' + state.project.id + '/rule')
       .send(params)
       .end(function (err, res) {
         if (err || !res.ok) {
-          dispatch(addRuleFail(err.msg))
+          dispatch(addRuleFail(res.body.msg))
         } else {
           dispatch(addRuleSuccess(res.body))
         }
@@ -111,7 +116,9 @@ export const actions = {
 
   handlePatternChange,
   handleCheck,
-  handleInput
+  handleInput,
+  handleSnackbarClose,
+  ruleDialogOpen
 }
 
 // ------------------------------------
@@ -151,8 +158,8 @@ export default handleActions({
     return Object.assign({}, state)
   },
   [HANDLE_INPUT]: (state, { payload }) => {
-    if (Number(payload.val)) {
-      state[payload.name] = payload.val
+    if (Number(payload.val) || payload.val === '') {
+      state[payload.name] = Number(payload.val) || undefined
       state[payload.name + 'ErrorText'] = ''
     } else {
       state[payload.name] = undefined
@@ -171,16 +178,32 @@ export default handleActions({
       ],
       ruleOpen: false,
       submitDisabled: false,
-      onTrendingUp: false,
-      onTrendingDown: false,
+      onTrendUp: false,
+      onTrendDown: false,
       onValueGt: false,
       onValueLt: false,
-      onTrendingUpAndValueGt: false,
-      onTrendingDownAndValueLt: false,
+      onTrendUpAndValueGt: false,
+      onTrendDownAndValueLt: false,
       patternErrorText: '',
       thresholdMaxErrorText: '',
       thresholdMinErrorText: '',
       trustlineErrorText: ''
+    })
+  },
+  [ADD_RULE_FAIL]: (state, { payload }) => {
+    return Object.assign({}, state, {
+      snackbarOpen: true,
+      snackbarMessage: payload
+    })
+  },
+  [RULE_DIALOG_OPEN]: (state, { payload }) => {
+    return Object.assign({}, state, {
+      ruleOpen: payload
+    })
+  },
+  [HANDLE_SNACKBAR_CLOSE]: (state, { payload }) => {
+    return Object.assign({}, state, {
+      snackbarOpen: payload
     })
   }
 },
