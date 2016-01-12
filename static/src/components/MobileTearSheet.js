@@ -1,5 +1,7 @@
 import React from 'react'
 
+import svg from '../static/bottom-tear.svg'
+
 const MobileTearSheet = React.createClass({
 
   propTypes: {
@@ -44,7 +46,7 @@ const MobileTearSheet = React.createClass({
         <div style={styles.container}>
           {this.props.children}
         </div>
-        <img style={styles.bottomTear} src='bottom-tear.svg' />
+        <img style={styles.bottomTear} src={svg} />
       </div>
     )
   }

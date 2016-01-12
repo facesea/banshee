@@ -50,7 +50,11 @@ export const getAllProjects = () => {
   }
 }
 
-export const createProject = () => {
+export const createProject = (e) => {
+  if (e) {
+    e.preventDefault()
+  }
+
   return (dispatch, getState) => {
     let state = getState().project
 
@@ -67,21 +71,6 @@ export const createProject = () => {
     })
   }
 }
-
-function checkStatus (response) {
-  if (response.status >= 200 && response.status < 300) {
-    return response
-  } else {
-    return Promise.all([response.json()])
-    .then(values => {
-      return Promise.reject(values[0])
-    })
-  }
-}
-
-// function parseJSON (response) {
-//   return response.json()
-// }
 
 export const actions = {
   setProjects,
@@ -151,4 +140,8 @@ export default handleActions({
       snackbarMessage: payload
     })
   }
-}, INIT_STATE)
+},
+
+// init state
+INIT_STATE
+)

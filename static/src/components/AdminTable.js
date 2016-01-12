@@ -51,7 +51,8 @@ export class AdminTable extends React.Component {
     const styles = {
       btnPrimary: {
         minWidth: 50,
-        marginRight: 10
+        marginRight: 10,
+        verticalAlign: 'bottom'
       },
       column: {
         textAlign: 'center'
@@ -72,6 +73,7 @@ export class AdminTable extends React.Component {
       <FlatButton
         label='Submit'
         primary
+        form='form'
         onTouchTap={this.props.createProject} />
     ]
     return (
@@ -107,7 +109,7 @@ export class AdminTable extends React.Component {
                     <TableRowColumn>{el.name}</TableRowColumn>
                     <TableRowColumn style={styles.column}>
                       <RaisedButton fullWidth={false} label='View' primary style={styles.btnPrimary} onTouchTap={this.props.getAllProjects}/>
-                      <RaisedButton label='Edit' secondary style={styles.btnPrimary}/>
+                      <RaisedButton label='Edit' secondary linkButton href={'/admin/' + el.id} style={styles.btnPrimary} />
                     </TableRowColumn>
                   </TableRow>
               })
@@ -120,10 +122,12 @@ export class AdminTable extends React.Component {
           modal={false}
           open={this.props.open}
           onRequestClose={this.props.dialogClose}>
-          <TextField
-            hintText='Project Name'
-            onChange={this.props.handleInputChange}
-            errorText={this.props.errorText}/>
+            <form id='form' onSubmit={this.props.createProject}>
+              <TextField
+                hintText='Project Name'
+                onChange={this.props.handleInputChange}
+                errorText={this.props.errorText}/>
+            </form>
         </Dialog>
         <Snackbar
           open={this.props.snackbarOpen}
