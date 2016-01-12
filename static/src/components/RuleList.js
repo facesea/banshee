@@ -83,6 +83,7 @@ export class RuleList extends React.Component {
     trustlineErrorText: React.PropTypes.string.isRequired
   }
 
+
   componentDidMount () {
     let id = this.props.id
     this.props.getProjectById(id)

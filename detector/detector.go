@@ -198,11 +198,13 @@ func (d *Detector) fillBlankZeros(m *models.Metric, s *models.State) (*models.St
 		// The metric will be trusted since its state is nil.
 		return s, nil
 	}
+	// Fill history blanks with zeros.
 	numGrid := d.cfg.Period[0]
 	gridLen := d.cfg.Period[1]
 	period := numGrid * gridLen
 	periodNo := m.Stamp / period
 	gridNo := (m.Stamp % period) / gridLen
+	// Find the start grid stamp
 	gridStart := gridNo*gridLen + periodNo*period
 	for gridStart-period >= idx.Stamp {
 		gridStart -= period
