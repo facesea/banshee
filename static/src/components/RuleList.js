@@ -29,7 +29,7 @@ export class RuleList extends React.Component {
     getProjectById: React.PropTypes.func.isRequired,
     getAllRules: React.PropTypes.func.isRequired,
     id: React.PropTypes.string.isRequired
-  }
+  };
 
   componentDidMount () {
     let id = this.props.id
