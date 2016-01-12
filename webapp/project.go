@@ -65,20 +65,22 @@ func createProject(w http.ResponseWriter, r *http.Request, _ httprouter.Params) 
 	// Save.
 	proj := &models.Project{Name: req.Name}
 	if err := db.Admin.DB().Create(proj).Error; err != nil {
-		switch err {
-		case sqlite3.ErrConstraintNotNull:
-			ResponseError(w, ErrNotNull)
-			return
-		case sqlite3.ErrConstraintPrimaryKey:
-			ResponseError(w, ErrPrimaryKey)
-			return
-		case sqlite3.ErrConstraintUnique:
-			ResponseError(w, ErrDuplicateProjectName)
-			return
-		default:
-			ResponseError(w, NewUnexceptedWebError(err))
-			return
+		sqliteErr, ok := err.(sqlite3.Error)
+		if ok {
+			switch sqliteErr.ExtendedCode {
+			case sqlite3.ErrConstraintNotNull:
+				ResponseError(w, ErrNotNull)
+				return
+			case sqlite3.ErrConstraintPrimaryKey:
+				ResponseError(w, ErrPrimaryKey)
+				return
+			case sqlite3.ErrConstraintUnique:
+				ResponseError(w, ErrDuplicateProjectName)
+				return
+			}
 		}
+		ResponseError(w, NewUnexceptedWebError(err))
+		return
 	}
 	ResponseJSONOK(w, proj)
 }
