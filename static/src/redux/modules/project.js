@@ -40,13 +40,13 @@ export const handleSnackbarClose = createAction(HANDLE_SNACKBAR_CLOSE, () => fal
 export const getAllProjects = () => {
   return (dispatch, getState) => {
     return request.get('/api/projects')
-      .end((err, res) => {
-        if (err || !res.ok) {
-          dispatch(getAllProjectsFail(res.body.msg))
-        } else {
-          dispatch(setProjects(res.body))
-        }
-      })
+    .end((err, res) => {
+      if (err || !res.ok) {
+        dispatch(getAllProjectsFail(res.body.msg))
+      } else {
+        dispatch(setProjects(res.body))
+      }
+    })
   }
 }
 
@@ -55,27 +55,27 @@ export const createProject = () => {
     let state = getState().project
 
     return request.post('/api/project')
-      .send({
-        name: state.projectName
-      })
-      .end((err, res) => {
-        if (err || !res.ok) {
-          dispatch(createProjectFail(res.body.msg))
-        } else {
-          dispatch(createProjectSuccess(res.body))
-        }
-      })
+    .send({
+      name: state.projectName
+    })
+    .end((err, res) => {
+      if (err || !res.ok) {
+        dispatch(createProjectFail(res.body.msg))
+      } else {
+        dispatch(createProjectSuccess(res.body))
+      }
+    })
   }
 }
 
-function checkStatus(response) {
+function checkStatus (response) {
   if (response.status >= 200 && response.status < 300) {
     return response
   } else {
     return Promise.all([response.json()])
-      .then(values => {
-        return Promise.reject(values[0])
-      })
+    .then(values => {
+      return Promise.reject(values[0])
+    })
   }
 }
 
@@ -98,62 +98,57 @@ export const actions = {
 // Reducer
 // ------------------------------------
 export default handleActions({
-    [SET_ALL_PROJECTS]: (state, {
-      payload
-    }) => {
-      return Object.assign({}, INIT_STATE, {
-        projects: payload
-      })
-    }, [DIALOG_OPEN]: (state, {
-      payload
-    }) => {
-      return Object.assign({}, state, {
-        open: payload
-      })
-    }, [DIALOG_CLOSE]: (state, {
-      payload
-    }) => {
-      return Object.assign({}, state, {
-        open: payload
-      })
-    }, [CREATE_PROJECT_SUCCESS]: (state, {
-      payload
-    }) => {
-
-      return Object.assign({}, state, {
-        open: false,
-        projectName: '',
-        projects: [
-          ...state.projects,
-          {
-            id: payload.id,
-            name: payload.name
-          }
-        ]
-      })
-    }, [HANDLE_INPUT_CHANGE]: (state, {
-      payload
-    }) => {
-      return Object.assign({}, state, {
-        projectName: payload,
-        errorText: payload ? '' : 'This field is required.'
-      })
-    }, [HANDLE_SNACKBAR_CLOSE]: (state, {
-      payload
-    }) => {
-      return Object.assign({}, state, {
-        snackbarOpen: payload
-      })
-    }, [CREATE_PROJECT_FAIL]: (state, {
-      payload
-    }) => {
-      return Object.assign({}, state, {
-        snackbarOpen: true,
-        snackbarMessage: payload
-      })
-    }
-  },
-
-  // init state
-  INIT_STATE
-)
+  [SET_ALL_PROJECTS]: (state, {
+    payload
+  }) => {
+    return Object.assign({}, INIT_STATE, {
+      projects: payload
+    })
+  }, [DIALOG_OPEN]: (state, {
+    payload
+  }) => {
+    return Object.assign({}, state, {
+      open: payload
+    })
+  }, [DIALOG_CLOSE]: (state, {
+    payload
+  }) => {
+    return Object.assign({}, state, {
+      open: payload
+    })
+  }, [CREATE_PROJECT_SUCCESS]: (state, {
+    payload
+  }) => {
+    return Object.assign({}, state, {
+      open: false,
+      projectName: '',
+      projects: [
+        ...state.projects,
+        {
+          id: payload.id,
+          name: payload.name
+        }
+      ]
+    })
+  }, [HANDLE_INPUT_CHANGE]: (state, {
+    payload
+  }) => {
+    return Object.assign({}, state, {
+      projectName: payload,
+      errorText: payload ? '' : 'This field is required.'
+    })
+  }, [HANDLE_SNACKBAR_CLOSE]: (state, {
+    payload
+  }) => {
+    return Object.assign({}, state, {
+      snackbarOpen: payload
+    })
+  }, [CREATE_PROJECT_FAIL]: (state, {
+    payload
+  }) => {
+    return Object.assign({}, state, {
+      snackbarOpen: true,
+      snackbarMessage: payload
+    })
+  }
+}, INIT_STATE)
