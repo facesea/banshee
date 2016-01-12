@@ -129,7 +129,7 @@ export const addRule = () => {
       .send(params)
       .end(function (err, res) {
         if (err || !res.ok) {
-          dispatch(addRuleFail(err.msg))
+          dispatch(addRuleFail(res.body.msg))
         } else {
           dispatch(addRuleSuccess(res.body))
         }
