@@ -177,6 +177,9 @@ func getProjectRules(w http.ResponseWriter, r *http.Request, ps httprouter.Param
 		ResponseError(w, NewUnexceptedWebError(err))
 		return
 	}
+	for _, rule := range rules {
+		rule.BuildRepr()
+	}
 	ResponseJSONOK(w, rules)
 }
 
