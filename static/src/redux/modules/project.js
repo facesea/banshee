@@ -54,7 +54,7 @@ export const createProject = () => {
       })
       .end((err, res) => {
         if (err || !res.ok) {
-          dispatch(createProjectFail(err.msg))
+          dispatch(createProjectFail(res.body.msg))
         } else {
           dispatch(createProjectSuccess(res.body))
         }
