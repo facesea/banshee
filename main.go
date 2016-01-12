@@ -25,9 +25,9 @@ var (
 	fileName    = flag.String("c", "config.json", "config file path")
 	showVersion = flag.Bool("v", false, "show version")
 	// Variables
-	cfg             = config.New()
-	db  *storage.DB = nil
-	flt             = filter.New()
+	cfg = config.New()
+	db  *storage.DB
+	flt = filter.New()
 )
 
 func usage() {
@@ -43,9 +43,9 @@ func initLog() {
 		log.SetLevel(log.DEBUG)
 	}
 	goVs := runtime.Version()
-	nCpu := runtime.GOMAXPROCS(-1)
+	nCPU := runtime.GOMAXPROCS(-1)
 	vers := version.Version
-	log.Debug("banshee%s %s %d cpu", vers, goVs, nCpu)
+	log.Debug("banshee%s %s %d cpu", vers, goVs, nCPU)
 }
 
 func initConfig() {

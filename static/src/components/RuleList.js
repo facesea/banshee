@@ -27,7 +27,6 @@ const mapStateToProps = (state) => ({
 export class RuleList extends React.Component {
   static propTypes = {
     getProjectById: React.PropTypes.func.isRequired,
-    getStates: React.PropTypes.func.isRequired,
     getAllRules: React.PropTypes.func.isRequired,
     id: React.PropTypes.string.isRequired
   }

@@ -95,20 +95,24 @@ func createUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		Universal:   req.Universal,
 	}
 	if err := db.Admin.DB().Create(user).Error; err != nil {
-		switch err {
-		case sqlite3.ErrConstraintNotNull:
-			ResponseError(w, ErrNotNull)
-			return
-		case sqlite3.ErrConstraintPrimaryKey:
-			ResponseError(w, ErrPrimaryKey)
-			return
-		case sqlite3.ErrConstraintUnique:
-			ResponseError(w, ErrDuplicateUserName)
-			return
-		default:
-			ResponseError(w, NewUnexceptedWebError(err))
-			return
+		// Write errors.
+		sqliteErr, ok := err.(sqlite3.Error)
+		if ok {
+			switch sqliteErr.ExtendedCode {
+			case sqlite3.ErrConstraintNotNull:
+				ResponseError(w, ErrNotNull)
+				return
+			case sqlite3.ErrConstraintPrimaryKey:
+				ResponseError(w, ErrPrimaryKey)
+				return
+			case sqlite3.ErrConstraintUnique:
+				ResponseError(w, ErrDuplicateUserName)
+				return
+			}
 		}
+		// Unexcepted.
+		ResponseError(w, NewUnexceptedWebError(err))
+		return
 	}
 	ResponseJSONOK(w, user)
 }
@@ -178,20 +182,26 @@ func updateUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	user.EnablePhone = req.EnablePhone
 	user.Universal = req.Universal
 	if err := db.Admin.DB().Save(user).Error; err != nil {
-		switch err {
-		case sqlite3.ErrConstraintNotNull:
-			ResponseError(w, ErrNotNull)
-			return
-		case sqlite3.ErrConstraintUnique:
-			ResponseError(w, ErrDuplicateUserName)
-			return
-		case gorm.RecordNotFound:
+		if err == gorm.RecordNotFound {
+			// User not found.
 			ResponseError(w, ErrUserNotFound)
 			return
-		default:
-			ResponseError(w, NewUnexceptedWebError(err))
-			return
 		}
+		// Write errors.
+		sqliteErr, ok := err.(sqlite3.Error)
+		if ok {
+			switch sqliteErr.ExtendedCode {
+			case sqlite3.ErrConstraintNotNull:
+				ResponseError(w, ErrNotNull)
+				return
+			case sqlite3.ErrConstraintUnique:
+				ResponseError(w, ErrDuplicateUserName)
+				return
+			}
+		}
+		// Unexcepted error.
+		ResponseError(w, NewUnexceptedWebError(err))
+		return
 	}
 	ResponseJSONOK(w, user)
 }

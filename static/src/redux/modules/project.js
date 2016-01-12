@@ -10,6 +10,7 @@ import request from 'superagent'
 export const SET_ALL_PROJECTS = 'SET_ALL_PROJECTS'
 export const DIALOG_OPEN = 'DIALOG_OPEN'
 export const DIALOG_CLOSE = 'DIALOG_CLOSE'
+export const GET_ALL_PROJECTS_FAIL = 'GET_ALL_PROJECTS_FAIL'
 export const CREATE_PROJECT_SUCCESS = 'CREATE_PROJECT_SUCCESS'
 export const CREATE_PROJECT_FAIL = 'CREATE_PROJECT_FAIL'
 export const HANDLE_INPUT_CHANGE = 'HANDLE_INPUT_CHANGE'
@@ -30,6 +31,7 @@ export const INIT_STATE = {
 export const dialogOpen = createAction(DIALOG_OPEN, () => true)
 export const dialogClose = createAction(DIALOG_CLOSE, () => false)
 export const setProjects = createAction(SET_ALL_PROJECTS, (projects = []) => projects)
+export const getAllProjectsFail = createAction(GET_ALL_PROJECTS_FAIL, (msg) => msg)
 export const createProjectSuccess = createAction(CREATE_PROJECT_SUCCESS, (project) => project)
 export const createProjectFail = createAction(CREATE_PROJECT_FAIL, (msg) => msg)
 export const handleInputChange = createAction(HANDLE_INPUT_CHANGE, (e) => e.target.value)
@@ -37,15 +39,14 @@ export const handleSnackbarClose = createAction(HANDLE_SNACKBAR_CLOSE, () => fal
 
 export const getAllProjects = () => {
   return (dispatch, getState) => {
-    request
-      .get('/api/projects')
-      .end(function (err, res) {
-        if (err || !res.ok) {
-          console.error('get projects error')
-        } else {
-          dispatch(setProjects(res.body))
-        }
-      })
+    return request.get('/api/projects')
+    .end((err, res) => {
+      if (err || !res.ok) {
+        dispatch(getAllProjectsFail(res.body.msg))
+      } else {
+        dispatch(setProjects(res.body))
+      }
+    })
   }
 }
 
@@ -57,18 +58,17 @@ export const createProject = (e) => {
   return (dispatch, getState) => {
     let state = getState().project
 
-    return request
-      .post('/api/project')
-      .send({
-        name: state.projectName
-      })
-      .end((err, res) => {
-        if (err || !res.ok) {
-          dispatch(createProjectFail(err.msg))
-        } else {
-          dispatch(createProjectSuccess(res.body))
-        }
-      })
+    return request.post('/api/project')
+    .send({
+      name: state.projectName
+    })
+    .end((err, res) => {
+      if (err || !res.ok) {
+        dispatch(createProjectFail(res.body.msg))
+      } else {
+        dispatch(createProjectSuccess(res.body))
+      }
+    })
   }
 }
 
