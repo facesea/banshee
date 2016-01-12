@@ -13,7 +13,6 @@ import (
 
 // createRule request
 type createRuleRequest struct {
-	ProjectID             int     `json:"projectID"`
 	Pattern               string  `json:"pattern"`
 	OnTrendUp             bool    `json:"onTrendUp"`
 	OnTrendDown           bool    `json:"onTrendDown"`
@@ -28,6 +27,12 @@ type createRuleRequest struct {
 
 // createRule creates a rule.
 func createRule(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	// Params
+	projectID, err := strconv.Atoi(ps.ByName("id"))
+	if err != nil {
+		ResponseError(w, ErrProjectID)
+		return
+	}
 	// Request
 	req := &createRuleRequest{}
 	if err := RequestBind(r, req); err != nil {
@@ -40,9 +45,9 @@ func createRule(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		ResponseError(w, ErrRulePattern)
 		return
 	}
-	if req.ProjectID <= 0 {
+	if projectID <= 0 {
 		// ProjectID is invalid.
-		ResponseError(w, ErrRuleProjectID)
+		ResponseError(w, ErrProjectID)
 		return
 	}
 	if (req.OnValueGt || req.OnTrendUpAndValueGt) && req.ThresholdMax == 0 {
@@ -82,7 +87,7 @@ func createRule(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	}
 	// Find project.
 	proj := &models.Project{}
-	if err := db.Admin.DB().First(proj, req.ProjectID).Error; err != nil {
+	if err := db.Admin.DB().First(proj, projectID).Error; err != nil {
 		switch err {
 		case gorm.RecordNotFound:
 			ResponseError(w, ErrProjectNotFound)
@@ -94,7 +99,7 @@ func createRule(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	}
 	// Create rule.
 	rule := &models.Rule{
-		ProjectID:    req.ProjectID,
+		ProjectID:    projectID,
 		Pattern:      req.Pattern,
 		When:         when,
 		ThresholdMax: req.ThresholdMax,

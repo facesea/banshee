@@ -210,9 +210,8 @@ Rule
 Request:
 
 ```
-POST /api/rule -d
+POST /api/project/:id/rule -d
 {
-    "projectID": 12,
     "pattern": "timer.abc.*",
     "when": 1,
     "thresholdMax": 0,

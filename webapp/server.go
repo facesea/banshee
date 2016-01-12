@@ -50,7 +50,7 @@ func Start(c *config.Config, d *storage.DB) {
 	router.POST("/api/user", auth.handler(createUser))
 	router.DELETE("/api/user/:id", auth.handler(deleteUser))
 	router.PATCH("/api/user/:id", auth.handler(updateUser))
-	router.POST("/api/rule", auth.handler(createRule))
+	router.POST("/api/project/:id/rule", auth.handler(createRule))
 	router.DELETE("/api/rule/:id", auth.handler(deleteRule))
 	router.GET("/api/metric/indexes", getMetricIndexes)
 	router.GET("/api/metric/data/:name/:start/:stop", getMetrics)

@@ -39,7 +39,6 @@ var (
 	ErrRuleID                   = NewWebError(http.StatusBadRequest, "Bad rule id")
 	ErrRulePattern              = NewWebError(http.StatusBadRequest, "Bad rule pattern")
 	ErrRuleWhen                 = NewWebError(http.StatusBadRequest, "Bad rule condition")
-	ErrRuleProjectID            = NewWebError(http.StatusBadRequest, "Bad rule project id")
 	ErrDuplicateRulePattern     = NewWebError(http.StatusForbidden, "Duplicate rule pattern")
 	ErrRuleNotFound             = NewWebError(http.StatusNotFound, "Rule not found")
 	ErrRuleNoCondition          = NewWebError(http.StatusBadRequest, "No condition specified")
