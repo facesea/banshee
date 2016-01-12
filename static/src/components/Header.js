@@ -7,7 +7,7 @@ export default class Header extends React.Component {
     return (
       <AppBar
         id='header'
-        iconElementLeft={<Link to='/' className={styles.brand}>Banshee - Metrics Monitor</Link>}
+        iconElementLeft={<Link to='/' className={styles.brand}>Banshee</Link>}
         iconElementRight={<div className={styles['header-right']}><span className='margin-right-10'>Version2.0.3</span> <Link to='/' className={styles['header-back']}>index</Link> </div>}
       />
     )
