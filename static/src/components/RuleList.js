@@ -90,7 +90,7 @@ export class RuleList extends React.Component {
     thresholdMinErrorText: React.PropTypes.string.isRequired,
     trustlineErrorText: React.PropTypes.string.isRequired,
     formFieldErrorText: React.PropTypes.string.isRequired
-  }
+  };
 
   componentDidMount () {
     let id = this.props.id

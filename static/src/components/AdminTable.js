@@ -50,9 +50,10 @@ export class AdminTable extends React.Component {
   render () {
     const styles = {
       btnPrimary: {
-        minWidth: 50,
+        minWidth: 46,
         marginRight: 10,
-        verticalAlign: 'bottom'
+        verticalAlign: 'bottom',
+        height: '25px'
       },
       column: {
         textAlign: 'center'
@@ -63,6 +64,12 @@ export class AdminTable extends React.Component {
         padding: 0,
         float: 'right',
         color: Colors.lightGreen500
+      },
+      tableTitle: {
+        fontSize: 16
+      },
+      tableRowColumn: {
+        fontSize: 14
       }
     }
     const actions = [
@@ -81,11 +88,12 @@ export class AdminTable extends React.Component {
         <Table
           height={'500px'}
           fixedHeader
-          fixedFooter>
+          fixedFooter
+          selectable={false}>
           <TableHeader>
             <TableRow>
               <TableHeaderColumn colSpan='3' style={{textAlign: 'center'}}>
-                Projects
+                <span style={styles.tableTitle}>Projects</span>
                 <IconButton touch style={styles.iconButton} onTouchTap={this.props.dialogOpen}>
                   <ContentAddBox color={Colors.lightGreen500}/>
                 </IconButton>
@@ -94,7 +102,7 @@ export class AdminTable extends React.Component {
             <TableRow>
               <TableHeaderColumn>ID</TableHeaderColumn>
               <TableHeaderColumn>Name</TableHeaderColumn>
-              <TableHeaderColumn style={styles.column}>Opt</TableHeaderColumn>
+              <TableHeaderColumn style={styles.column}>Option</TableHeaderColumn>
             </TableRow>
           </TableHeader>
           <TableBody
@@ -105,9 +113,9 @@ export class AdminTable extends React.Component {
             {
               this.props.projects.map((el, index) => {
                 return <TableRow selectable={false} key={el.id}>
-                    <TableRowColumn>{el.id}</TableRowColumn>
-                    <TableRowColumn>{el.name}</TableRowColumn>
-                    <TableRowColumn style={styles.column}>
+                    <TableRowColumn style={styles.tableRowColumn}>{el.id}</TableRowColumn>
+                    <TableRowColumn style={styles.tableRowColumn}>{el.name}</TableRowColumn>
+                    <TableRowColumn style={styles.column && styles.tableRowColumn}>
                       <RaisedButton fullWidth={false} label='View' primary style={styles.btnPrimary} onTouchTap={this.props.getAllProjects}/>
                       <RaisedButton label='Edit' secondary linkButton href={'/admin/' + el.id} style={styles.btnPrimary} />
                     </TableRowColumn>

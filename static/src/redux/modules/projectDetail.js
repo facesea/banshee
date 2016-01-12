@@ -21,6 +21,7 @@ export const RULE_DIALOG_OPEN = 'RULE_DIALOG_OPEN'
 export const HANDLE_SNACKBAR_CLOSE = 'HANDLE_SNACKBAR_CLOSE'
 export const EDIT_PROJECT_NAME_SUCCESS = 'EDIT_PROJECT_NAME_SUCCESS'
 export const DELETE_RULE_SUCCESS = 'DELETE_RULE_SUCCESS'
+export const EDIT_PROJECT_NAME_FAIL = 'EDIT_PROJECT_NAME_FAIL'
 
 export const INIT_STATE = {
   project: {},
@@ -59,6 +60,7 @@ export const addRuleFail = createAction(ADD_RULE_FAIL, (msg) => msg)
 export const addRuleSuccess = createAction(ADD_RULE_SUCCESS, (rule) => rule)
 export const handleSnackbarClose = createAction(HANDLE_SNACKBAR_CLOSE, () => false)
 export const editProjectNameSucess = createAction(EDIT_PROJECT_NAME_SUCCESS, (project) => project)
+export const editProjectNameFail = createAction(EDIT_PROJECT_NAME_FAIL, (msg) => msg)
 export const deleteRuleSuccess = createAction(DELETE_RULE_SUCCESS, (index) => index)
 
 export const getProjectById = (id) => {
@@ -101,7 +103,7 @@ export const editProjectName = (e) => {
       .send({name: state.formField})
       .end(function (err, res) {
         if (err || !res.ok) {
-          console.error('get projects error')
+          dispatch(editProjectNameFail(res.body.msg))
         } else {
           dispatch(editProjectNameSucess(res.body))
         }
@@ -264,6 +266,12 @@ export default handleActions({
     return Object.assign({}, state, {
       ruleOpen: false,
       project: payload
+    })
+  },
+  [EDIT_PROJECT_NAME_FAIL]: (state, { payload }) => {
+    return Object.assign({}, state, {
+      snackbarOpen: true,
+      snackbarMessage: payload
     })
   },
   [DELETE_RULE_SUCCESS]: (state, { payload }) => {
