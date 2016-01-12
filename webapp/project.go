@@ -119,20 +119,25 @@ func updateProject(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
 	// Patch.
 	proj.Name = req.Name
 	if err := db.Admin.DB().Save(proj).Error; err != nil {
-		switch err {
-		case sqlite3.ErrConstraintNotNull:
-			ResponseError(w, ErrNotNull)
-			return
-		case sqlite3.ErrConstraintUnique:
-			ResponseError(w, ErrDuplicateProjectName)
-			return
-		case gorm.RecordNotFound:
+		if err == gorm.RecordNotFound {
+			// Not found.
 			ResponseError(w, ErrProjectNotFound)
 			return
-		default:
-			ResponseError(w, NewUnexceptedWebError(err))
-			return
 		}
+		// Writer errors.
+		sqliteErr, ok := err.(sqlite3.Error)
+		if ok {
+			switch sqliteErr.ExtendedCode {
+			case sqlite3.ErrConstraintNotNull:
+				ResponseError(w, ErrNotNull)
+				return
+			case sqlite3.ErrConstraintUnique:
+				ResponseError(w, ErrDuplicateProjectName)
+				return
+			}
+		}
+		ResponseError(w, NewUnexceptedWebError(err))
+		return
 	}
 	ResponseJSONOK(w, proj)
 }
@@ -244,17 +249,20 @@ func addProjectUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params
 	}
 	// Append user.
 	if err := db.Admin.DB().Model(proj).Association("Users").Append(user).Error; err != nil {
-		switch err {
-		case gorm.RecordNotFound:
+		if err == gorm.RecordNotFound {
+			// User or Project not found.
 			ResponseError(w, ErrNotFound)
 			return
-		case sqlite3.ErrConstraintPrimaryKey:
+		}
+		// Duplicate primay key.
+		sqliteErr, ok := err.(sqlite3.Error)
+		if ok && sqliteErr.ExtendedCode == ErrConstraintPrimaryKey {
 			ResponseError(w, ErrPrimaryKey)
 			return
-		default:
-			ResponseError(w, NewUnexceptedWebError(err))
-			return
 		}
+		// Unexcepted error.
+		ResponseError(w, NewUnexceptedWebError(err))
+		return
 	}
 }
 

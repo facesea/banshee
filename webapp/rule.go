@@ -67,20 +67,24 @@ func createRule(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		TrustLine:    req.TrustLine,
 	}
 	if err := db.Admin.DB().Create(rule).Error; err != nil {
-		switch err {
-		case sqlite3.ErrConstraintNotNull:
-			ResponseError(w, ErrNotNull)
-			return
-		case sqlite3.ErrConstraintPrimaryKey:
-			ResponseError(w, ErrPrimaryKey)
-			return
-		case sqlite3.ErrConstraintUnique:
-			ResponseError(w, ErrDuplicateRulePattern)
-			return
-		default:
-			ResponseError(w, NewUnexceptedWebError(err))
-			return
+		// Write errors.
+		sqliteErr, ok := err.(sqlite3.Error)
+		if ok {
+			switch sqliteErr.ExtendedCode {
+			case sqlite3.ErrConstraintNotNull:
+				ResponseError(w, ErrNotNull)
+				return
+			case sqlite3.ErrConstraintPrimaryKey:
+				ResponseError(w, ErrPrimaryKey)
+				return
+			case sqlite3.ErrConstraintUnique:
+				ResponseError(w, ErrDuplicateRulePattern)
+				return
+			}
 		}
+		// Unexcepted error.
+		ResponseError(w, NewUnexceptedWebError(err))
+		return
 	}
 	// Cache
 	db.Admin.RulesCache.Put(rule)
