@@ -1,6 +1,5 @@
 // Copyright 2015 Eleme Inc. All rights reserved.
 
-// Package storage implements persistence storage based on leveldb.
 package storage
 
 import (
