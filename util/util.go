@@ -1,5 +1,6 @@
 // Copyright 2015 Eleme Inc. All rights reserved.
 
+// Package util provides util functions.
 package util
 
 import (

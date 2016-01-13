@@ -1,92 +1,22 @@
 Banshee
 =======
 
-Anomalies detection system for periodic metrics.
+Banshee is a real-time anomalies(outliers) detection system for periodic
+metrics.
 
 [![Build Status](https://travis-ci.org/eleme/banshee.svg?branch=master)](https://travis-ci.org/eleme/banshee)
 
-Features
---------
-
-* Designed for periodic metrics.
-* Easy to get started.
-* Automatically anomalies detection.
-* Alerting rules admin panels.
-* Detection result visualization.
-* Built for a large quantity of metrics.
-
-Requirements
-------------
-
-* [Go](https://golang.org/)>=1.4
-* [godep](https://github.com/tools/godep)
-
-Get Started
------------
-
-1. Run `make`.
-2. Run `./banshee -c <path/to/config.json>`.
-
-Configuration
+Installation
 -------------
 
-The default configuration is [exampleConfig.json](config/exampleConfig.json).
+Clone and run `make`.
 
-Statsd Integration
-------------------
+Or download banshee binary from https://github.com/eleme/banshee/releases.
 
-1. Install `statsd-banshee` on the statsd servers: `npm install statsd-banshee`.
-2. Add module `statsd-banshee` to statsd's backends:
+Documentation
+--------------
 
-   ```js
-   {
-   , backends: ['statsd-banshee']
-   , bansheeHost: 'localhost'
-   , bansheePort: 2015
-   }
-   ```
-
-Alerting Command
-----------------
-
-See [alerter/exampleCommand](alerter/exampleCommand).
-
-Net Protocol
-------------
-
-Very simple line-based:
-
-```
-<Name> <Timestamp> <Value>\n
-```
-
-For example:
-
-```bash
-$ telnet 0.0.0.0 2015                                                                                                                                                                                            18 ↵ (go1.5.2 node@v5.0.0)
-Trying 0.0.0.0...
-Connected to 0.0.0.0.
-Escape character is '^]'.
-counter.foo 1451471948 3.14
-```
-
-Algorithms
------------
-
-1. Anomalies detection: [3-sigma](https://en.wikipedia.org/wiki/68%E2%80%9395%E2%80%9399.7_rule).
-
-   ```py
-   if abs(v-avg) > 3*stdev:
-       return True  # anomaly
-   ```
-
-2. Metric trendings following: [ewma](https://en.wikipedia.org/wiki/Moving_average) and ewms:
-
-   ```py
-   avg_old = avg
-   avg = avg*(1-f) + v*f
-   stdev = sqrt((1-f)*stdev*stdev + f*(v-avg_old)*(v-avg))
-   ```
+https://godoc.org/github.com/eleme/banshee
 
 License
 -------

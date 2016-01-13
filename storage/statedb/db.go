@@ -1,6 +1,5 @@
 // Copyright 2015 Eleme Inc. All rights reserved.
 
-// Package statedb handles the states storage.
 package statedb
 
 import (

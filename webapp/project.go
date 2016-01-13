@@ -104,6 +104,11 @@ func updateProject(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
 		ResponseError(w, ErrBadRequest)
 		return
 	}
+	// Validate
+	if len(req.Name) <= 0 {
+		ResponseError(w, ErrProjectName)
+		return
+	}
 	// Find
 	proj := &models.Project{}
 	if err := db.Admin.DB().First(proj, id).Error; err != nil {

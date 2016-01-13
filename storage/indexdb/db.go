@@ -1,6 +1,5 @@
 // Copyright 2015 Eleme Inc. All rights reserved.
 
-// Package indexdb handles the storage for indexes.
 package indexdb
 
 import (
