@@ -1,92 +1,32 @@
 Banshee
 =======
 
-Anomalies detection system for periodic metrics.
+Banshee is a real-time anomalies(outliers) detection system for periodic
+metrics.
 
 [![Build Status](https://travis-ci.org/eleme/banshee.svg?branch=master)](https://travis-ci.org/eleme/banshee)
 
-Features
---------
+Documentation
+--------------
 
-* Designed for periodic metrics.
-* Easy to get started.
-* Automatically anomalies detection.
-* Alerting rules admin panels.
-* Detection result visualization.
-* Built for a large quantity of metrics.
-
-Requirements
-------------
-
-* [Go](https://golang.org/)>=1.4
-* [godep](https://github.com/tools/godep)
-
-Get Started
------------
-
-1. Run `make`.
-2. Run `./banshee -c <path/to/config.json>`.
-
-Configuration
--------------
-
-The default configuration is [exampleConfig.json](config/exampleConfig.json).
-
-Statsd Integration
-------------------
-
-1. Install `statsd-banshee` on the statsd servers: `npm install statsd-banshee`.
-2. Add module `statsd-banshee` to statsd's backends:
-
-   ```js
-   {
-   , backends: ['statsd-banshee']
-   , bansheeHost: 'localhost'
-   , bansheePort: 2015
-   }
-   ```
-
-Alerting Command
-----------------
-
-See [alerter/exampleCommand](alerter/exampleCommand).
-
-Net Protocol
-------------
-
-Very simple line-based:
-
-```
-<Name> <Timestamp> <Value>\n
-```
-
-For example:
-
-```bash
-$ telnet 0.0.0.0 2015                                                                                                                                                                                            18 ↵ (go1.5.2 node@v5.0.0)
-Trying 0.0.0.0...
-Connected to 0.0.0.0.
-Escape character is '^]'.
-counter.foo 1451471948 3.14
-```
-
-Algorithms
------------
-
-1. Anomalies detection: [3-sigma](https://en.wikipedia.org/wiki/68%E2%80%9395%E2%80%9399.7_rule).
-
-   ```py
-   if abs(v-avg) > 3*stdev:
-       return True  # anomaly
-   ```
-
-2. Metric trendings following: [ewma](https://en.wikipedia.org/wiki/Moving_average) and ewms:
-
-   ```py
-   avg_old = avg
-   avg = avg*(1-f) + v*f
-   stdev = sqrt((1-f)*stdev*stdev + f*(v-avg_old)*(v-avg))
-   ```
+1. [Overview](https://godoc.org/github.com/eleme/banshee)
+   1. [Use Case](https://godoc.org/github.com/eleme/banshee#hdr-Use_Case)
+   2. [Features](https://godoc.org/github.com/eleme/banshee#hdr-Features)
+   3. [Requirements](https://godoc.org/github.com/eleme/banshee#hdr-Requirements)
+   4. [Installation](https://godoc.org/github.com/eleme/banshee#hdr-Installation)
+   5. [Command Line](https://godoc.org/github.com/eleme/banshee#hdr-Command_Line)
+   6. [Compontents](https://godoc.org/github.com/eleme/banshee#hdr-Compontents)
+2. [Configuration](https://godoc.org/github.com/eleme/banshee/config)
+   1. [Example](https://godoc.org/github.com/eleme/banshee/config#hdr-Example)
+   2. [Documents](https://godoc.org/github.com/eleme/banshee/config#hdr-Documents)
+3. [Statsd Integration](https://godoc.org/github.com/eleme/banshee#hdr-Statsd_Integration)
+4. [Alerter Command Example](https://godoc.org/github.com/eleme/banshee/alerter/exampleCommand)
+5. [Implementation Details](https://godoc.org/github.com/eleme/banshee#hdr-Implementation_Details)
+   1. [Detector Input Net Protocol](https://godoc.org/github.com/eleme/banshee/detector#hdr-Detector_Input_protocol)
+   2. [Detection Alogrithms](https://godoc.org/github.com/eleme/banshee/detector#hdr-Detection_Algorithms)
+   3. [Detection States](https://godoc.org/github.com/eleme/banshee/detector#hdr-Detection_State)
+   4. [Storage Handling](https://godoc.org/github.com/eleme/banshee/storage)
+   5. [Metrics Filter](https://godoc.org/github.com/eleme/banshee/filter)
 
 License
 -------
