@@ -1,6 +1,5 @@
 // Copyright 2015 Eleme Inc. All rights reserved.
 
-// Package config handles the configuration container and parsing.
 package config
 
 import (
@@ -102,7 +101,7 @@ func New() *Config {
 	config.Detector.FillBlankZeros = []string{}
 	config.Webapp.Port = 2016
 	config.Webapp.Auth = [2]string{"admin", "admin"}
-	config.Webapp.Static = "static"
+	config.Webapp.Static = "static/"
 	config.Alerter.Command = ""
 	config.Alerter.Workers = 4
 	config.Alerter.Interval = DefaultAlerterInterval

@@ -1,7 +1,5 @@
 // Copyright 2015 Eleme Inc. All rights reserved.
 
-// Package detector implements a tcp server that detects whether incoming
-// metrics are anomalies and send alertings on anomalies found.
 package detector
 
 import (
