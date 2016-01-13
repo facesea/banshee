@@ -1,0 +1,139 @@
+/* ========================================================================
+   Component: masonry-grid-deck.less
+ ========================================================================== */
+
+// The photo card
+// ----------------------------------- 
+
+.photo {
+    background-color: #fff;
+    border: 1px solid rgba(0, 0, 0, .15);
+    border-radius: 3px;
+    margin: 0 10px 10px 0;
+    position: relative;
+    .photo-loader {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      padding-top: 40%;  
+      z-index: 1;
+    }
+
+    img {
+      position: relative;
+      opacity: 0;
+      z-index: 2;
+      &.photoloaded {
+        opacity: 1;
+        .transition(.2s);
+        + .photo-loader {
+          display: none;
+        }
+      }
+    }
+
+    .photo-index {
+        background: fade(@gray-dark,75%);
+        color:#fff;
+        position:absolute;
+        height:100%;
+        text-align:center;
+        width:100%;
+        z-index:99;
+    }
+
+    .photo-index p:first-child {
+        margin-top:10px;
+    }
+
+    .photo-wrapper {
+        min-height: 100px;
+    }
+
+    .photo-description {
+        padding:15px;
+    }
+}
+
+.balloon-wrapper {
+    padding-top:30px;
+    opacity:1;
+    text-align:center;
+}
+
+.balloon {
+    background:@brand-primary;
+    border-radius:50%;
+    display:inline-block;
+    font-size:160%;
+    text-align:center;
+    height:100px;
+    line-height:100px;
+    width:100px;
+}
+
+// Special Grid 
+// ----------------------------------- 
+
+.deckgrid {
+    margin: 0 auto;
+    padding:10px;
+    max-width:100%;
+}
+
+.deckgrid .column {
+    float:left;
+}
+
+.deckgrid .column.size-1-5 {
+    width: 20%;
+}
+
+.deckgrid .column.size-1-4 {
+    width: 25%;
+}
+
+.deckgrid .column.size-1-3 {
+    width: 33.3333%;
+}
+
+.deckgrid .column.size-1-2 {
+    width: 50%;
+}
+
+.deckgrid .column.size-1-1 {
+    width: 100%;
+}
+
+.deckgrid[deckgrid]::before {
+    content: '1 .column.size-1-1';
+    font-size: 0;
+    visibility:hidden;
+}
+
+@media @mobile {
+    .deckgrid[deckgrid]::before {
+      content: '2 .column.size-1-2';
+    }
+}
+
+@media @tablet {
+    .deckgrid[deckgrid]::before {
+      content: '3 .column.size-1-3';
+    }
+}
+
+@media @desktop {
+    .deckgrid[deckgrid]::before {
+      content: '4 .column.size-1-4';
+    }
+}
+
+@media @desktop-lg {
+    .deckgrid[deckgrid]::before {
+      content: '5 .column.size-1-5';
+    }
+}
+

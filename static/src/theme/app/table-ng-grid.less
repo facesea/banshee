@@ -1,0 +1,89 @@
+/* ========================================================================
+   Component: table-ng-grid.less
+ ========================================================================== */
+
+.ngGrid {
+  min-height: 480px;
+  background-color: transparent;
+
+  .ngVerticalBarVisible {
+    background-color: @gray-light;
+  }
+  .ngTopPanel {
+    position: relative;
+    z-index: 1;
+    background-color: #fff;
+    border-bottom: 1px solid @gray-light;
+  }
+  .ngTopPanel .ngHeaderContainer{
+    border-bottom: 1px solid @gray-light;
+  }
+  .ngGroupPanel {
+    background-color: #fff;
+    border-bottom: 1px solid @gray-light;
+  }
+  .ngGroupName {
+    background-color: #fff;
+    border: 1px solid @gray-light;
+  }
+  .ngRow {
+    position: absolute;
+    border-top: 1px solid @gray-light;
+  }
+  .ngRow.odd {
+    background-color: @gray-lighter;
+  }
+  .ngRow.even {
+    background-color: #fff;
+    border-bottom: 1px solid @gray-light;
+  }
+  .ngRow.selected {
+    background-color: @gray-light;
+  }
+  .ngFooterPanel {
+    padding: 0 5px;
+    background-color: #fff;
+    border-top: 1px solid @gray-light;
+  }
+  .ngPagerFirstBar {
+    border-left: 2px solid @gray-dark;
+  }
+  .ngPagerFirstTriangle {
+    border-color: transparent @gray-dark transparent transparent;
+  }
+  .ngPagerLastTriangle {
+    border-color: transparent transparent transparent @gray-dark;
+  }
+  .ngPagerLastBar {
+    border-left: 2px solid @gray-dark;
+  }
+  .ngPagerButton {
+    background-color: #fff;
+    border: 1px solid @gray-light;
+  }
+  .ngHeaderText,
+  .ngCellText{
+    padding: 8px 15px;
+  }
+  .ngFooterSelectedItems{padding-top: 0; margin-top: -4px}
+  
+  .ngGridMaxPagesNumber{position: relative; top: -6px}
+  
+  .ngViewport{overflow-x:hidden;}
+  .ngSortButtonUp,
+  .ngSortButtonDown{
+    top: 14px;
+  }
+  
+  .ngLabel {
+    margin-right: 10px;
+  }
+  input, 
+  select{
+    border: 1px solid @gray-light;
+  }
+  input{
+    line-height: 18px
+  }
+}
+

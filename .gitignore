@@ -12,8 +12,8 @@ test-storage
 static/node_modules
 static/dist
 static/npm-debug.log
-static/bower_components
-static/css
-static/fonst
-static/images
-static/js
+static/public/bower_components
+static/public/css
+static/public/fonst
+static/public/images
+static/public/js

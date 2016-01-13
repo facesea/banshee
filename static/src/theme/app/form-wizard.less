@@ -1,0 +1,118 @@
+/* ========================================================================
+   Component: form-wizard.less
+ ========================================================================== */
+
+@wizard-primary-color:        @brand-primary;
+@wizard-steps-bg:             @jumbotron-bg;
+@wizard-steps-bg-active:      @wizard-primary-color;
+
+@wizard-heading-color:        @text-color;
+@wizard-subheading-color:     @text-muted;
+
+.form-wizard {
+
+  > ol {
+    list-style-type: none;
+    padding: 0 15px; // abort row expanding to border in panels
+    
+    // steps indicator
+    > li {
+      min-height: 50px;
+      padding-top: 15px;
+      padding-bottom: 15px;
+      background-color: @wizard-steps-bg;
+      cursor: pointer;
+      .transition(all .3s ease);
+
+      // unstyle plugin anchors
+      > a {
+        text-decoration: none;
+      }
+
+      // label for step indicator
+      .label {
+        // display: inline-block;
+        .label-variant(@wizard-primary-color);
+        vertical-align: super;
+        margin-right: 6px;
+      }
+
+      // step title
+      h4 {
+        display: inline-block;
+        color: @wizard-heading-color;
+      }
+
+      // subtext 
+      small {
+        display: block;
+        color: @wizard-subheading-color;
+      }
+
+      // Active step
+      &.active {
+        background-color: @wizard-primary-color;
+        h4, small {
+          color: #fff;
+        }
+        .label {
+          background-color: #fff;
+          border-color: #fff;
+          color: @wizard-primary-color;
+        }
+      }
+    }
+  }
+
+  .bwizard-buttons {
+    margin: 0;
+  }
+
+  // well is added to contain form elements
+  .well {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    box-shadow: 0 0 0 #000;
+    fieldset {
+      margin: 0;
+    }
+  }
+
+  &.wizard-horizontal {
+    @media @desktop {
+      > ol > li {
+        display: inline-block;
+      }
+    }
+  }
+
+  &.wizard-vertical {
+    .clearfix;
+    > ol {
+      float: left;
+      width: 39%;
+      padding: 0;
+      > li {
+        display: block;
+        padding: 10px;
+        h4 {
+          font-size: 14px;
+        }
+      }
+    }
+    > div {
+      float: right;
+      width: 59%;
+    }
+    .pager {
+      clear: both;
+      padding-top: 10px;
+    }
+    .well {
+      padding: 0;
+    }
+  }
+
+}
+
