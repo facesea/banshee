@@ -104,6 +104,16 @@ Alerting Sender
 
 See package alerter and alerter/exampleCommand.
 
+Implementation Details
+
+1. Detection algorithms, see package detector.
+
+2. Detector input net protocol, see package detector.
+
+3. Storage, see package storage.
+
+4. Filter, see package filter.
+
 License
 
 MIT (c) eleme, inc.
