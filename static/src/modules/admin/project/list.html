@@ -1,0 +1,46 @@
+<div id="admin-project-list">
+  <div class="col-lg-6">
+    <!-- START panel-->
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        Project
+        <button class="btn btn-labeled btn-success pull-right" ng-click="openModal()">
+          <span class="btn-label">
+            <i class="icon-plus"></i>
+          </span>
+          Create
+        </button>
+      </div>
+      <div class="panel-body">
+        <!-- START table-responsive-->
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th class="th50">ID</th>
+                <th>Project Name</th>
+                <th class="th100">Options</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="project in projects">
+                <td ng-bind="project.id"></td>
+                <td ng-bind="project.name"></td>
+                <td>
+                  <a ui-sref='banshee.admin' class="btn btn-sm btn-info">
+                    <i class="icon-bubble"></i>
+                  </a>
+                  <a ui-sref='banshee.admin' class="btn btn-sm btn-green">
+                    <i class="icon-pencil"></i>
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- END table-responsive-->
+      </div>
+    </div>
+    <!-- END panel-->
+  </div>
+</div>

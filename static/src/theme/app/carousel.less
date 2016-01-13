@@ -1,0 +1,75 @@
+/* ========================================================================
+   Component: carousel.less
+ ========================================================================== */
+
+.bgimage {
+    text-align:right;
+    color:white;
+    background-size:cover;
+    height: 100%;
+    background-position: center center;
+}
+
+ul[rn-carousel] {
+    height: 380px;
+    width: 100%;
+    margin: 0 auto;
+    cursor: pointer;
+}
+
+.carousel5 li {
+    width:100%;
+    height:100%;
+    font-size:30px;
+}
+
+.carousel-demo {
+    margin-top:20px;
+    display: block;
+    text-align: center;
+}
+
+.carousel-demo-3d > ul[rn-carousel] {
+  display: block !important;
+  max-width: 50%;
+  margin: 0 auto !important;
+}
+
+.carousel-demo-fullscreen {
+  width:100%;
+  height:100%;
+}
+.carousel-demo-fullscreen ul[rn-carousel] {
+  width:100%;
+  height:100%;
+}
+
+.carousel-demo ul[rn-carousel-transition="hexagon"] {
+  margin-left:100px;
+}
+
+
+.rn-carousel-indicator span {
+  display: inline-block;
+  text-indent: -999px;
+  overflow: hidden;
+  background-color: @gray-dark;
+  border: 1px solid @gray-darker;
+  width: 10px;
+  height: 10px;
+  margin: 0 1px;
+  border-radius: 500px;
+  &.active {
+    background-color: @gray;
+    border: 1px solid darken(@gray, 10%);
+  }
+}
+
+.custom-indicator span {
+  background-color: @brand-info-dark;
+  border: 1px solid @brand-info-dark;
+  &.active {
+    background-color: @brand-info;
+    border: 1px solid darken(@brand-info, 10%);
+  }
+}

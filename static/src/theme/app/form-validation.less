@@ -1,0 +1,105 @@
+/* ========================================================================
+   Component: form-validation.less
+ ========================================================================== */
+
+//
+// Styles for validation results
+//
+
+.form-validate {
+  .form-control {
+    
+    // Invalid input
+    &.ng-dirty.ng-invalid {
+      border-color: @brand-danger;
+    }
+    // Valid input
+    &.ng-dirty.ng-valid,
+    &.ng-dirty.ng-valid:focus {
+        border-color: @brand-success;
+    }
+    
+  }
+
+  .has-error .form-control {
+    border-color: @brand-danger !important;
+  }
+  
+  // custom checkbox and radio
+  .c-checkbox, .c-radio {
+    input {
+      // Invalid input
+      &.ng-dirty.ng-invalid + span {
+          border-color: @brand-danger;
+      }
+    }
+  }
+  // ui select
+  .ui-select-container {
+    &.ng-dirty.ng-invalid .btn {
+      border-color: @brand-danger;
+    }
+  }
+  // invalid input group adjustment
+  .input-group .ui-select-container {
+    &.ng-dirty.ng-invalid .btn {
+      margin-left: -1px;
+    }
+  }
+  
+  // chosen
+  .chosen-select {
+    // Invalid input
+    &.ng-dirty.ng-invalid + .chosen-container > .chosen-choices {
+      border-color: @brand-danger;
+    }
+    // Valid input
+    &.ng-dirty.ng-valid + .chosen-container > .chosen-choices,
+    &.ng-dirty.ng-valid:focus  + .chosen-container > .chosen-choices {
+        border-color: @brand-success;
+    }
+  }
+  
+  // tags input
+  .form-control {
+    
+    // Invalid input
+    &.ng-dirty.ng-invalid + .bootstrap-tagsinput {
+      border-color: @brand-danger;
+    }
+    // Valid input
+    &.ng-dirty.ng-valid + .bootstrap-tagsinput,
+    &.ng-dirty.ng-valid:focus + .bootstrap-tagsinput{
+        border-color: @brand-success;
+    }
+    
+  }
+
+}
+
+//
+// Styles for validation results from Parsley
+//
+
+@label-error-color: @brand-danger;
+
+.parsley-error {
+  border-color: @label-error-color!important;
+}
+
+.parsley-errors-list {
+  display: none;
+  margin: 0;
+  padding: 0;
+
+  &.filled {
+    display: block;
+  }
+
+  > li {
+    font-size: 12px;
+    list-style: none;
+    color: @label-error-color;
+  }
+
+}

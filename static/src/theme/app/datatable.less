@@ -1,0 +1,172 @@
+/* ========================================================================
+   Component: datatable.less
+ ========================================================================== */
+
+// Search filter
+.dataTables_filter {
+  input {
+    margin-left: 10px
+  }
+}
+
+
+// Select length filter
+.dataTables_length {
+  select {
+    margin-right: 10px
+  }
+}
+
+table.dataTable {
+  tfoot > tr > th {
+    color: #a1a2a3;
+    background: #f1f2f3;    
+  }
+}
+
+// datatable inside panels
+.panel {
+  .dataTables_wrapper .row {
+    margin: 10px 0;
+  }
+  .dataTable {
+    width: 100% !important;
+  }
+}
+
+
+// 
+// Custom ColVis extensions styles
+// 
+
+// The main button
+.ColVis {
+  button.ColVis_Button {
+    .btn;
+    .btn-default;
+    background-image: none;
+    box-shadow: 0 0 0 #000;
+    cursor: pointer;
+    height: 31px;
+    > span {
+      color: #656565;
+    }
+  }
+
+}
+
+// Backdrop
+.ColVis_collectionBackground {
+  display: none;
+}
+
+// Labels dropdown
+ul.ColVis_collection {
+  background-color: #fff !important;
+  > li {
+    border: 0 !important;
+    background-image: none !important;
+    box-shadow: 0 0 0 #000 !important;
+    margin: 0;
+    > label {
+        margin: 0;
+        > span {
+          color: #888;
+          vertical-align: top;
+          font-weight: normal;
+          &:hover {
+            color: #555;
+          }
+        }
+        input[type=checkbox]:checked + span, 
+        input[type=radio]:checked + span {
+          background-color: transparent;
+        }
+    }
+  }
+}
+
+.ColVis_catcher {
+  cursor: pointer;
+}
+
+table.dataTable {
+  border-bottom: 1px solid @gray-light !important;
+}
+
+table.dataTable thead th, 
+table.dataTable thead td {
+  border-bottom: 1px solid @gray-light !important;
+}
+
+// Input styles
+.dataTables_wrapper .dataTables_filter input,
+.dataTables_wrapper select {
+  box-shadow: none;
+  // -webkit-appearance: none;
+  height: @input-height-small; // Make inputs at least the height of their button counterpart (base line-height + padding + border)
+  padding: @padding-small-vertical @padding-small-horizontal;
+  font-size: @font-size-small;
+  line-height: @line-height-small;
+  color: @input-color;
+  background-color: @input-bg;
+  background-image: none; // Reset unusual Firefox-on-Android default style; see https://github.com/necolas/normalize.css/issues/214
+  border: 1px solid @input-border;
+  border-radius: @input-border-radius; // Note: This has no effect on <select>s in some browsers, due to the limited stylability of <select>s in CSS.
+}
+
+// Pagination buttons
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  background-image: none !important;
+  background-color: @gray-lighter !important;
+  border: 0 !important;
+  &:hover {
+    background-color: #fff !important;
+  }
+}
+
+body {
+  .dataTable {
+    .clearfix;
+  }
+  .dataTables_wrapper .dataTables_paginate .paginate_button {
+    background-color: #fff !important;
+    border: 1px solid @gray-light !important;
+    margin-left: 0;
+    padding: 6px 16px;
+    &.previous {
+      border-top-left-radius: 4px;
+      border-bottom-left-radius: 4px;
+    }
+    &.next {
+      border-top-right-radius: 4px;
+      border-bottom-right-radius: 4px;
+    }
+  }
+
+  .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    color: @brand-primary !important;
+  }
+  .dataTables_wrapper .dataTables_paginate .paginate_button.current, 
+  .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+    background-color: @brand-primary !important;
+    color: #fff !important;
+    border-color: @brand-primary !important;
+  }
+  table.dataTable.row-border tbody th, table.dataTable.row-border tbody td, table.dataTable.display tbody th, table.dataTable.display tbody td {
+    border-top-color: #eee;
+  }
+  table.dataTable tbody tr:nth-child(odd),
+  table.dataTable.hover tbody tr:hover, 
+  table.dataTable.display tbody tr:hover {
+    background-color: #fafbfc;
+  }
+  table.dataTable thead th,
+  .dataTables_wrapper .dataTables_length,
+  .dataTables_wrapper .dataTables_filter,
+  .dataTables_wrapper .dataTables_info,
+  .dataTables_wrapper .dataTables_processing,
+  .dataTables_wrapper .dataTables_paginate {
+    color: #888;
+  }
+}
