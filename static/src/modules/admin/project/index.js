@@ -19,6 +19,7 @@ var app = angular.module('banshee.admin', [])
       })
   })
 
-.controller('AdminProjectListCtrl', require('./AdminProjectListCtrl'));
+.controller('AdminProjectListCtrl', require('./AdminProjectListCtrl'))
+.controller('ProjectModalCtrl', require('./ProjectModalCtrl'));
 
 module.exports = app.name;

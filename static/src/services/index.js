@@ -9,6 +9,7 @@ app.config(function ($httpProvider) {
 });
 
 app
-  .factory('httpInterceptor', require('./httpInterceptor'));
+  .factory('httpInterceptor', require('./httpInterceptor'))
+  .factory('Project', require('./Project'));
 
 module.exports = app.name;
