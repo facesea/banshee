@@ -2,7 +2,7 @@
 
 /*
 
-Configuration parser and container.
+Package config handles configuration parser and container.
 
 Example
 

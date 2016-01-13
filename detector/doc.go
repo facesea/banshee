@@ -2,8 +2,8 @@
 
 /*
 
-Detector is a tcp server analyze the trendings of incoming metrics
-and send them to alerter.
+Package detector starts a tcp server to analyze the trendings of incoming
+metrics and send them to alerter.
 
 Detector Input protocol
 
