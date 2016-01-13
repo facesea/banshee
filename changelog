@@ -1,3 +1,28 @@
+0.0.2
+-----
+
+* Alerter: Add `oneDayLimit` in alerter. #181
+* CI: Add golint to travis-ci. #164
+* CI: Add travis.yml. #153 #154
+* Config: Move IntervalHitLimit to config.Detector. #161
+* Deps: Update deps gorm. #178
+* Detector: Add ability to fill blanks with zeros. #166
+* Doc: Add doc for main/storage/detector/config/alerter. #196 #193 #194
+* Filter: Add TestHitLimit. #170
+* Filter: Add IntervalHitLimit. #159
+* Filter: Use atomic for counters. #165.
+* Filter: Use safemap.Clear() to clear counters. #160
+* Main: Split Main function. #171
+* Makefile: Add command changelog. #167
+* Models: Add method `BuildRepr` to model Rule. #190 #187
+* Models: Add DefaultTrustLines. #162
+* Webapp: Errors: Fix sqlite errors handling. #179
+* Webapp: Enable to disable auth by set auth user to empty string. #174
+* Webapp: Response created json object post creation. #169
+* Webapp: Validate whether project name is empty on api `updateProject`. #192
+* Webapp: Update route for `AddRule` from `/api/rule` to `/api/project/:id/rule`. #188
+* Webapp: Use more specified request for api `createRule`. #185
+
 0.0.1
 -----
 
