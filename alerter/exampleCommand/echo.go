@@ -2,8 +2,17 @@
 
 // Example alerter command to echo message to console.
 //
-// This command will be called with a JSON-formatted argument:
+// An alerter command is some command or script to be called by alerter on
+// anomalies found.
+//
+// Command Line Call
+//
+// This command will be called by alerter with a JSON-formatted argument:
+//
 //   $ ./echo <JSON-string>
+//
+// JSON Argument
+//
 // JSON argument example
 //   {
 //     "project": {"name": "foo"},
@@ -21,6 +30,23 @@
 //       "value": 139.1
 //     }
 //   }
+//
+// Alerter Command
+//
+// An alerter command/script should be like this (pseudo code):
+//
+//	// Parse command line arguments#1 json string
+//	s = argv[1]
+//	data = loadJSON(s)
+//
+//	if data['user']['enableEmail'] then
+//		// Send email.
+//		sendEmail(data['user']['email'], data['metric'])
+//	endif
+//	if data['user']['enablePhone'] then
+//		// Send sms.
+//		sendPhone(data['user']['phone'], data['metric'])
+//	endif
 //
 package main
 

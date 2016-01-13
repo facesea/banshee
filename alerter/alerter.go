@@ -1,5 +1,7 @@
 // Copyright 2015 Eleme Inc. All rights reserved.
 
+// Package alerter implements an alerter to send sms/email messages
+// on anomalies found.
 package alerter
 
 import (
