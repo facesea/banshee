@@ -1,6 +1,5 @@
 // Copyright 2015 Eleme Inc. All rights reserved.
 
-// Package metricdb handles the storage for metrics.
 package metricdb
 
 import (

@@ -1,6 +1,5 @@
 // Copyright 2015 Eleme Inc. All rights reserved.
 
-// Package admindb handles the admin storage.
 package admindb
 
 import (
