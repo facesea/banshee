@@ -3,6 +3,7 @@
 package models
 
 import (
+	"github.com/eleme/banshee/config"
 	"github.com/eleme/banshee/util/assert"
 	"testing"
 )
@@ -50,4 +51,38 @@ func TestRuleBuildRepr(t *testing.T) {
 	}
 	rule.BuildRepr()
 	assert.Ok(t, rule.Repr == "(trend ↑ && value >= 18987) || (trend ↓ && value <= 781)")
+}
+
+func TestRuleTest(t *testing.T) {
+	m := &Metric{Name: "foo", Score: 1.2, Value: 3.567}
+	// WhenTrendUp
+	r1 := &Rule{When: WhenTrendUp}
+	assert.Ok(t, r1.Test(m, nil))
+	// WhenTrendDown
+	r2 := &Rule{When: WhenTrendDown}
+	assert.Ok(t, !r2.Test(m, nil))
+	// WhenValueGt
+	r3 := &Rule{When: WhenValueGt, ThresholdMax: 1.2}
+	assert.Ok(t, r3.Test(m, nil))
+	// WhenValueLt
+	r4 := &Rule{When: WhenValueLt, ThresholdMin: 1.2}
+	assert.Ok(t, !r4.Test(m, nil))
+	// WhenTrendUpAndValueGt
+	r5 := &Rule{When: WhenTrendUpAndValueGt, ThresholdMax: 1.2}
+	assert.Ok(t, r5.Test(m, nil))
+	r6 := &Rule{When: WhenTrendUpAndValueGt, ThresholdMax: 9.0}
+	assert.Ok(t, !r6.Test(m, nil))
+	// WhenTrendUp | WhenTrendDownAndValueLt
+	r7 := &Rule{When: WhenTrendUp | WhenTrendDownAndValueLt, ThresholdMin: 2.0}
+	assert.Ok(t, r7.Test(m, nil))
+	// TrustLine
+	r8 := &Rule{When: WhenTrendUp, TrustLine: 1.0}
+	assert.Ok(t, r8.Test(m, nil))
+	r9 := &Rule{When: WhenTrendUp, TrustLine: 8.0}
+	assert.Ok(t, !r9.Test(m, nil))
+	// Default TrustLines
+	cfg := config.New()
+	cfg.Detector.DefaultTrustLines["fo*"] = 4.0
+	r10 := &Rule{When: WhenTrendUp}
+	assert.Ok(t, !r10.Test(m, cfg))
 }
