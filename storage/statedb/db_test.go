@@ -14,18 +14,18 @@ import (
 func TestOpen(t *testing.T) {
 	fileName := "db-testing"
 	db, err := Open(fileName, &Options{288, 300})
-	defer db.Close()
-	defer os.RemoveAll(fileName)
 	assert.Ok(t, err == nil)
 	assert.Ok(t, util.IsFileExist(fileName))
+	db.Close()
+	os.RemoveAll(fileName)
 }
 
 func TestPut(t *testing.T) {
 	// Open db.
 	fileName := "db-testing"
 	db, _ := Open(fileName, &Options{288, 300})
-	defer db.Close()
 	defer os.RemoveAll(fileName)
+	defer db.Close()
 	// Test.
 	m := &models.Metric{Name: "foo", Stamp: 1450435291}
 	s := &models.State{Count: 1, Average: 100, StdDev: 1.02}
@@ -43,8 +43,8 @@ func TestGet(t *testing.T) {
 	// Open db.
 	fileName := "db-testing"
 	db, _ := Open(fileName, &Options{288, 300})
-	defer db.Close()
 	defer os.RemoveAll(fileName)
+	defer db.Close()
 	// Not found.
 	m := &models.Metric{Name: "foo", Stamp: 1450435291}
 	_, err := db.Get(m)
@@ -62,8 +62,8 @@ func TestDelete(t *testing.T) {
 	// Open db.
 	fileName := "db-testing"
 	db, _ := Open(fileName, &Options{288, 300})
-	defer db.Close()
 	defer os.RemoveAll(fileName)
+	defer db.Close()
 	// Put some states.
 	m := &models.Metric{Name: "bar", Stamp: 1450435742}
 	n := &models.Metric{Name: "foo", Stamp: 1450435742}
