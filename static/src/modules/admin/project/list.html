@@ -6,7 +6,7 @@
         Project
         <button class="btn btn-labeled btn-success pull-right" ng-click="openModal()">
           <span class="btn-label">
-            <i class="icon-plus"></i>
+            <i class="fa fa-plus"></i>
           </span>
           Create
         </button>
@@ -23,15 +23,18 @@
               </tr>
             </thead>
             <tbody>
+              <tr ng-if="!projects || !projects.length">
+                <td colspan="3">no found any result</td>
+              <tr>
               <tr ng-repeat="project in projects">
                 <td ng-bind="project.id"></td>
                 <td ng-bind="project.name"></td>
                 <td>
                   <a ui-sref='banshee.admin' class="btn btn-sm btn-info">
-                    <i class="icon-bubble"></i>
+                    <i class="fa fa-search"></i>
                   </a>
                   <a ui-sref='banshee.admin' class="btn btn-sm btn-primary">
-                    <i class="icon-pencil"></i>
+                    <i class="fa fa-pencil"></i>
                   </a>
                 </td>
               </tr>
