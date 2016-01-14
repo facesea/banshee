@@ -12,8 +12,8 @@ test-storage
 static/node_modules
 static/dist
 static/npm-debug.log
-static/public/bower_components
 static/public/css
 static/public/fonts
 static/public/images
 static/public/js
+static/public/node_modules
