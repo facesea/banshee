@@ -1,12 +1,5 @@
 {
   "name": "banshee",
-  "version": "0.0.1",
-  "description": "Anomalies detection system for periodic metrics.",
-  "main": "index.js",
-  "homepage": "https://github.com/eleme/banshee",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "devDependencies": {
     "browserify-ngannotate": "^0.7.3",
     "connect-modrewrite": "^0.8.1",
@@ -24,15 +17,7 @@
     "gulp-uglify": "^1.0.1",
     "gulp-usemin": "^0.3.11",
     "proxy-middleware": "^0.11.1",
-    "gulp-less": "^3.0.3"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git@git.elenet.me:bpm/banshee.git"
-  },
-  "author": "liang.peng <facesea18@gmail.com>",
-  "license": "ISC",
-  "dependencies": {
+    "gulp-less": "^3.0.3",
     "gulp-jshint": "^1.12.0",
     "gulp-jshint-html-reporter": "^0.1.3",
     "jshint-stylish": "^2.1.0"

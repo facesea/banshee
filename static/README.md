@@ -1,18 +1,9 @@
 #＃   Install & Run
 
-1.  `npm install`
-1.  `bower install`
-1.  `gulp`
-1.  add proxy.json
+Dev Guide
+---------
 
-    ```json
-    [
-      {
-        "route": "/api",
-        "host": "localhost",
-        "port": 2016
-      }
-    ]
-    ```
-
-1.  `http://localhost:3000/` open it
+1. `npm install`
+2. `cd public && npm install`
+3. `gulp`
+4.  open `http://localhost:3000/`
