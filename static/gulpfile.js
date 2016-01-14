@@ -1,6 +1,3 @@
-/**
- * Created by Administrator on 2014/11/19.
- */
 var pkg = require('./package.json'),
   gulp = require('gulp'),
   concat = require('gulp-concat'),
@@ -27,6 +24,7 @@ var dist = './public/js';
 
 gulp.task('default', ['dev']);
 
+// Less
 gulp.task('less', function () {
   return gulp.src(['./src/theme/inspinia.less', './src/app.less', './src/theme/square/green.css'])
     .pipe(less())
@@ -34,6 +32,7 @@ gulp.task('less', function () {
     .pipe(connect.reload());
 });
 
+// Js
 gulp.task('js', function () {
   var path;
   if (this.seq.indexOf('build') == -1) {
@@ -53,6 +52,7 @@ gulp.task('js', function () {
     .pipe(connect.reload());
 });
 
+// Lint
 gulp.task('lint', function () {
   return gulp.src([
       'src/**/*.js',
@@ -67,6 +67,7 @@ gulp.task('lint', function () {
     }));
 });
 
+// Html
 gulp.task('tpl', function () {
   return gulp.src(['src/**/**.html'])
     .pipe(htmlmin({
@@ -88,6 +89,7 @@ gulp.task('tpl', function () {
     .pipe(connect.reload());
 });
 
+// File
 gulp.task('file', function () {
   var path;
   if (this.seq.indexOf('build') == -1) {
@@ -96,13 +98,14 @@ gulp.task('file', function () {
     path = 'dist';
   };
 
-  gulp.src(['./public/bower_components/bootstrap/fonts/*', './public/bower_components/simple-line-icons/fonts/*'])
+  gulp.src(['./public/node_modules/bootstrap/fonts/*', './public/node_modules/simple-line-icons/fonts/*'])
     .pipe(gulp.dest('./' + path + '/fonts'));
 
   gulp.src(['./public/images/**/*', './src/theme/*.png', './src/theme/square/*.png', './src/static/*.png', './src/static/*.ico'])
     .pipe(gulp.dest('./' + path + '/images'));
 });
 
+// Minify
 gulp.task('usemin', ['tpl', 'less', 'js'], function () {
   return gulp.src('./public/index.html')
     .pipe(usemin({
@@ -118,9 +121,12 @@ gulp.task('usemin', ['tpl', 'less', 'js'], function () {
     .pipe(gulp.dest('dist/'));
 });
 
+// Build
 gulp.task('build', gulpSequence('usemin', 'file'));
 
+// Dev
 gulp.task('dev', ['tpl', 'file', 'less', 'js'], function () {
+  // Server
   connect.server({
     root: 'public',
     port: 3000,
@@ -128,13 +134,12 @@ gulp.task('dev', ['tpl', 'file', 'less', 'js'], function () {
     middleware: function (connect, opt) {
       var middlewares = [];
       try {
-
+        middlewares = require('./proxy.json').map(function (opt) {
+          return proxy(opt);
+        });
       } catch (e) {
         console.warn('proxy.json not found');
       }
-      middlewares = require('./proxy.json').map(function (opt) {
-        return proxy(opt);
-      });
       middlewares.push(modRewrite(['^[^\\.]*$ /index.html [L]']));
       return middlewares;
     }

@@ -25,7 +25,7 @@ Configuration is in JSON file, for example:
 	  "webapp": {
 	    "port": 2016,
 	    "auth": ["user", "pass"],
-	    "static": "static/"
+	    "static": "static/dist"
 	  },
 	  "alerter": {
 	    "command": "",
@@ -54,7 +54,7 @@ The documents for each configuration item with default values:
 	detector.filterBlankZeros  // Detector will fill metric blanks with zeros if it matches any of these wildcard patterns. default: []
 	webapp.port                // Webapp http port to listen.
 	webapp.auth                // Webapp admin pages basic auth, in form of [user, pass], use empty string ["", ""] to disable auth. default: ["admin", "admin"]
-	webapp.static              // Webapp static files (htmls/css/js) path, default: "static/"
+	webapp.static              // Webapp static files (htmls/css/js) path, default: "static/dist"
 	alerter.command            // Alerter command or script to execute on anomalies found. default: ""
 	alerter.workers            // Number of workers to consume command execution jobs. default: 4
 	alerter.interval           // Minimal interval (in seconds) between two alerting message for one metric. default: 1200
