@@ -1,5 +1,3 @@
-#＃   Install & Run
-
 Dev Guide
 ---------
 
