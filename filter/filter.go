@@ -95,7 +95,7 @@ func (f *Filter) matchedRs(c *childFilter, prefix string, l []string) []*models.
 			//use atomic
 			atomic.AddInt32(v.(*int32), 1)
 			if atomic.LoadInt32(v.(*int32)) > int32(f.intervalHitLimit) {
-				log.Info("hits over intervalHitLimit, metric: %s", prefix)
+				log.Warn("hits over intervalHitLimit, metric: %s", prefix)
 				return []*models.Rule{}
 			}
 		} else {
