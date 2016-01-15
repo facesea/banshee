@@ -8,7 +8,6 @@
   "immed": true,
   "indent": 2,
   "latedef": true,
-  "es5": true,
   "newcap": true,
   "noarg": true,
   "quotmark": "single",
@@ -18,6 +17,7 @@
   "predef": [
     "angular",
     "_",
-    "AMap"
+    "AMap",
+    "document"
   ]
 }
