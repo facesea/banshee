@@ -3,6 +3,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -71,6 +72,11 @@ func initConfig() {
 }
 
 func initDB() {
+	// Rely on config.
+	if cfg == nil {
+		panic(errors.New("db require config"))
+	}
+	// Open db with options.
 	options := &storage.Options{
 		NumGrid: cfg.Period[0],
 		GridLen: cfg.Period[1],
@@ -84,6 +90,11 @@ func initDB() {
 }
 
 func initFilter() {
+	// Rely on db and config.
+	if db == nil || cfg == nil {
+		panic(errors.New("filter require db and config"))
+	}
+	// Init filter
 	flt.Init(db)
 	flt.SetHitLimit(cfg)
 }
