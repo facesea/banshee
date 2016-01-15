@@ -34,10 +34,10 @@
                 <td ng-bind="project.id"></td>
                 <td ng-bind="project.name"></td>
                 <td>
-                  <md-button class="md-raised md-mini" ui-sref="banshee.admin">
+                  <md-button class="md-raised md-mini" ui-sref="banshee.admin" aria-label="project detail">
                     <i class="fa fa-search"></i>
                   </md-button>
-                  <md-button class="md-raised md-primary md-mini"  ui-sref='banshee.admin.project.detail({id: project.id})'>
+                  <md-button class="md-raised md-primary md-mini"  ui-sref='banshee.admin.project.detail({id: project.id})' aria-label="edit project">
                     <i class="fa fa-pencil"></i>
                   </md-button>
                 </td>
