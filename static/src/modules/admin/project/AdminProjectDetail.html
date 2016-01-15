@@ -1,27 +1,40 @@
-<div id="admin-project-detail" class="row">
-  <div class="col-md-12">
-    <h3 class="page-header">
-      Project
-      <button class="btn btn-labeled btn-primary btn-sm pull-right" ng-click="openModal()">
-        <span class="btn-label">
-          <i class="fa fa-penceil"></i>
-        </span>
-        Edit Name
-      </button>
-    </h3>
+<div id="admin-project-detail">
+  <div class="col-lg-12">
+    <!-- Project name panel -->
+    <div class="panel-container">
+      <md-toolbar>
+        <div class="md-toolbar-tools">
+          <h3>FIXME</h3>
+          <span flex></span>
+          <md-button
+            class="md-icon-button"
+            aria-label="Edit"
+            ng-click="openModal($event)">
+              <md-tooltip md-autohide>Edit name</md-tooltip>
+              <md-icon class="fa fa-pencil" ng-style="{'font-size': '20px'}"></md-icon>
+          </md-button>
+        </div>
+      </md-toolbar>
+    </div> <!-- ./Project name panel -->
 
-    <!-- START panel-->
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        Rules
-        <button class="btn btn-labeled btn-success pull-right" ng-click="openModal('add')">
-          <span class="btn-label">
-            <i class="fa fa-plus"></i>
-          </span>
-        </button>
-      </div>
-      <div class="panel-body">
-        <!-- START table-responsive-->
+    <!-- Rules panel-->
+    <div class="panel-container">
+      <md-toolbar>
+        <div class="md-toolbar-tools">
+          <h3>Rules</h3>
+          <span flex></span>
+          <md-button
+            class="md-icon-button"
+            aria-label="Add Rule"
+            ng-click="openModal('add')">
+              <md-tooltip md-autohide>Add Rule</md-tooltip>
+              <md-icon class="fa fa-plus-circle" ng-style="{'font-size': '20px'}"></md-icon>
+          </md-button>
+        </div>
+      </md-toolbar>
+      <!-- Panle Content -->
+      <div class="panel-content">
+        <!-- Table -->
         <div class="table-responsive">
           <table class="table">
             <thead>
@@ -50,9 +63,8 @@
             </tbody>
           </table>
         </div>
-        <!-- END table-responsive-->
+        <!-- ./Table -->
       </div>
-    </div>
-    <!-- END panel-->
+    </div> <!-- ./Rules panel -->
   </div>
 </div>
