@@ -1,117 +1,149 @@
 /**
   * 函数工具
   */
-
-.borderRadius(@radius){
+.borderRadius(@radius) {
   -moz-border-radius: @radius; // FF 1+
   -webkit-border-radius: @radius; // FF 1+
   border-radius: @radius; // Opera 10.5, IE 9, Saf5, Chrome
 }
 
-.boxShadow(@params){
+.boxShadow(@params) {
   -moz-box-shadow: @params; // FF3.5+
   -webkit-box-shadow: @params; // Saf3.0+, Chrome
   box-shadow: @params; // Opera 10.5, IE9+, Chrome 10+
 }
 
-.tansformAnimate(@params){
-  -o-transform: @params; 	/* Opera */
-  -ms-transform: @params; 	/* IE 9 */
-  -moz-transform: @params; 	/* Firefox */
-  -webkit-transform: @params; /* Safari and Chrome */
+.tansformAnimate(@params) {
+  -o-transform: @params;
+  /* Opera */
+  -ms-transform: @params;
+  /* IE 9 */
+  -moz-transform: @params;
+  /* Firefox */
+  -webkit-transform: @params;
+  /* Safari and Chrome */
   transform: @params;
 }
-
 /**
   * 基本样式reset
   */
-
 ul {
   list-style: none;
   padding-left: 0;
 }
+
 button {
   outline: none;
 }
+
 textarea {
   height: 150px;
+}
+.table {
+  margin-bottom: 0;
+}
+.table>tbody>tr>td,
+.table>tbody>tr>th,
+.table>tfoot>tr>td,
+.table>tfoot>tr>th,
+.table>thead>tr>td,
+.table>thead>tr>th {
+  padding: 4px 8px;
+  vertical-align: middle;
 }
 /* 表单验证样式
  * 只对input作样式提示
  */
-
 .fa.fa-spinner {
-  animation: rotate .5s linear infinite;
+  animation: rotate 0.5s linear infinite;
 }
 
 @-webkit-keyframes rotate {
-  from {-webkit-transform:rotate(0deg);}
-  to {-webkit-transform:rotate(360deg);}
-}
+  from {
+    -webkit-transform: rotate(0deg);
+  }
 
+  to {
+    -webkit-transform: rotate(360deg);
+  }
+}
 /*
  * tools
  */
-
 .padding-left-0 {
   padding-left: 0;
 }
+
 .padding-left-15 {
   padding-left: 15px;
 }
+
 .padding-right-0 {
   padding-right: 0;
 }
+
 .padding-right-70 {
   padding-right: 70px;
 }
+
 .padding-bottom-0 {
   padding-bottom: 0;
 }
-.padding-top-6{
+
+.padding-top-6 {
   padding-top: 6px;
 }
-.padding-right-6{
+
+.padding-right-6 {
   padding-right: 6px;
 }
-.padding-right-20{
+
+.padding-right-20 {
   padding-right: 20px;
 }
-.padding-top-14{
+
+.padding-top-14 {
   padding-top: 14px;
 }
+
 .padding-top-15 {
   padding-top: 15px;
 }
+
 .margin-top-5 {
   margin-top: 5px;
 }
+
 .margin-bottom-0 {
-  margin-bottom: 0!important;
+  margin-bottom: 0 !important;
 }
+
 .margin-right-5 {
   margin-right: 5px;
 }
+
 .margin-left-5 {
   margin-left: 5px;
 }
+
 .margin-left-15 {
   margin-left: 15px;
 }
+
 .margin-bottom-10 {
   margin-bottom: 10px;
 }
-.margin-right-20{
+
+.margin-right-20 {
   margin-right: 20px;
 }
 
 .ellipsis {
-  word-break:keep-all;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
+  word-break: keep-all;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-
 /**
   * 颜色
   */

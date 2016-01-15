@@ -1,5 +1,6 @@
 /*@ngInject*/
-module.exports = function ($scope, $modal, Project) {
+module.exports = function ($scope, $modal, $mdDialog, Project) {
+
   /**
    * 加载数据
    * @param
@@ -15,12 +16,20 @@ module.exports = function ($scope, $modal, Project) {
    * 打开创建弹框
    * @param
    */
-  $scope.openModal = function () {
-    $modal.open({
+  $scope.openModal = function (event) {
+    // $modal.open({
+    //   templateUrl: 'modules/admin/project/projectModal.html',
+    //   controller: 'ProjectModalCtrl'
+    // }).result.then(function (project) {
+    //   $scope.projects.push(project);
+    // })
+    $mdDialog.show({
+      controller: 'ProjectModalCtrl',
       templateUrl: 'modules/admin/project/projectModal.html',
-      controller: 'ProjectModalCtrl'
-    }).result.then(function (project) {
-      $scope.projects.push(project);
+      parent: angular.element(document.body),
+      targetEvent: event,
+      clickOutsideToClose:true,
+      fullscreen: true
     })
   }
 
