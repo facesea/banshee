@@ -1,11 +1,8 @@
-/**
- * Created by Panda on 16/1/14.
- */
-
 var app = angular.module('banshee.admin', [])
   /*@ngInject*/
   .config(function ($stateProvider) {
 
+    // State
     $stateProvider
       .state('banshee.admin', {
         url: '/admin',
@@ -25,9 +22,10 @@ var app = angular.module('banshee.admin', [])
             controller: 'AdminProjectDetailCtrl'
           }
         }
-      })
+      });
   })
 
+// Controller
 .controller('AdminProjectListCtrl', require('./AdminProjectListCtrl'))
 .controller('AdminProjectDetailCtrl', require('./AdminProjectDetailCtrl'))
 .controller('ProjectModalCtrl', require('./ProjectModalCtrl'))

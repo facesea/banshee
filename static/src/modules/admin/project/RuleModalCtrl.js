@@ -2,11 +2,11 @@
 module.exports = function ($scope, $mdDialog, toastr, Project) {
   $scope.project = {
     name: ''
-  }
+  };
 
   $scope.cancel = function() {
     $mdDialog.cancel();
-  }
+  };
 
   $scope.create = function() {
     // FIXME: Not Project.save
@@ -16,6 +16,6 @@ module.exports = function ($scope, $mdDialog, toastr, Project) {
       })
       .catch(function(err) {
         toastr.error(err.msg);
-      })
-  }
-}
+      });
+  };
+};

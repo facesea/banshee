@@ -6,7 +6,7 @@ module.exports = function ($scope, $mdDialog, $stateParams, Project) {
       .then(function (res) {
         $scope.rules = res;
       });
-  }
+  };
 
   $scope.openModal = function (event) {
     $mdDialog.show({
@@ -18,10 +18,10 @@ module.exports = function ($scope, $mdDialog, $stateParams, Project) {
       fullscreen: true
     })
     .then(function (rule) {
-      $scope.rules.push(rule)
+      $scope.rules.push(rule);
     });
-  }
+  };
 
   $scope.loadData();
 
-}
+};

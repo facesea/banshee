@@ -6,7 +6,7 @@ module.exports = function ($scope, $modal, $mdDialog, Project) {
       .then(function (res) {
         $scope.projects = res;
       });
-  }
+  };
 
   $scope.openModal = function (event) {
     $mdDialog.show({
@@ -20,8 +20,8 @@ module.exports = function ($scope, $modal, $mdDialog, Project) {
     .then(function (project) {
       $scope.projects.push(project);
     });
-  }
+  };
 
   $scope.loadData();
 
-}
+};
