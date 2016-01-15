@@ -4,6 +4,7 @@ angular.module('banshee', [
 
   'ui.router',
   'ui.bootstrap',
+  // 'ngMaterial',
 
   'toastr',
 

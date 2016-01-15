@@ -8,6 +8,11 @@ module.exports = function ($resource) {
 			method: 'GET',
 			url: '/api/projects',
 			isArray: true
+		},
+		getRulesByProjectId: {
+			method: 'GET',
+			url: '/api/project/:id/rules',
+			isArray: true
 		}
 	});
 };
