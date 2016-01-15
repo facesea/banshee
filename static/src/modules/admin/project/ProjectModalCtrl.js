@@ -2,11 +2,11 @@
 module.exports = function ($scope, toastr, $mdDialog, Project) {
   $scope.project = {
     name: ''
-  }
+  };
 
   $scope.cancel = function() {
     $mdDialog.cancel();
-  }
+  };
 
   $scope.create = function() {
     Project.save($scope.project).$promise
@@ -15,6 +15,6 @@ module.exports = function ($scope, toastr, $mdDialog, Project) {
       })
       .catch(function(err) {
         toastr.error(err.msg);
-      })
-  }
-}
+      });
+  };
+};

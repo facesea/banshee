@@ -29,7 +29,7 @@ var app = angular.module('banshee.layout', [])
           templateUrl: 'modules/layout/footer.html'
         }
       }
-    })
+    });
   })
   .controller('MainCtrl', require('./MainCtrl'))
   .controller('HeaderCtrl', require('./HeaderCtrl'))
