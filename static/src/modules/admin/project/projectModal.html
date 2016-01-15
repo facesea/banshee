@@ -1,27 +1,3 @@
-<!-- <form name="form" class="form-horizontal" ng-submit="create()" onvalidate>
-  <div class="modal-header">
-    <h4 class="modal-title inline-block">Create Project</h4>
-  </div>
-
-  <div class="modal-body row">
-
-    <div class="form-group col-md-10">
-      <label for="input-id-1" class="col-md-4 control-label">Project Name</label>
-      <div class="col-md-8">
-        <input type="text" name="projectName" class="form-control" ng-model="project.name" required>
-        <small ng-if="form.projectName.$dirty && form.projectName.$error.required" class="help-block color-red">
-          This field is required.
-        </small>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal-footer text-right">
-    <button class="btn btn-default" type="button" ng-click="$dismiss()">cancel</button>
-    <button class="btn btn-primary" type="submit" ng-disabled="form.$invalid">submit</button>
-  </div>
-</form> -->
-
 <md-dialog aria-label="Create" class="form-dialog" ng-cloak>
   <form name="form" class="form-horizontal" ng-submit="create()" onvalidate>
     <md-toolbar>
@@ -36,8 +12,8 @@
     <md-dialog-content>
       <div class="md-dialog-content row">
         <div class="form-group col-md-12">
-          <label for="input-id-1" class="col-md-3 control-label">Project Name</label>
-          <div class="col-md-8">
+          <label for="input-id-1" class="col-md-2 control-label">Name</label>
+          <div class="col-md-9">
             <input type="text" name="projectName" class="form-control" ng-model="project.name" required>
             <small ng-if="form.projectName.$dirty && form.projectName.$error.required" class="help-block color-red">
               This field is required.
