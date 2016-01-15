@@ -1,17 +1,21 @@
 <div id="admin-project-list">
   <div class="col-lg-12">
     <!-- START panel-->
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        Project
-        <button class="btn btn-labeled btn-success pull-right" ng-click="openModal()">
-          <span class="btn-label">
-            <i class="fa fa-plus"></i>
-          </span>
-          Create
-        </button>
-      </div>
-      <div class="panel-body">
+    <div class="panel-container">
+      <md-toolbar>
+        <div class="md-toolbar-tools">
+          <h3>Project</h3>
+          <span flex></span>
+          <md-button
+            class="md-icon-button"
+            aria-label="Create Project"
+            ng-click="openModal($event)">
+              <md-tooltip md-autohide>Create Project</md-tooltip>
+              <md-icon class="fa fa-plus-circle" ng-style="{'font-size': '20px'}"></md-icon>
+          </md-button>
+        </div>
+      </md-toolbar>
+      <div class="panel-content">
         <!-- START table-responsive-->
         <div class="table-responsive">
           <table class="table">
@@ -19,7 +23,7 @@
               <tr>
                 <th class="th50">ID</th>
                 <th>Project Name</th>
-                <th class="th100">Options</th>
+                <th class="th120">Options</th>
               </tr>
             </thead>
             <tbody>
@@ -30,12 +34,12 @@
                 <td ng-bind="project.id"></td>
                 <td ng-bind="project.name"></td>
                 <td>
-                  <a ui-sref='banshee.admin' class="btn btn-sm btn-info">
+                  <md-button class="md-raised md-mini" ui-sref="banshee.admin">
                     <i class="fa fa-search"></i>
-                  </a>
-                  <a ui-sref='banshee.admin.project.detail({id: project.id})' class="btn btn-sm btn-primary">
+                  </md-button>
+                  <md-button class="md-raised md-primary md-mini"  ui-sref='banshee.admin.project.detail({id: project.id})'>
                     <i class="fa fa-pencil"></i>
-                  </a>
+                  </md-button>
                 </td>
               </tr>
             </tbody>

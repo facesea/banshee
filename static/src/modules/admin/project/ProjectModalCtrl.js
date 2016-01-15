@@ -1,8 +1,13 @@
 /*@ngInject*/
-module.exports = function ($scope, $modalInstance, toastr, Project) {
+module.exports = function ($scope, toastr, $mdDialog, Project) {
   $scope.project = {
     name: ''
   }
+
+  $scope.cancel = function() {
+    $mdDialog.cancel();
+  }
+  
   /**
    * 提交创建表单
    * @param
@@ -10,7 +15,7 @@ module.exports = function ($scope, $modalInstance, toastr, Project) {
   $scope.create = function() {
     Project.save($scope.project).$promise
       .then(function(res) {
-        $modalInstance.close(res);
+        $mdDialog.hide(res);
       })
       .catch(function(err) {
         toastr.error(err.msg);

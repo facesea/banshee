@@ -1,22 +1,22 @@
 <div class="aside-inner">
-  <nav class="sidebar">
-    <ul class="sidebar-subnav" style="height: auto;">
-      <li class="sidebar-subnav-header">Navigation</li>
-      <li>
-        <a ui-sref="/" title="Project">
-          <span>Project</span>
-        </a>
-      </li>
-      <li>
-        <a ui-sref="/" title="Receiver">
-          <span>Receiver</span>
-        </a>
-      </li>
-      <li>
-        <a ui-sref="/" title="Configuration">
-          <span>Configuration</span>
-        </a>
-      </li>
-    </ul>
-  </nav>
+  <section class="panel-container">
+    <md-toolbar class="demo-toolbar md-primary">
+      <div class="md-toolbar-tools">
+        <h3>Navigation</h3>
+      </div>
+    </md-toolbar>
+    <div class="panel-content">
+      <md-list ng-cloak>
+        <md-list-item ng-click="navigationTo('banshee.admin.project')">
+          <p> Project </p>
+        </md-list-item>
+        <md-list-item>
+          <p> Reeiver </p>
+        </md-list-item>
+        <md-list-item>
+          <p> Configuration </p>
+        </md-list-item>
+      </md-list>
+    </div>
+  </section>
 </div>

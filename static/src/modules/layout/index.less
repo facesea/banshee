@@ -13,8 +13,7 @@ body {
   > section {
     min-height: 100%;
     background-color: #fff;
-    padding: 70px 25px 70px 10px;
-    border-left: 1px solid #ccc;
+    padding: 75px 25px 70px 10px;
     position: absolute;
   }
 }
@@ -22,7 +21,7 @@ body {
 .nav {
   > li {
     > a {
-      color: #fff;
+      color: #202020;
       background-color: transparent;
 
       &:focus,
@@ -40,11 +39,15 @@ body {
   top: 0;
   left: 0;
   z-index: 10;
+
+  .topnavbar {
+    border-bottom: 1px solid #ccc;
+    box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.14), 0 0 2px 2px rgba(0, 0, 0, 0.098), 0 0 5px 1px rgba(0, 0, 0, 0.084);
+  }
 }
 
 .navbar {
-  background-color: #00bcd4;
-  padding: 0 10px;
+  background-color: #f6f6f6;
   .borderRadius(0);
 }
 
@@ -54,26 +57,8 @@ body {
   top: 0;
   left: 0;
 
-  .aside-inner {
-    padding-top: 55px;
-  }
-}
-
-.sidebar {
-  li {
-    padding: 5px 20px;
-    color: #919da8;
-    font-size: 13px;
-    letter-spacing: 0.035em;
-    text-indent: 1em;
-    cursor: pointer;
-
-    &.sidebar-subnav-header {
-      padding: 12px 15px;
-      pointer-events: none;
-      cursor: default;
-      text-indent: 0;
-    }
+  .panel-container {
+    margin-top: 75px;
   }
 }
 
@@ -83,5 +68,36 @@ footer {
   position: absolute;
   bottom: 0;
   left: 0;
-  text-align: right;
+  text-align: center;
+}
+
+.brand {
+  line-height: 48px;
+  color: #202020;
+  margin-left: 5px;
+}
+
+.panel-container {
+  border-radius: 4px;
+  margin-bottom: 16px;
+  -webkit-transition: 0.02s padding cubic-bezier(0.35, 0, 0.25, 1);
+  transition: 0.02s padding cubic-bezier(0.35, 0, 0.25, 1);
+  position: relative;
+  padding-bottom: 0;
+  overflow: hidden;
+}
+
+.panel-content {
+  border: 1px solid #ccc;
+}
+// reset angular-material style
+.form-dialog {
+  min-width: 600px;
+}
+
+.md-mini {
+  min-width: 30px;
+  margin: 0 4px;
+  min-height: 30px;
+  line-height: 30px;
 }
