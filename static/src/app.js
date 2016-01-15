@@ -1,10 +1,12 @@
 angular.module('banshee', [
 
   'ngSanitize',
+  'ngAnimate',
+  'ngAria',
 
   'ui.router',
   'ui.bootstrap',
-  // 'ngMaterial',
+  'ngMaterial',
 
   'toastr',
 
