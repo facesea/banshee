@@ -125,7 +125,7 @@ gulp.task('usemin', ['tpl', 'less', 'js'], function () {
 gulp.task('build', gulpSequence('usemin', 'file'));
 
 // Dev
-gulp.task('dev', ['tpl', 'file', 'less', 'js'], function () {
+gulp.task('dev', ['lint', 'tpl', 'file', 'less', 'js'], function () {
   // Server
   connect.server({
     root: 'public',
