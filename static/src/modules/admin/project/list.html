@@ -19,20 +19,16 @@
         <!-- START table-responsive-->
         <div class="table-responsive">
           <table class="table">
-            <thead>
-              <tr>
-                <th class="th50">ID</th>
-                <th>Name</th>
-                <th class="th120">Options</th>
-              </tr>
-            </thead>
             <tbody>
               <tr ng-if="!projects || !projects.length">
                 <td colspan="3">not found any result</td>
               <tr>
               <tr ng-repeat="project in projects">
                 <td ng-bind="project.id"></td>
-                <td ng-bind="project.name"></td>
+                <td>
+                  <a ng-bind="project.name" ui-sref='banshee.admin.project.detail({id: project.id})' class="md-body-2">
+                  </a>
+                </td>
                 <td>
                   <md-button class="md-raised md-mini" ui-sref="banshee.admin" aria-label="project detail">
                     <i class="fa fa-search"></i>

@@ -19,7 +19,7 @@ module.exports = function ($scope, $modal, $mdDialog, Project) {
     })
     .then(function (project) {
       $scope.projects.push(project);
-    })
+    });
   }
 
   $scope.loadData();

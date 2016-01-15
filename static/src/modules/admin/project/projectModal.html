@@ -10,21 +10,19 @@
       </div>
     </md-toolbar>
     <md-dialog-content>
-      <div class="md-dialog-content row">
-        <div class="form-group col-md-12">
-          <label for="input-id-1" class="col-md-2 control-label">Name</label>
-          <div class="col-md-9">
-            <input type="text" name="projectName" class="form-control" ng-model="project.name" required>
-            <small ng-if="form.projectName.$dirty && form.projectName.$error.required" class="help-block color-red">
-              This field is required.
-            </small>
+      <md-content layout-padding>
+        <md-input-container class="md-block" flex-gt-sm>
+          <label>Name</label>
+          <input required name="projectName" ng-model="project.name" placeholder="Name">
+          <div ng-messages="form.projectName.$error">
+            <div ng-message="required" ng-if="form.projectName.$dirty">This field is required.</div>
           </div>
-        </div>
-      </div>
+        </md-input-container>
+      </md-content>
     </md-dialog-content>
     <md-dialog-actions layout="row">
-      <md-button>Cancel</md-button>
-      <md-button md-no-ink class="md-primary"  ng-disabled="form.$invalid" type="submit">Submit</md-button>
+      <md-button ng-click="cancel()">Cancel</md-button>
+      <md-button md-no-ink class="md-primary" ng-disabled="form.$invalid" type="submit">Submit</md-button>
     </md-dialog-actions>
   </form>
 </md-dialog>
