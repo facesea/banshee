@@ -1,9 +1,6 @@
 /*@ngInject*/
 module.exports = function ($scope, $modal, $stateParams, Project) {
-  /**
-   * 加载数据
-   * @param
-   */
+
   $scope.loadData = function () {
     Project.getRulesByProjectId({id: $stateParams.id}).$promise
       .then(function (res) {
@@ -11,10 +8,6 @@ module.exports = function ($scope, $modal, $stateParams, Project) {
       });
   }
 
-  /**
-   * 打开弹框
-   * @param opt
-   */
   $scope.openModal = function (opt) {
     var url, ctrl;
     if (opt === 'add') {
