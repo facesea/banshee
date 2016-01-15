@@ -16,15 +16,15 @@ func TestOpen(t *testing.T) {
 	db, err := Open(fileName)
 	assert.Ok(t, err == nil)
 	assert.Ok(t, util.IsFileExist(fileName))
-	defer db.Close()
-	defer os.RemoveAll(fileName)
+	db.Close()
+	os.RemoveAll(fileName)
 }
 
 func TestLoad(t *testing.T) {
 	fileName := "db-testing"
 	db, _ := Open(fileName)
-	defer db.Close()
 	defer os.RemoveAll(fileName)
+	defer db.Close()
 	idx := &models.Index{Name: "foo", Stamp: 1450430839, Score: 0.7, Average: 78.5}
 	// Add one
 	db.Put(idx)
@@ -44,8 +44,8 @@ func TestPut(t *testing.T) {
 	// Open db.
 	fileName := "db-testing"
 	db, _ := Open(fileName)
-	defer db.Close()
 	defer os.RemoveAll(fileName)
+	defer db.Close()
 	// Test.
 	idx := &models.Index{Name: "foo", Stamp: 1450430837, Score: 1.2, Average: 109.5}
 	err := db.Put(idx)
@@ -66,8 +66,8 @@ func TestGet(t *testing.T) {
 	// Open db.
 	fileName := "db-testing"
 	db, _ := Open(fileName)
-	defer db.Close()
 	defer os.RemoveAll(fileName)
+	defer db.Close()
 	// Not found.
 	_, err := db.Get("Not-exist")
 	assert.Ok(t, ErrNotFound == err)
@@ -84,8 +84,8 @@ func TestDelete(t *testing.T) {
 	// Open db.
 	fileName := "db-testing"
 	db, _ := Open(fileName)
-	defer db.Close()
 	defer os.RemoveAll(fileName)
+	defer db.Close()
 	// Add one.
 	idx := &models.Index{Name: "foo", Stamp: 1450430837, Score: 0.3, Average: 100}
 	db.Put(idx)
@@ -108,8 +108,8 @@ func TestFilter(t *testing.T) {
 	// Open db.
 	fileName := "db-testing"
 	db, _ := Open(fileName)
-	defer db.Close()
 	defer os.RemoveAll(fileName)
+	defer db.Close()
 	// Add indexes.
 	excludeName := "abfxyz"
 	db.Put(&models.Index{Name: "abcefg"})

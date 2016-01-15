@@ -101,7 +101,7 @@ func (rule *Rule) Test(m *Metric, cfg *config.Config) bool {
 	defer rule.RUnlock()
 	// Ignore it if its value small enough to be trust
 	trustLine := rule.TrustLine
-	if trustLine == 0 {
+	if trustLine == 0 && cfg != nil {
 		// Check default trustlines
 		for pattern, value := range cfg.Detector.DefaultTrustLines {
 			if ok, _ := filepath.Match(pattern, m.Name); ok && value != 0 {
