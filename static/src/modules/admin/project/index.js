@@ -17,9 +17,20 @@ var app = angular.module('banshee.admin', [])
         templateUrl: 'modules/admin/project/list.html',
         controller: 'AdminProjectListCtrl'
       })
+      .state('banshee.admin.project.detail', {
+        url: '/:id',
+        views: {
+          '@banshee': {
+            templateUrl: 'modules/admin/project/AdminProjectDetail.html',
+            controller: 'AdminProjectDetailCtrl'
+          }
+        }
+      })
   })
 
 .controller('AdminProjectListCtrl', require('./AdminProjectListCtrl'))
-.controller('ProjectModalCtrl', require('./ProjectModalCtrl'));
+.controller('AdminProjectDetailCtrl', require('./AdminProjectDetailCtrl'))
+.controller('ProjectModalCtrl', require('./ProjectModalCtrl'))
+.controller('RuleModalCtrl', require('./RuleModalCtrl'));
 
 module.exports = app.name;

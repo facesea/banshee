@@ -1,0 +1,69 @@
+<form name="form" class="form-horizontal" ng-submit="submit()" onvalidate>
+  <div class="modal-header">
+    <h4 class="modal-title inline-block" ng-bind="titles[opt]"></h4>
+  </div>
+
+  <div class="modal-body row ruleModal">
+
+    <div class="form-group col-md-12">
+      <label class="col-md-2 control-label">Pattern:</label>
+      <div class="col-md-8">
+        <input type="text" name="pattern" class="form-control" ng-model="rule.pattern" required>
+        <small ng-if="form.pattern.$dirty && form.pattern.$error.required" class="help-block color-red">
+          This field is required.
+        </small>
+      </div>
+    </div>
+
+    <div class="form-group col-md-12">
+      <label for="input-id-1" class="col-md-2 control-label">Pattern:</label>
+      <div class="col-md-8">
+        <div class="controls">
+          <label class="checkbox">
+            <input type="checkbox" ng-model="rule.onTrendUp"> On trend up
+          </label>
+          <label class="checkbox">
+            <input type="checkbox" ng-model="rule.onTrendDown"> On trend down
+          </label>
+          <label class="checkbox">
+            <input type="checkbox" ng-model="rule.onValueGt"> On value &gt;= thresholdMax
+          </label>
+          <label class="checkbox">
+            <input type="checkbox" ng-model="rule.onValueLt"> On value &lt;= thresholdMin
+          </label>
+          <label class="checkbox">
+            <input type="checkbox" ng-model="rule.onTrendUpAndValueGt"> On trend up and value &gt;= thresholdMax
+          </label>
+          <label class="checkbox">
+            <input type="checkbox" ng-model="rule.onTrendDownAndValueLt"> On trend down and value &lt;= thresholdMin
+          </label>
+          <div class="form-group">
+            <label class="col-md-4 control-label">thresholdMax:</label>
+            <div class="col-md-8">
+              <input type="text" name="pattern" class="form-control" ng-model="rule.thresholdMax" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-md-4 control-label">thresholdMin:</label>
+            <div class="col-md-8">
+              <input type="text" name="pattern" class="form-control" ng-model="rule.thresholdMin" required />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group col-md-12">
+      <label class="col-md-2 control-label">Trustline:</label>
+      <div class="col-md-8">
+        <span>Don't alert me when value is less than</span>
+        <input type="text" name="pattern" class="form-control" ng-model="rule.pattern" required>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer text-right">
+    <button class="btn btn-default" type="button" ng-click="$dismiss()">cancel</button>
+    <button class="btn btn-primary" type="submit" ng-disabled="form.$invalid">submit</button>
+  </div>
+</form>

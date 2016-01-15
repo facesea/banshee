@@ -12,7 +12,7 @@ module.exports = function ($scope, $modal, Project) {
   }
 
   /**
-   * 点击列表某一项
+   * 打开创建弹框
    * @param
    */
   $scope.openModal = function () {

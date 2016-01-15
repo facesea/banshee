@@ -98,7 +98,7 @@ gulp.task('file', function () {
     path = 'dist';
   };
 
-  gulp.src(['./public/node_modules/bootstrap/fonts/*', './public/node_modules/simple-line-icons/fonts/*'])
+  gulp.src(['./public/node_modules/bootstrap/fonts/*', './public/node_modules/font-awesome/fonts/*'])
     .pipe(gulp.dest('./' + path + '/fonts'));
 
   gulp.src(['./public/images/**/*', './src/theme/*.png', './src/theme/square/*.png', './src/static/*.png', './src/static/*.ico'])

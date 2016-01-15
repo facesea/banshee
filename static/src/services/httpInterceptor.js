@@ -8,12 +8,10 @@ module.exports = function ($q, $rootScope) {
       //检查是否token是否有效
       if (rejection.status === 401) {
         return $rootScope.$emit(401);
-      } else if (rejection.status === 403) {
-        return $rootScope.$emit(403);
       }
 
       // 兼容angular-loading-bar
-      rejection.message = rejection.data.message;
+      rejection.msg = rejection.data.msg;
       return $q.reject(rejection);
     }
   };

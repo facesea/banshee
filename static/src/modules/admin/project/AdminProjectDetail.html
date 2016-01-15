@@ -1,14 +1,23 @@
-<div id="admin-project-list">
-  <div class="col-lg-12">
+<div id="admin-project-detail" class="row">
+  <div class="col-md-12">
+    <h3 class="page-header">
+      Project
+      <button class="btn btn-labeled btn-primary btn-sm pull-right" ng-click="openModal()">
+        <span class="btn-label">
+          <i class="fa fa-penceil"></i>
+        </span>
+        Edit Name
+      </button>
+    </h3>
+
     <!-- START panel-->
     <div class="panel panel-default">
       <div class="panel-heading">
-        Project
-        <button class="btn btn-labeled btn-success pull-right" ng-click="openModal()">
+        Rules
+        <button class="btn btn-labeled btn-success pull-right" ng-click="openModal('add')">
           <span class="btn-label">
             <i class="fa fa-plus"></i>
           </span>
-          Create
         </button>
       </div>
       <div class="panel-body">
@@ -18,14 +27,14 @@
             <thead>
               <tr>
                 <th class="th50">ID</th>
-                <th>Project Name</th>
+                <th>Rule Name</th>
                 <th class="th100">Options</th>
               </tr>
             </thead>
             <tbody>
               <tr ng-if="!projects || !projects.length">
                 <td colspan="3">not found any result</td>
-              <tr>
+              </tr>
               <tr ng-repeat="project in projects">
                 <td ng-bind="project.id"></td>
                 <td ng-bind="project.name"></td>
@@ -33,7 +42,7 @@
                   <a ui-sref='banshee.admin' class="btn btn-sm btn-info">
                     <i class="fa fa-search"></i>
                   </a>
-                  <a ui-sref='banshee.admin.project.detail({id: project.id})' class="btn btn-sm btn-primary">
+                  <a ui-sref='banshee.admin' class="btn btn-sm btn-primary">
                     <i class="fa fa-pencil"></i>
                   </a>
                 </td>
