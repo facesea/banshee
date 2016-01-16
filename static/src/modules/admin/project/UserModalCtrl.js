@@ -12,7 +12,7 @@ module.exports = function ($scope, $mdDialog, $stateParams, toastr, User, params
   $scope.submit = function() {
     var params = angular.copy($scope.rule);
     params.projectId = $stateParams.id;
-    Rule.save(params).$promise
+    User.save(params).$promise
       .then(function(res) {
         $mdDialog.hide(res);
       })
