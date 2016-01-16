@@ -11,6 +11,7 @@ app.config(function ($httpProvider) {
 app
   .factory('httpInterceptor', require('./httpInterceptor'))
   .factory('Project', require('./Project'))
+  .factory('User', require('./User'))
   .factory('Rule', require('./Rule'));
 
 module.exports = app.name;
