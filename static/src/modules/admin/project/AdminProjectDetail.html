@@ -6,7 +6,7 @@
         <div class="md-toolbar-tools">
           <h3 ng-bind="project.name"></h3>
           <span flex></span>
-          <md-button class="md-icon-button" aria-label="Edit" ng-click="openModal($event)">
+          <md-button class="md-icon-button" aria-label="Edit" ng-click="openModal($event, 'editProject')">
             <md-tooltip md-autohide>Edit name</md-tooltip>
             <md-icon class="fa fa-pencil" ng-style="{'font-size': '20px'}"></md-icon>
           </md-button>
@@ -64,7 +64,7 @@
         <div class="md-toolbar-tools">
           <h3>Receivers</h3>
           <span flex></span>
-          <md-button class="md-icon-button" aria-label="Add user" ng-click="openModal('addUser')">
+          <md-button class="md-icon-button" aria-label="Add user" ng-click="openModal($event, 'addUser')">
             <md-tooltip md-autohide>Add user</md-tooltip>
             <md-icon class="fa fa-plus-circle" ng-style="{'font-size': '20px'}"></md-icon>
           </md-button>

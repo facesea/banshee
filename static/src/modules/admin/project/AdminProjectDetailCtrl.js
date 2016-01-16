@@ -26,7 +26,7 @@ module.exports = function ($scope, $mdDialog, $stateParams, toastr, Project, Rul
       }).$promise
       .then(function (res) {
         $scope.users = res;
-      })
+      });
 
   };
 
@@ -40,7 +40,7 @@ module.exports = function ($scope, $mdDialog, $stateParams, toastr, Project, Rul
       .cancel('No');
     $mdDialog.show(confirm).then(function () {
       Rule.delete({id: ruleId}).$promise
-        .then(function(res) {
+        .then(function() {
           $scope.rules.splice(index, 1);
           toastr.success('Rule Deleted!');
         })
@@ -48,7 +48,7 @@ module.exports = function ($scope, $mdDialog, $stateParams, toastr, Project, Rul
           toastr.error(err.msg);
         });
     });
-  }
+  };
 
   $scope.openModal = function (event, opt) {
     $mdDialog.show({
