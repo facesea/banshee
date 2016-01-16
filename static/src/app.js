@@ -3,6 +3,7 @@ angular.module('banshee', [
   'ngSanitize',
   'ngAnimate',
   'ngAria',
+  'ngMessages',
 
   'ui.router',
   'ui.bootstrap',

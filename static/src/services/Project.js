@@ -13,6 +13,11 @@ module.exports = function ($resource) {
       method: 'GET',
       url: '/api/project/:id/rules',
       isArray: true
+    },
+    getUsersByProjectId: {
+      method: 'GET',
+      url: '/api/project/:id/users',
+      isArray: true
     }
   });
 };
