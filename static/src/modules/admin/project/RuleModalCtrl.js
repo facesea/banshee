@@ -7,7 +7,6 @@ module.exports = function ($scope, $mdDialog, $stateParams, toastr, Rule) {
   };
 
   $scope.submit = function() {
-    // FIXME: Not Project.save
     var params = angular.copy($scope.rule);
     params.projectId = $stateParams.id;
     Rule.save(params).$promise
