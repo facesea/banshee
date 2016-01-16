@@ -50,17 +50,41 @@ module.exports = function ($scope, $mdDialog, $stateParams, toastr, Project, Rul
     });
   };
 
-  $scope.openModal = function (event, opt) {
+  $scope.openModal = function (event, opt, project) {
+    var ctrl, template;
+
+    if (opt === 'addRule') {
+      ctrl = 'RuleModalCtrl';
+      template = 'modules/admin/project/ruleModal.html';
+    }
+
+    if (opt === 'editProject') {
+      ctrl = 'ProjectModalCtrl';
+      template = 'modules/admin/project/projectModal.html';
+    }
+
     $mdDialog.show({
-        controller: 'RuleModalCtrl',
-        templateUrl: 'modules/admin/project/ruleModal.html',
+        controller: ctrl,
+        templateUrl: template,
         parent: angular.element(document.body),
         targetEvent: event,
         clickOutsideToClose: true,
-        fullscreen: true
+        fullscreen: true,
+        locals: {
+          params: {
+            opt: opt,
+            obj: angular.copy(project)
+          }
+        }
       })
-      .then(function (rule) {
-        $scope.rules.push(rule);
+      .then(function (res) {
+        if (opt === 'addRule') {
+          $scope.rules.push(res);
+        }
+
+        if (opt === 'editProject') {
+          $scope.project = res;
+        }
       });
   };
 

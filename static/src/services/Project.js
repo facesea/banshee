@@ -4,6 +4,10 @@
 /*@ngInject*/
 module.exports = function ($resource) {
   return $resource('/api/project/:id', {id: '@id'}, {
+    edit: {
+      method: 'PATCH',
+      url: '/api/project/:id'
+    },
     getAllProjects: {
       method: 'GET',
       url: '/api/projects',
