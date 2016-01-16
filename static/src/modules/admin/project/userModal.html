@@ -1,0 +1,35 @@
+<md-dialog aria-label="AddUser" class="form-dialog" ng-cloak>
+  <form name="form" class="form-horizontal" ng-submit="submit()" onvalidate>
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2 ng-bind="titles[opt]"></h2>
+        <span flex></span>
+        <md-button class="md-icon-button" ng-click="cancel()">
+          <md-icon class="fa fa-times-circle" aria-label="Close dialog"></md-icon>
+        </md-button>
+      </div>
+    </md-toolbar>
+    <md-dialog-content>
+      <md-content layout-padding>
+        <md-autocomplete
+          md-selected-item="autoComplete.selectedItem"
+          md-search-text="ctrl.searchText"
+          md-items="user in users"
+          md-item-text="user.name"
+          md-min-length="0"
+          placeholder="please enter user name">
+          <md-item-template>
+            <span md-highlight-text="autoComplete.searchText" md-highlight-flags="^i">{{user.name}}</span>
+          </md-item-template>
+          <md-not-found>
+            No states matching "{{ctrl.searchText}}" were found.
+          </md-not-found>
+        </md-autocomplete>
+      </md-content>
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+      <md-button ng-click="cancel()">Cancel</md-button>
+      <md-button md-no-ink class="md-primary" ng-disabled="form.$invalid" type="submit">Submit</md-button>
+    </md-dialog-actions>
+  </form>
+</md-dialog>

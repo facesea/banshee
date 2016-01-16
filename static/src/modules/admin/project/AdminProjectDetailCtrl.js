@@ -63,6 +63,11 @@ module.exports = function ($scope, $mdDialog, $stateParams, toastr, Project, Rul
       template = 'modules/admin/project/projectModal.html';
     }
 
+    if (opt === 'addUserToProject') {
+      ctrl = 'UserModalCtrl';
+      template = 'modules/admin/project/userModal.html';
+    }
+
     $mdDialog.show({
         controller: ctrl,
         templateUrl: template,
@@ -73,7 +78,7 @@ module.exports = function ($scope, $mdDialog, $stateParams, toastr, Project, Rul
         locals: {
           params: {
             opt: opt,
-            obj: angular.copy(project)
+            obj: angular.copy(project) || ''
           }
         }
       })

@@ -18,7 +18,7 @@ module.exports = function ($scope, toastr, $mdDialog, Project, params) {
     } else {
       $scope.create();
     }
-  }
+  };
 
   $scope.edit = function() {
     Project.edit($scope.project).$promise
@@ -28,8 +28,8 @@ module.exports = function ($scope, toastr, $mdDialog, Project, params) {
       })
       .catch(function(err) {
         toastr.error(err.msg);
-      })
-  }
+      });
+  };
 
   $scope.create = function() {
     Project.save($scope.project).$promise
