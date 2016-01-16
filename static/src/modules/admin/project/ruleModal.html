@@ -16,12 +16,12 @@
         <md-input-container class="md-block" flex-gt-sm>
           <label>Pattern</label>
           <input type="text" name="pattern" ng-model="rule.pattern" required>
-          <div ng-messages="form.pattern.$error">
-            <div ng-message="required" ng-if="form.pattern.$dirty">This field is required.</div>
+          <div ng-messages="form.pattern.$error" ng-if="form.pattern.$dirty">
+            <div ng-message="required">This field is required.</div>
           </div>
         </md-input-container>
         <div layout="row">
-          <div flex="20">Alerting</div>
+          <div flex="15">Alerting</div>
           <div flex="80">
             <md-checkbox layout="row" ng-model="rule.onTrendUp"> On trend up </md-checkbox>
             <md-checkbox layout="row" ng-model="rule.onTrendDown"> On trend Down </md-checkbox>
@@ -31,15 +31,15 @@
             <md-checkbox layout="row" ng-model="rule.onTrendDownAndValueLt"> On trend down and Value &lt;= thresholdMin </md-checkbox>
             <md-input-container class="md-block" flex-gt-sm>
               <label>thresholdMax</label>
-              <input type="text" name="thresholdMax" ng-model="rule.thresholdMax">
+              <input type="number" name="thresholdMax" ng-model="rule.thresholdMax">
             </md-input-container>
             <md-input-container class="md-block" flex-gt-sm>
               <label>thresholdMin</label>
-              <input type="text" name="thresholdMin" ng-model="rule.thresholdMin">
+              <input type="number" name="thresholdMin" ng-model="rule.thresholdMin">
             </md-input-container>
             <md-input-container class="md-block" flex-gt-sm>
               <label>Don't alert me when value is less than</label>
-              <input type="text" name="trustLine" ng-model="rule.trustLine">
+              <input type="number" name="trustLine" ng-model="rule.trustLine">
             </md-input-container>
           </div>
         </div>
