@@ -15,7 +15,12 @@ module.exports = function ($scope, $modal, $mdDialog, Project) {
       parent: angular.element(document.body),
       targetEvent: event,
       clickOutsideToClose:true,
-      fullscreen: true
+      fullscreen: true,
+      locals: {
+        params: {
+          opt: 'addProject'
+        }
+      }
     })
     .then(function (project) {
       $scope.projects.push(project);
