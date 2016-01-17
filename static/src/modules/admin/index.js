@@ -9,6 +9,8 @@ var app = angular.module('banshee.admin', [])
         template: '<ui-view></ui-view>',
         abstract: true
       })
+
+      // Project router
       .state('banshee.admin.project', {
         url: '/project',
         templateUrl: 'modules/admin/project/list.html',
@@ -22,14 +24,24 @@ var app = angular.module('banshee.admin', [])
             controller: 'AdminProjectDetailCtrl'
           }
         }
+      })
+
+      // User router
+      .state('banshee.admin.user', {
+        url: '/user',
+        templateUrl: 'modules/admin/user/AdminUserList.html',
+        controller: 'AdminUserListCtrl'
       });
   })
 
 // Controller
-.controller('AdminProjectListCtrl', require('./AdminProjectListCtrl'))
-.controller('AdminProjectDetailCtrl', require('./AdminProjectDetailCtrl'))
-.controller('ProjectModalCtrl', require('./ProjectModalCtrl'))
-.controller('UserModalCtrl', require('./UserModalCtrl'))
-.controller('RuleModalCtrl', require('./RuleModalCtrl'));
+.controller('AdminProjectListCtrl', require('./project/AdminProjectListCtrl'))
+  .controller('AdminProjectDetailCtrl', require('./project/AdminProjectDetailCtrl'))
+  .controller('ProjectModalCtrl', require('./project/ProjectModalCtrl'))
+  .controller('UserModalCtrl', require('./project/UserModalCtrl'))
+  .controller('UserAddModalCtrl', require('./user/UserAddModalCtrl'))
+  .controller('RuleModalCtrl', require('./project/RuleModalCtrl'))
+
+  .controller('AdminUserListCtrl', require('./user/AdminUserListCtrl'));
 
 module.exports = app.name;

@@ -1,0 +1,49 @@
+<div id="admin-user-list">
+  <div class="col-lg-12">
+    <!-- START panel-->
+    <div class="panel-container">
+      <md-toolbar>
+        <div class="md-toolbar-tools">
+          <h3>Receiver</h3>
+          <span flex></span>
+          <md-button
+            class="md-icon-button"
+            aria-label="Create User"
+            ng-click="openModal($event)">
+              <md-tooltip md-autohide>Create User</md-tooltip>
+              <md-icon class="fa fa-plus-circle" ng-style="{'font-size': '20px'}"></md-icon>
+          </md-button>
+        </div>
+      </md-toolbar>
+      <div class="panel-content">
+        <!-- START table-responsive-->
+        <div class="table-responsive">
+          <table class="table">
+            <tbody>
+              <tr ng-if="!users || !users.length">
+                <td colspan="3">not found any result</td>
+              <tr>
+              <tr ng-repeat="user in users">
+                <td ng-bind="user.id"></td>
+                <td>
+                  <a ng-bind="user.name" ui-sref='banshee.admin.user.detail({id: user.id})' class="md-body-2">
+                  </a>
+                </td>
+                <td style="text-align: right;">
+                  <md-button class="md-raised md-mini" ui-sref="banshee.admin" aria-label="user detail">
+                    <i class="fa fa-search"></i>
+                  </md-button>
+                  <md-button class="md-raised md-primary md-mini"  ui-sref='banshee.admin.user.detail({id: user.id})' aria-label="edit user">
+                    <i class="fa fa-pencil"></i>
+                  </md-button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- END table-responsive-->
+      </div>
+    </div>
+    <!-- END panel-->
+  </div>
+</div>

@@ -1,0 +1,51 @@
+<md-dialog aria-label="Create" class="form-dialog" ng-cloak>
+  <form name="form" class="form-horizontal" ng-submit="submit()" onvalidate>
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2>Create Receiver</h2>
+        <span flex></span>
+        <md-button class="md-icon-button" ng-click="cancel()">
+          <md-icon class="fa fa-times-circle" aria-label="Close dialog"></md-icon>
+        </md-button>
+      </div>
+    </md-toolbar>
+    <md-dialog-content>
+      <md-content layout-padding>
+        <md-input-container class="md-block" flex-gt-sm>
+          <label>Name</label>
+          <input type="text" name="userName" ng-model="user.name" required>
+          <div ng-messages="form.userName.$error" ng-if="form.userName.$dirty">
+            <div ng-message="required">This field is required.</div>
+          </div>
+        </md-input-container>
+        <md-input-container class="md-block" flex-gt-sm>
+          <label>Email</label>
+          <input type="text" name="email" ng-model="user.email" required>
+          <div ng-messages="form.email.$error" ng-if="form.email.$dirty">
+            <div ng-message="required">This field is required.</div>
+          </div>
+        </md-input-container>
+        <md-input-container class="md-block" flex-gt-sm>
+          <label>Phone</label>
+          <input type="number" name="phone" ng-model="user.phone" required>
+          <div ng-messages="form.phone.$error" ng-if="form.phone.$dirty">
+            <div ng-message="required">This field is required.</div>
+          </div>
+        </md-input-container>
+        <md-input-container class="md-block" flex-gt-sm>
+          <md-checkbox ng-model="user.enableEmail"> Enable email</md-checkbox>
+        </md-input-container>
+        <md-input-container class="md-block" flex-gt-sm>
+          <md-checkbox ng-model="user.enablePhone"> Enable phone</md-checkbox>
+        </md-input-container>
+        <md-input-container class="md-block" flex-gt-sm>
+          <md-checkbox ng-model="user.universal"> universal</md-checkbox>
+        </md-input-container>
+      </md-content>
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+      <md-button ng-click="cancel()">Cancel</md-button>
+      <md-button md-no-ink class="md-primary" ng-disabled="form.$invalid" type="submit">Submit</md-button>
+    </md-dialog-actions>
+  </form>
+</md-dialog>
