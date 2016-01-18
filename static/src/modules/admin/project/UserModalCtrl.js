@@ -20,7 +20,7 @@ module.exports = function ($scope, $mdDialog, $stateParams, toastr, Project, par
       id: $stateParams.id,
       name: $scope.autoComplete.selectedItem.name
     }).$promise
-    .then(function(res) {
+    .then(function() {
       $mdDialog.hide($scope.autoComplete.selectedItem);
     })
     .catch(function(err) {
