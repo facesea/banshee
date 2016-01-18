@@ -19,6 +19,15 @@
         <!-- START table-responsive-->
         <div class="table-responsive">
           <table class="table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Universal</th>
+              </tr>
+            </thead>
             <tbody>
               <tr ng-if="!users || !users.length">
                 <td colspan="3">not found any result</td>
@@ -28,6 +37,18 @@
                 <td>
                   <a ng-bind="user.name" ui-sref='banshee.admin.user.detail({id: user.id})' class="md-body-2">
                   </a>
+                </td>
+                <td>
+                  <del ng-if="!user.enableEmail" ng-bind="user.email"></del>
+                  <span ng-if="user.enableEmail" ng-bind="user.email"></span>
+                </td>
+                <td>
+                  <del ng-if="!user.enablePhone" ng-bind="user.phone"></del>
+                  <span ng-if="user.enablePhone" ng-bind="user.phone"></span>
+                </td>
+                <td>
+                  <span ng-if="user.universal">Yes</span>
+                  <span ng-if="!user.universal">No</span>
                 </td>
                 <td style="text-align: right;">
                   <md-button class="md-raised md-mini" ui-sref="banshee.admin" aria-label="user detail">
