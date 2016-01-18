@@ -20,7 +20,7 @@ module.exports = function ($scope, $modal, $mdDialog, User) {
       .then(function (res) {
         $scope.users.push(res);
       });
-  }
+  };
 
   $scope.loadData();
 
