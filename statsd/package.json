@@ -1,7 +1,7 @@
 {
   "name": "statsd-banshee",
   "description": "Backend for github.com/etsy/statsd.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Chao Wang <hit9@icloud.com>",
   "homepage": "https://github.com/eleme/banshee",
   "bugs": "https://github.com/eleme/banshee/issues",
