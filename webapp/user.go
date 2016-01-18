@@ -162,6 +162,23 @@ func updateUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		ResponseError(w, ErrBadRequest)
 		return
 	}
+	// Validation
+	if len(req.Name) == 0 {
+		ResponseError(w, ErrUserName)
+		return
+	}
+	if len(req.Email) == 0 || !strings.Contains(req.Email, "@") {
+		ResponseError(w, ErrUserEmail)
+		return
+	}
+	if len(req.Phone) != 10 && len(req.Phone) != 11 {
+		ResponseError(w, ErrUserPhone)
+		return
+	}
+	if ok, _ := regexp.MatchString("^\\d{10,11}", req.Phone); !ok {
+		ResponseError(w, ErrUserPhone)
+		return
+	}
 	// Find
 	user := &models.User{}
 	if err := db.Admin.DB().First(user, id).Error; err != nil {
