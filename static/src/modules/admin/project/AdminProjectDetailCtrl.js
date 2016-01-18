@@ -169,7 +169,7 @@ module.exports = function ($scope, $mdDialog, $state, $stateParams, toastr, Proj
     });
   }
 
-  function getUsersId(user) {
-    return $scope.users.map(function(el) {return el.id});
+  function getUsersId() {
+    return $scope.users.map(function(el) {return el.id;});
   }
 };
