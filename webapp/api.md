@@ -38,6 +38,23 @@ Response:
 }
 ```
 
+Interval
+--------
+
+### Get interval.
+
+Request:
+
+```
+GET /api/interval
+```
+
+Response:
+
+```
+{"interval": 10}
+```
+
 Project
 -------
 

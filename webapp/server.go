@@ -36,6 +36,7 @@ func Start(c *config.Config, d *storage.DB) {
 	router := httprouter.New()
 	// Api
 	router.GET("/api/config", auth.handler(getConfig))
+	router.GET("/api/interval", getInterval)
 	router.GET("/api/projects", getProjects)
 	router.GET("/api/project/:id", getProject)
 	router.POST("/api/project", auth.handler(createProject))
