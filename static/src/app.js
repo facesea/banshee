@@ -19,6 +19,7 @@ angular.module('banshee', [
   require('./directives'),
 
   require('./modules/layout'),
+  require('./modules/main'),
   require('./modules/admin')
 
 ]).config(require('./config'))

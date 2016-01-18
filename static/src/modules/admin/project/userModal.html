@@ -14,7 +14,7 @@
         <md-autocomplete
           md-selected-item="autoComplete.selectedItem"
           md-search-text="autoComplete.searchText"
-          md-items="user in users | filter: {name: autoComplete.searchText}"
+          md-items="user in users | filter: {name: autoComplete.searchText, universal: false}"
           md-item-text="user.name"
           md-min-length="0"
           placeholder="please enter user name">
