@@ -28,6 +28,13 @@
               <!-- Table -->
               <div class="table-responsive">
                 <table class="table">
+                  <thead>
+                    <tr>
+                      <th> # </th>
+                      <th> Pattern </th>
+                      <th> Condition </th>
+                      <th> TrustLine </th>
+                    </tr>
                   <tbody>
                     <tr ng-if="!rules || !rules.length">
                       <td colspan="3">not found any result</td>
@@ -35,10 +42,16 @@
                     <tr ng-repeat="rule in rules">
                       <td class="padding-left-16" ng-bind="rule.id"></td>
                       <td>
-                        <a class="label label-warning" ui-sref="banshee.admin" ng-bind="rule.pattern"></a>
+                        <a ui-sref="FIXME">
+                          <kbd ng-bind="rule.pattern"></kbd>
+                        </a>
                       </td>
                       <td>
-                        <p class="label label-danger" ng-bind="rule.repr"></p>
+                        <code ng-bind="rule.repr"></code>
+                      </td>
+                      <td>
+                        <code ng-if="!rule.trustLine">-</code>
+                        <code ng-if="rule.trustLine" ng-bind="rule.trustLine"></code>
                       </td>
                       <td class="th100 text-right">
                         <md-button class="md-raised md-warn md-mini" aria-label="delete rule" ng-click="deleteRule($event, rule.id, $index)">
