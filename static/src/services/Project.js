@@ -3,7 +3,7 @@
  */
 /*@ngInject*/
 module.exports = function ($resource) {
-  return $resource('/api/project/:id', {id: '@id'}, {
+  return $resource('/api/project/:id', {id: '@id', userId: '@userId'}, {
     edit: {
       method: 'PATCH',
       url: '/api/project/:id'
@@ -22,6 +22,14 @@ module.exports = function ($resource) {
       method: 'GET',
       url: '/api/project/:id/users',
       isArray: true
+    },
+    addUserToProject: {
+      method: 'POST',
+      url: '/api/project/:id/user'
+    },
+    deleteUserFromProject: {
+      method: 'DELETE',
+      url: '/api/project/:id/user/:userId'
     }
   });
 };
