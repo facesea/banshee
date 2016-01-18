@@ -246,14 +246,23 @@ func addProjectUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params
 	// Find proj
 	proj := &models.Project{}
 	if err := db.Admin.DB().First(proj, id).Error; err != nil {
-		switch err {
-		case gorm.RecordNotFound:
-			ResponseError(w, ErrProjectNotFound)
-			return
-		default:
-			ResponseError(w, NewUnexceptedWebError(err))
+		if err == gorm.RecordNotFound {
+			ResponseError(w, ErrNotFound)
 			return
 		}
+		sqliteErr, ok := err.(sqlite3.Error)
+		if ok {
+			switch sqliteErr.ExtendedCode {
+			case sqlite3.ErrConstraintPrimaryKey:
+				ResponseError(w, ErrDuplicateProjectUser)
+				return
+			case sqlite3.ErrConstraintUnique:
+				ResponseError(w, ErrDuplicateProjectUser)
+				return
+			}
+		}
+		ResponseError(w, NewUnexceptedWebError(err))
+		return
 	}
 	// Append user.
 	if err := db.Admin.DB().Model(proj).Association("Users").Append(user).Error; err != nil {
