@@ -19,12 +19,12 @@
           <!-- Rules -->
           <md-tab label="Rules">
             <md-content class="md-padding">
-              <section layout="row" layout-padding>
-                <md-button class="md-raised md-primary md-mini" aria-label="Add Rule" ng-click="openModal($event, 'addRule')">
+            <div ng-style="{'text-align': 'right'}" layout-padding>
+                <md-button class="md-raised md-mini" aria-label="Add Rule" ng-click="openModal($event, 'addRule')">
                   <md-icon class="fa fa-plus-circle" ng-style="{'font-size': '21px'}"></md-icon>
                   <md-tooltip md-autohide>Add Rule</md-tooltip>
                 </md-button>
-              </section>
+              </div>
               <!-- Table -->
               <div class="table-responsive">
                 <table class="table">
@@ -67,12 +67,12 @@
           </md-tab> <!-- ./Rules -->
           <md-tab label="Receivers">
             <md-content class="md-padding">
-              <section layout="row" layout-padding>
-                <md-button class="md-raised md-mini md-primary" aria-label="Add User" ng-click="openModal($event, 'addUserToProject')">
+              <div ng-style="{'text-align': 'right'}" layout-padding>
+                <md-button class="md-raised md-mini" aria-label="Add User" ng-click="openModal($event, 'addUserToProject')">
                   <md-icon class="fa fa-plus-circle" ng-style="{'font-size': '21px'}"></md-icon>
                   <md-tooltip md-autohide>Add User</md-tooltip>
                 </md-button>
-              </section>
+              </div>
               <!-- Table -->
               <div class="table-responsive">
                 <table class="table">
