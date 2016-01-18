@@ -85,7 +85,7 @@
                       <td colspan="3">not found any result</td>
                     </tr>
                     <tr ng-repeat="user in users">
-                      <td ng-bind="user.id" class="th50"></td>
+                      <td ng-bind="$index+1" class="th50"></td>
                       <td>
                         <a ng-bind="user.name" ui-sref='banshee.admin.user.detail({id: user.id})' class="md-body-2"></a>
                       </td>
