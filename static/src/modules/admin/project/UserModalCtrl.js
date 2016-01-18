@@ -11,6 +11,7 @@ module.exports = function ($scope, $mdDialog, $stateParams, toastr, Project, par
     searchText: ''
   };
 
+
   $scope.cancel = function() {
     $mdDialog.cancel();
   };

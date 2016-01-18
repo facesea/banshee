@@ -104,7 +104,7 @@ module.exports = function ($scope, $mdDialog, $state, $stateParams, toastr, Proj
   };
 
   $scope.openModal = function (event, opt, project) {
-    var ctrl, template;
+    var ctrl, template, users;
 
     if (opt === 'addRule') {
       ctrl = 'RuleModalCtrl';
@@ -119,6 +119,7 @@ module.exports = function ($scope, $mdDialog, $state, $stateParams, toastr, Proj
     if (opt === 'addUserToProject') {
       ctrl = 'UserModalCtrl';
       template = 'modules/admin/project/userModal.html';
+      users = filterUsers();
     }
 
     $mdDialog.show({
@@ -132,7 +133,7 @@ module.exports = function ($scope, $mdDialog, $state, $stateParams, toastr, Proj
           params: {
             opt: opt,
             obj: angular.copy(project) || '',
-            users: allUsers
+            users: users
           }
         }
       })
@@ -153,4 +154,22 @@ module.exports = function ($scope, $mdDialog, $state, $stateParams, toastr, Proj
 
   $scope.loadData();
 
+  /**
+   * filter user:
+   *  1.user.universal = true;
+   *  2.user is not the existing user list;
+   * @param
+   */
+  function filterUsers() {
+    var usersIds = getUsersId();
+    return allUsers.map(function(el) {
+      if (!el.universal && usersIds.indexOf(el.id) < 0) {
+        return el;
+      }
+    });
+  }
+
+  function getUsersId() {
+    return $scope.users.map(function(el) {return el.id;});
+  }
 };
