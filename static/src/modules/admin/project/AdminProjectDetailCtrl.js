@@ -1,5 +1,5 @@
 /*@ngInject*/
-module.exports = function ($scope, $mdDialog, $stateParams, toastr, Project, Rule, User) {
+module.exports = function ($scope, $mdDialog, $state, $stateParams, toastr, Project, Rule, User) {
   var projectId = $stateParams.id;
   var allUsers = [];
 

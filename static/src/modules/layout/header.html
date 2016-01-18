@@ -1,10 +1,15 @@
 <nav role="navigation" class="navbar topnavbar md-whiteframe-glow-z1">
   <md-toolbar>
     <div class="md-toolbar-tools">
-      <h3>Banshee</h3>
+      <h3>
+        <a ui-sref="banshee.main">Banshee</a>
+      </h3>
       <span flex></span>
-      <md-button aria-label="Administration" ui-sref="banshee.admin.project">
+      <md-button aria-label="Administration" ui-sref="banshee.admin.project" ng-if="includes('banshee.main')">
         Administration
+      </md-button>
+      <md-button aria-label="Main" ui-sref="banshee.main" ng-if="includes('banshee.admin')">
+        Index
       </md-button>
     </div>
   </md-toolbar>
