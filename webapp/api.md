@@ -202,6 +202,12 @@ POST /api/user -d
 DELETE /api/user/:id
 ```
 
+### Get Projects of User
+
+```
+GET /api/user/:id/projects
+```
+
 Rule
 ----
 
