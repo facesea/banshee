@@ -79,7 +79,29 @@ module.exports = function ($scope, $mdDialog, $state, $stateParams, toastr, Proj
           toastr.error(err.msg);
         });
     });
-  }
+  };
+
+  $scope.deleteProject = function (event) {
+    var confirm = $mdDialog.confirm()
+      .title('Delete Project')
+      .textContent('This will delete this project with all its rules, do you want to proceed?')
+      .ariaLabel('Remove Project')
+      .targetEvent(event)
+      .ok('Yes')
+      .cancel('No');
+
+    $mdDialog.show(confirm).then(function () {
+      Project.delete({id: $scope.project.id}).$promise
+        .then(function () {
+          toastr.success('Project Deleted!');
+          $state.go('banshee.admin.project');
+        })
+        .catch(function (err) {
+          toastr.error(err.msg);
+        });
+    });
+
+  };
 
   $scope.openModal = function (event, opt, project) {
     var ctrl, template;
