@@ -212,9 +212,15 @@ func getProjectUsers(w http.ResponseWriter, r *http.Request, ps httprouter.Param
 	ResponseJSONOK(w, users)
 }
 
-// addUser adds a user to a project by name.
+// addProjectUserRequest is the request of addProjectUser
 type addProjectUserRequest struct {
 	Name string `json:"name"`
+}
+
+// projectUser is the tempory select result for table `project_users`
+type projectUser struct {
+	UserID    int `sql:"user_id"`
+	ProjectID int `sql:"project_id"`
 }
 
 // addProjectUser adds a user to a project.
@@ -243,6 +249,10 @@ func addProjectUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params
 			return
 		}
 	}
+	if user.Universal {
+		ResponseError(w, ErrProjectUniversalUser)
+		return
+	}
 	// Find proj
 	proj := &models.Project{}
 	if err := db.Admin.DB().First(proj, id).Error; err != nil {
@@ -250,18 +260,13 @@ func addProjectUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params
 			ResponseError(w, ErrNotFound)
 			return
 		}
-		sqliteErr, ok := err.(sqlite3.Error)
-		if ok {
-			switch sqliteErr.ExtendedCode {
-			case sqlite3.ErrConstraintPrimaryKey:
-				ResponseError(w, ErrDuplicateProjectUser)
-				return
-			case sqlite3.ErrConstraintUnique:
-				ResponseError(w, ErrDuplicateProjectUser)
-				return
-			}
-		}
 		ResponseError(w, NewUnexceptedWebError(err))
+		return
+	}
+	// Note: Gorm only insert values to join-table if the primary key not in
+	// the join-table. So we select the record at first here.
+	if err := db.Admin.DB().Table("project_users").Where("user_id = ? and project_id = ?", user.ID, proj.ID).Find(&projectUser{}).Error; err == nil {
+		ResponseError(w, ErrDuplicateProjectUser)
 		return
 	}
 	// Append user.
@@ -273,9 +278,15 @@ func addProjectUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params
 		}
 		// Duplicate primay key.
 		sqliteErr, ok := err.(sqlite3.Error)
-		if ok && sqliteErr.ExtendedCode == sqlite3.ErrConstraintPrimaryKey {
-			ResponseError(w, ErrPrimaryKey)
-			return
+		if ok {
+			switch sqliteErr.ExtendedCode {
+			case sqlite3.ErrConstraintUnique:
+				ResponseError(w, ErrDuplicateProjectUser)
+				return
+			case sqlite3.ErrConstraintPrimaryKey:
+				ResponseError(w, ErrDuplicateProjectUser)
+				return
+			}
 		}
 		// Unexcepted error.
 		ResponseError(w, NewUnexceptedWebError(err))
