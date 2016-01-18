@@ -1,6 +1,7 @@
 /*@ngInject*/
-module.exports = function ($scope, $mdDialog, $stateParams, toastr, Project, Rule) {
+module.exports = function ($scope, $mdDialog, $stateParams, toastr, Project, Rule, User) {
   var projectId = $stateParams.id;
+  var allUsers = [];
 
   $scope.loadData = function () {
 
@@ -28,6 +29,11 @@ module.exports = function ($scope, $mdDialog, $stateParams, toastr, Project, Rul
         $scope.users = res;
       });
 
+    // get all users
+    User.getAllUsers().$promise
+      .then(function (res) {
+        allUsers = res;
+      });
   };
 
   $scope.deleteRule = function (event, ruleId, index) {
@@ -39,8 +45,10 @@ module.exports = function ($scope, $mdDialog, $stateParams, toastr, Project, Rul
       .ok('Yes')
       .cancel('No');
     $mdDialog.show(confirm).then(function () {
-      Rule.delete({id: ruleId}).$promise
-        .then(function() {
+      Rule.delete({
+          id: ruleId
+        }).$promise
+        .then(function () {
           $scope.rules.splice(index, 1);
           toastr.success('Rule Deleted!');
         })
@@ -49,6 +57,29 @@ module.exports = function ($scope, $mdDialog, $stateParams, toastr, Project, Rul
         });
     });
   };
+
+  $scope.deleteUser = function (event, userId, index) {
+    var confirm = $mdDialog.confirm()
+      .title('Remove User')
+      .textContent('Would you like to remove this user from project?')
+      .ariaLabel('Remove User')
+      .targetEvent(event)
+      .ok('Yes')
+      .cancel('No');
+    $mdDialog.show(confirm).then(function () {
+      Project.deleteUserFromProject({
+          id: projectId,
+          userId: userId
+        }).$promise
+        .then(function () {
+          $scope.users.splice(index, 1);
+          toastr.success('User Deleted!');
+        })
+        .catch(function (err) {
+          toastr.error(err.msg);
+        });
+    });
+  }
 
   $scope.openModal = function (event, opt, project) {
     var ctrl, template;
@@ -78,7 +109,8 @@ module.exports = function ($scope, $mdDialog, $stateParams, toastr, Project, Rul
         locals: {
           params: {
             opt: opt,
-            obj: angular.copy(project) || ''
+            obj: angular.copy(project) || '',
+            users: allUsers
           }
         }
       })
@@ -89,6 +121,10 @@ module.exports = function ($scope, $mdDialog, $stateParams, toastr, Project, Rul
 
         if (opt === 'editProject') {
           $scope.project = res;
+        }
+
+        if (opt === 'addUserToProject') {
+          $scope.users.push(res);
         }
       });
   };
