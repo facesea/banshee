@@ -10,12 +10,6 @@
         <md-list-item ng-repeat="item in navList" ui-sref="{{item.state}}" ng-class="{active: includes(item.state)}" aria-label="nav item">
           <p ng-bind="item.name"> </p>
         </md-list-item>
-        <!-- <md-list-item ui-sref="banshee.admin.user">
-          <p> Receiver </p>
-        </md-list-item>
-        <md-list-item ui-sref="banshee.admin.config">
-          <p> Configuration </p>
-        </md-list-item> -->
       </md-list>
     </div>
   </section>
