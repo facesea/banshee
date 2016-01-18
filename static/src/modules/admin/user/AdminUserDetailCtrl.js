@@ -31,7 +31,7 @@ module.exports = function ($scope, $state, $stateParams, toastr, $mdDialog, User
       });
   };
 
-  $scope.deleteUser = function() {
+  $scope.deleteUser = function(event) {
     var confirm = $mdDialog.confirm()
       .title('Delete Receiver')
       .textContent('This will delete this receiver with all its projects, do you want to proceed?')
@@ -50,7 +50,7 @@ module.exports = function ($scope, $state, $stateParams, toastr, $mdDialog, User
         });
     });
 
-  }
+  };
 
   $scope.loadData();
 

@@ -79,7 +79,7 @@ module.exports = function ($scope, $mdDialog, $state, $stateParams, toastr, Proj
           toastr.error(err.msg);
         });
     });
-  }
+  };
 
   $scope.openModal = function (event, opt, project) {
     var ctrl, template;
