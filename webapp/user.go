@@ -222,3 +222,41 @@ func updateUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	}
 	ResponseJSONOK(w, user)
 }
+
+// getUserProjects gets usr projects.
+func getUserProjects(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	// Params
+	id, err := strconv.Atoi(ps.ByName("id"))
+	if err != nil {
+		ResponseError(w, ErrProjectID)
+		return
+	}
+	// Get User.
+	user := &models.User{}
+	if err := db.Admin.DB().First(user, id).Error; err != nil {
+		switch err {
+		case gorm.RecordNotFound:
+			ResponseError(w, ErrUserNotFound)
+			return
+		default:
+			ResponseError(w, NewUnexceptedWebError(err))
+			return
+		}
+	}
+	// Query
+	var projs []models.Project
+	if user.Universal {
+		// Get all projects for universal user.
+		if err := db.Admin.DB().Find(&projs).Error; err != nil {
+			ResponseError(w, NewUnexceptedWebError(err))
+			return
+		}
+	} else {
+		// Get related projects for this user.
+		if err := db.Admin.DB().Model(user).Association("Projects").Find(&projs).Error; err != nil {
+			ResponseError(w, NewUnexceptedWebError(err))
+			return
+		}
+	}
+	ResponseJSONOK(w, projs)
+}
