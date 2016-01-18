@@ -1,3 +1,51 @@
+0.0.3
+-----
+
+* Config: Use 'static/dist' as default static dir. #203
+* Deps: Update dep gorm. #245
+* Filter: Logging level to Warn when hit IntervalHitLimit. #209
+* Filter: Add doc for filter. #244
+* Models: Add test case for rule.Test. #208
+* Release: Use 'static/dist' instead of old 'static'. #204
+* Statsd: Remove mistaken commit files in statsd. #214
+* Statsd: Publish statsd-banshee to npm. #252
+* Static: Add request interceptor when method is GET. #255
+* Static: Move footer higher in layout. #254
+* Static: Use $index+1 instead of id in table. #250
+* Static: Filter universals and users in project. #253 #249
+* Static: Implement deleteProject. #248
+* Static: Add deleteUser. #247
+* Static: Finish addUser page. #242
+* Static: Finish receivers page. #239
+* Static: Add email/phone/universal to user list. #238
+* Static: Add trustLine to rules table and style fixes. #237
+* Static: Implement admin/config page. #236
+* Static: Fix createUser request that phone should be string. #233
+* Static: Implement receiver page. #231
+* Static: Use tabs instead of panels in project detail page. #230
+* Static: Fix rule dialog not show. #229
+* Static: Implement add user page. #228
+* Static: Implement project edit page. #227
+* Static: Implement rules page. #226
+* Static: Use meterial ui for rules page. #221
+* Static: Fix footer absolute kayout. #220
+* Static: Fix project create not show. #218
+* Static: Use meterial ui in project detail page. #217
+* Static: Use Makefile to install static deps. #213
+* Static: Add dependency angular-material. #211
+* Static: Implement project detail page. #210
+* Static: Remove Angle theme. #206
+* Static: Use npm instead of bower. #200
+* Static: Refactor static from react to angular. #198
+* Storage: Add db_test for metricdb. #207
+* Storage: Disable gorm logging mode. #235
+* Webapp: Fix createUser regexp and length validation. #232
+* Webapp: Validate duplicated users for project. #243
+* Webapp: Add new interface getUserProjects. #241
+* Webapp: Validate request on updateUser. #240
+* Webapp: Temply fix duplicated users to project by pre select. #246
+* Webapp: Add api getInterval. #256
+
 0.0.2
 -----
 
