@@ -71,9 +71,11 @@
                         <a ng-bind="project.name" ui-sref='banshee.admin.project.detail({id: project.id})' class="md-body-2"></a>
                       </td>
                       <td class="text-right">
-                        <md-button class="md-raised md-primary md-mini" aria-label="edit project">
-                          <i class="fa fa-pencil"></i>
-                        </md-button>
+                        <a ui-sref='banshee.admin.project.detail({id: project.id})'>
+                          <md-button class="md-raised md-primary md-mini" aria-label="edit project">
+                            <i class="fa fa-pencil"></i>
+                          </md-button>
+                        </a>
                       </td>
                     </tr>
                   </tbody>

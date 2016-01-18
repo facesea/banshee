@@ -34,7 +34,7 @@ module.exports = function ($scope, $state, $stateParams, toastr, $mdDialog, User
   $scope.deleteUser = function(event) {
     var confirm = $mdDialog.confirm()
       .title('Delete Receiver')
-      .textContent('This will delete this receiver with all its projects, do you want to proceed?')
+      .textContent('This will delete this receiver, do you want to proceed?')
       .ariaLabel('Remove User')
       .targetEvent(event)
       .ok('Yes')
