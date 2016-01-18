@@ -18,6 +18,13 @@ Documentation
 
 https://godoc.org/github.com/eleme/banshee
 
+Authors
+-------
+
+- [@facesea](https://github.com/facesea)
+- [@nrzipher](https://github.com/nrzipher)
+- [@hit9](https://github.com/hit9)
+
 License
 -------
 
