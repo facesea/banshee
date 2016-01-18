@@ -14,3 +14,12 @@ func getConfig(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	c.Webapp.Auth[1] = "******"
 	ResponseJSONOK(w, c)
 }
+
+// getInterval returns config.interval.
+type intervalResponse struct {
+	Interval uint32 `json:"interval"`
+}
+
+func getInterval(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	ResponseJSONOK(w, &intervalResponse{cfg.Interval})
+}
