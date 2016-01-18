@@ -1,0 +1,90 @@
+<div id="admin-user-detail">
+  <div class="col-lg-12">
+    <!-- main panel -->
+    <section class="panel-container">
+      <!-- Panel content -->
+      <section class="panel-content">
+        <!-- tabs --->
+        <md-tabs md-dynamic-height md-border-bottom>
+          <!-- Rules -->
+          <md-tab label="Receiver">
+            <md-content class="md-padding">
+              <!-- Form -->
+              <form name="form" ng-submit="edit()" novalidate>
+                <md-content layout-padding>
+                  <md-input-container class="md-block" flex-gt-sm>
+                    <label>Name</label>
+                    <input type="text" name="userName" ng-model="user.name" required>
+                    <div ng-messages="form.userName.$error" ng-if="form.userName.$dirty">
+                      <div ng-message="required">This field is required.</div>
+                    </div>
+                  </md-input-container>
+                  <md-input-container class="md-block" flex-gt-sm>
+                    <label>Email</label>
+                    <input type="text" name="email" ng-model="user.email" required>
+                    <div ng-messages="form.email.$error" ng-if="form.email.$dirty">
+                      <div ng-message="required">This field is required.</div>
+                    </div>
+                  </md-input-container>
+                  <md-input-container class="md-block" flex-gt-sm>
+                    <label>Phone</label>
+                    <input type="text" name="phone" ng-model="user.phone" required>
+                    <div ng-messages="form.phone.$error" ng-if="form.phone.$dirty">
+                      <div ng-message="required">This field is required.</div>
+                    </div>
+                  </md-input-container>
+                  <md-input-container class="md-block" flex-gt-sm>
+                    <md-checkbox ng-model="user.enableEmail" aria-label="checked checkbox"> Enable email</md-checkbox>
+                  </md-input-container>
+                  <md-input-container class="md-block" flex-gt-sm>
+                    <md-checkbox ng-model="user.enablePhone" aria-label="checked checkbox"> Enable phone</md-checkbox>
+                  </md-input-container>
+                  <md-input-container class="md-block" flex-gt-sm>
+                    <md-checkbox ng-model="user.universal"> universal</md-checkbox>
+                  </md-input-container>
+                  <md-input-container>
+                    <md-button class="md-raised" aria-label="Save User" type="submit" ng-disabled="form.$invalid">
+                      Save
+                    </md-button>
+                  </md-input-container>
+                </md-content>
+              </form>
+              <!-- ./Form -->
+            </md-content>
+          </md-tab>
+          <!-- ./Rules -->
+          <md-tab label="Project">
+            <md-content class="md-padding">
+              <!-- Table -->
+              <div class="table-responsive">
+                <table class="table">
+                  <tbody>
+                    <tr ng-if="!projects || !projects.length">
+                      <td colspan="3">not found any result</td>
+                    </tr>
+                    <tr ng-repeat="project in projects">
+                      <td ng-bind="project.id" class="td50"></td>
+                      <td>
+                        <a ng-bind="project.name" ui-sref='banshee.admin.project.detail({id: project.id})' class="md-body-2"></a>
+                      </td>
+                      <td class="text-right">
+                        <md-button class="md-raised md-primary md-mini" aria-label="edit project">
+                          <i class="fa fa-pencil"></i>
+                        </md-button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <!-- ./Table -->
+            </md-content>
+          </md-tab>
+          <!-- ./Users -->
+        </md-tabs>
+        <!-- ./tabs -->
+      </section>
+      <!-- ./Panel content -->
+    </section>
+    <!-- Main panel -->
+  </div>
+</div>

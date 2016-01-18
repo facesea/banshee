@@ -39,10 +39,10 @@
                   </a>
                 </td>
                 <td>
-                  <span ng-class="{del: user.enableEmail}" ng-bind="user.email"></span>
+                  <span ng-class="{del: !user.enableEmail}" ng-bind="user.email"></span>
                 </td>
                 <td>
-                  <span ng-class="{del: user.enablePhone}" ng-bind="user.phone"></span>
+                  <span ng-class="{del: !user.enablePhone}" ng-bind="user.phone"></span>
                 </td>
                 <td>
                   <span ng-if="user.universal">Yes</span>
