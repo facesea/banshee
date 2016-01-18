@@ -40,7 +40,7 @@ func Start(c *config.Config, d *storage.DB) {
 	router.GET("/api/project/:id", getProject)
 	router.POST("/api/project", auth.handler(createProject))
 	router.PATCH("/api/project/:id", auth.handler(updateProject))
-	router.DELETE("/api/projects/:id", auth.handler(deleteProject))
+	router.DELETE("/api/project/:id", auth.handler(deleteProject))
 	router.GET("/api/project/:id/rules", auth.handler(getProjectRules))
 	router.GET("/api/project/:id/users", auth.handler(getProjectUsers))
 	router.POST("/api/project/:id/user", auth.handler(addProjectUser))
