@@ -13,8 +13,8 @@
       <md-content layout-padding>
         <md-autocomplete
           md-selected-item="autoComplete.selectedItem"
-          md-search-text="ctrl.searchText"
-          md-items="user in users"
+          md-search-text="autoComplete.searchText"
+          md-items="user in users | filter: {name: autoComplete.searchText}"
           md-item-text="user.name"
           md-min-length="0"
           placeholder="please enter user name">
@@ -22,7 +22,7 @@
             <span md-highlight-text="autoComplete.searchText" md-highlight-flags="^i">{{user.name}}</span>
           </md-item-template>
           <md-not-found>
-            No states matching "{{ctrl.searchText}}" were found.
+            No items matching "{{autoComplete.searchText}}" were found.
           </md-not-found>
         </md-autocomplete>
       </md-content>
