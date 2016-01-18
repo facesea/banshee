@@ -11,7 +11,7 @@ module.exports = function ($scope, $modal, $mdDialog, User) {
   $scope.openModal = function (event) {
     $mdDialog.show({
         controller: 'UserAddModalCtrl',
-        templateUrl: 'modules/admin/user/userModal.html',
+        templateUrl: 'modules/admin/user/userAddModal.html',
         parent: angular.element(document.body),
         targetEvent: event,
         clickOutsideToClose: true,

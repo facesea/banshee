@@ -39,21 +39,16 @@
                   </a>
                 </td>
                 <td>
-                  <del ng-if="!user.enableEmail" ng-bind="user.email"></del>
-                  <span ng-if="user.enableEmail" ng-bind="user.email"></span>
+                  <span ng-class="{del: !user.enableEmail}" ng-bind="user.email"></span>
                 </td>
                 <td>
-                  <del ng-if="!user.enablePhone" ng-bind="user.phone"></del>
-                  <span ng-if="user.enablePhone" ng-bind="user.phone"></span>
+                  <span ng-class="{del: !user.enablePhone}" ng-bind="user.phone"></span>
                 </td>
                 <td>
                   <span ng-if="user.universal">Yes</span>
                   <span ng-if="!user.universal">No</span>
                 </td>
                 <td style="text-align: right;">
-                  <md-button class="md-raised md-mini" ui-sref="banshee.admin" aria-label="user detail">
-                    <i class="fa fa-search"></i>
-                  </md-button>
                   <md-button class="md-raised md-primary md-mini"  ui-sref='banshee.admin.user.detail({id: user.id})' aria-label="edit user">
                     <i class="fa fa-pencil"></i>
                   </md-button>

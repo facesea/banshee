@@ -8,6 +8,15 @@ module.exports = function ($resource) {
       method: 'GET',
       url: '/api/users',
       isArray: true
+    },
+    getProjectsByUserId: {
+      method: 'GET',
+      url: '/api/projects',
+      isArray: true
+    },
+    edit: {
+      method: 'PATCH',
+      url: '/api/user/:id'
     }
   });
 };

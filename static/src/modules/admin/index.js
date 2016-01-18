@@ -32,6 +32,15 @@ var app = angular.module('banshee.admin', [])
         templateUrl: 'modules/admin/user/AdminUserList.html',
         controller: 'AdminUserListCtrl'
       })
+      .state('banshee.admin.user.detail', {
+        url: '/:id',
+        views: {
+          '@banshee': {
+            templateUrl: 'modules/admin/user/AdminUserDetail.html',
+            controller: 'AdminUserDetailCtrl'
+          }
+        }
+      })
 
       // Config router
       .state('banshee.admin.config', {
@@ -46,10 +55,11 @@ var app = angular.module('banshee.admin', [])
   .controller('AdminProjectDetailCtrl', require('./project/AdminProjectDetailCtrl'))
   .controller('ProjectModalCtrl', require('./project/ProjectModalCtrl'))
   .controller('UserModalCtrl', require('./project/UserModalCtrl'))
-  .controller('UserAddModalCtrl', require('./user/UserAddModalCtrl'))
   .controller('RuleModalCtrl', require('./project/RuleModalCtrl'))
 
   .controller('AdminUserListCtrl', require('./user/AdminUserListCtrl'))
+  .controller('AdminUserDetailCtrl', require('./user/AdminUserDetailCtrl'))
+  .controller('UserAddModalCtrl', require('./user/UserAddModalCtrl'))
 
   .controller('AdminConfigCtrl', require('./config/AdminConfigCtrl'));
 
