@@ -11,6 +11,9 @@ module.exports = function ($scope, $mdDialog, $state, $stateParams, toastr, Proj
       }).$promise
       .then(function (res) {
         $scope.project = res;
+      })
+      .catch(function(err) {
+        toastr.error(err.msg);
       });
 
     // get rules of project

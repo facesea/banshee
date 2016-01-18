@@ -18,6 +18,11 @@ Documentation
 
 https://godoc.org/github.com/eleme/banshee
 
+Statsd Backend
+--------------
+
+https://www.npmjs.com/package/statsd-banshee
+
 Authors
 -------
 
