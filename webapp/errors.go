@@ -29,6 +29,7 @@ var (
 	ErrProjectNotFound      = NewWebError(http.StatusNotFound, "Project not found")
 	ErrDuplicateProjectName = NewWebError(http.StatusForbidden, "Duplicate project name")
 	ErrDuplicateProjectUser = NewWebError(http.StatusForbidden, "Duplicate user to project")
+	ErrProjectUniversalUser = NewWebError(http.StatusForbidden, "Cannot add universal user to project")
 	// User
 	ErrUserID            = NewWebError(http.StatusBadRequest, "Bad user id")
 	ErrUserName          = NewWebError(http.StatusBadRequest, "Bad user name")
