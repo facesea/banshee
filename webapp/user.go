@@ -77,11 +77,11 @@ func createUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		ResponseError(w, ErrUserEmail)
 		return
 	}
-	if len(req.Phone) != 10 || len(req.Phone) != 11 {
+	if len(req.Phone) != 10 && len(req.Phone) != 11 {
 		ResponseError(w, ErrUserPhone)
 		return
 	}
-	if ok, _ := regexp.MatchString("^\\d{10,11}", req.Phone); ok {
+	if ok, _ := regexp.MatchString("^\\d{10,11}", req.Phone); !ok {
 		ResponseError(w, ErrUserPhone)
 		return
 	}
