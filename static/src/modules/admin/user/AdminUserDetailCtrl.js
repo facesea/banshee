@@ -9,9 +9,6 @@ module.exports = function ($scope, $state, $stateParams, toastr, $mdDialog, User
       }).$promise
       .then(function (res) {
         $scope.user = res;
-      })
-      .catch(function(err) {
-        toastr.error(err.msg);
       });
 
     // get projects by user id
