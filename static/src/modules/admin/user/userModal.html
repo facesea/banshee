@@ -27,16 +27,16 @@
         </md-input-container>
         <md-input-container class="md-block" flex-gt-sm>
           <label>Phone</label>
-          <input type="number" name="phone" ng-model="user.phone" required>
+          <input type="text" name="phone" ng-model="user.phone" required>
           <div ng-messages="form.phone.$error" ng-if="form.phone.$dirty">
             <div ng-message="required">This field is required.</div>
           </div>
         </md-input-container>
         <md-input-container class="md-block" flex-gt-sm>
-          <md-checkbox ng-model="user.enableEmail"> Enable email</md-checkbox>
+          <md-checkbox ng-model="user.enableEmail" ng-init="user.enableEmail=true" aria-label="checked checkbox"> Enable email</md-checkbox>
         </md-input-container>
         <md-input-container class="md-block" flex-gt-sm>
-          <md-checkbox ng-model="user.enablePhone"> Enable phone</md-checkbox>
+          <md-checkbox ng-model="user.enablePhone" ng-init="user.enablePhone=true" aria-label="checked checkbox"> Enable phone</md-checkbox>
         </md-input-container>
         <md-input-container class="md-block" flex-gt-sm>
           <md-checkbox ng-model="user.universal"> universal</md-checkbox>
