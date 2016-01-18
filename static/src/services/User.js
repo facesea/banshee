@@ -11,7 +11,7 @@ module.exports = function ($resource) {
     },
     getProjectsByUserId: {
       method: 'GET',
-      url: '/api/projects',
+      url: '/api/user/:id/projects',
       isArray: true
     },
     edit: {
