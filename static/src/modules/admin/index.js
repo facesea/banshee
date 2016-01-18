@@ -31,6 +31,13 @@ var app = angular.module('banshee.admin', [])
         url: '/user',
         templateUrl: 'modules/admin/user/AdminUserList.html',
         controller: 'AdminUserListCtrl'
+      })
+
+      // Config router
+      .state('banshee.admin.config', {
+        url: '/config',
+        templateUrl: 'modules/admin/config/config.html',
+        controller: 'AdminConfigCtrl'
       });
   })
 
@@ -42,6 +49,8 @@ var app = angular.module('banshee.admin', [])
   .controller('UserAddModalCtrl', require('./user/UserAddModalCtrl'))
   .controller('RuleModalCtrl', require('./project/RuleModalCtrl'))
 
-  .controller('AdminUserListCtrl', require('./user/AdminUserListCtrl'));
+  .controller('AdminUserListCtrl', require('./user/AdminUserListCtrl'))
+
+  .controller('AdminConfigCtrl', require('./config/AdminConfigCtrl'));
 
 module.exports = app.name;
