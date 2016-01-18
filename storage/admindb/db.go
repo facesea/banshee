@@ -9,7 +9,11 @@ import (
 	_ "github.com/mattn/go-sqlite3" // Import but no use
 )
 
+// SQL db dialect
 const dialect = "sqlite3"
+
+// Gorm logging?
+const gormLogMode = false
 
 // DB handles admin storage.
 type DB struct {
@@ -37,6 +41,8 @@ func Open(fileName string) (*DB, error) {
 	if err := db.RulesCache.Init(db.db); err != nil {
 		return nil, err
 	}
+	// Log Mode
+	db.db.LogMode(gormLogMode)
 	return db, nil
 }
 
