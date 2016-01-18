@@ -40,7 +40,7 @@
                       <td colspan="3">not found any result</td>
                     </tr>
                     <tr ng-repeat="rule in rules">
-                      <td class="padding-left-16" ng-bind="rule.id"></td>
+                      <td class="padding-left-16" ng-bind="$index+1"></td>
                       <td>
                         <a ui-sref="FIXME">
                           <kbd ng-bind="rule.pattern"></kbd>
