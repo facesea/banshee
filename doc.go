@@ -37,19 +37,17 @@ via anomalous trendings.
 
 Requirements
 
-Go >= 1.4 and godep.
+1. Go >= 1.4 and godep.
 
-Installation
+2. Node and gulp.
 
-Just clone it and run make:
+Build
 
-	$ git clone git://github.com/eleme/banshee.git
-	$ cd banshee
-	$ go get github.com/tools/godep
-	$ make
+1. Clone the repo.
 
-Or simply download pre-compiled banshee binary from
-https://github.com/eleme/banshee/releases.
+2. Build binary via `make`.
+
+3. Build static files via `make static`.
 
 Command Line
 
