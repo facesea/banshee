@@ -70,36 +70,36 @@ module.exports = function ($scope, $rootScope, $stateParams, Metric, Config, Pro
   $scope.restart = function () {
     $scope.filter = angular.copy(initOpt);
     buildCubism();
-  }
+  };
 
   $scope.searchPattern = function() {
     $scope.filter.project = '';
     buildCubism();
-  }
+  };
 
   $scope.searchProject = function(project) {
     $scope.filter.project = project.id;
     $scope.filter.pattern = '';
     buildCubism();
-  }
+  };
 
-  loadData();
 
-  $scope.$on("$destroy", function () {
+  $scope.$on('$destroy', function () {
     $rootScope.currentMain = false;
   });
 
   function loadData() {
     Project.getAllProjects().$promise
       .then(function (res) {
+        var projectId = parseInt($stateParams.project);
         $scope.projects = res;
 
-        if ($stateParams.project) {
+        if (projectId) {
           $scope.projects.forEach(function(el) {
-            if (el.id == $stateParams.project) {
+            if (el.id === projectId) {
               $scope.autoComplete.searchText = el.name;
             }
-          })
+          });
         }
       });
 
@@ -116,7 +116,7 @@ module.exports = function ($scope, $rootScope, $stateParams, Metric, Config, Pro
    * watch filter.
    */
   function watchAll() {
-    $scope.$watchGroup(['filter.datetime', 'filter.limit', 'filter.sort', 'filter.type'], function (newValues, oldValues) {
+    $scope.$watchGroup(['filter.datetime', 'filter.limit', 'filter.sort', 'filter.type'], function () {
       buildCubism();
     });
   }
@@ -159,7 +159,7 @@ module.exports = function ($scope, $rootScope, $stateParams, Metric, Config, Pro
       metrics.push(feed(name, function () {}));
     }
     return chart.plot(metrics);
-  };
+  }
 
   /**
    * Feed metric.
@@ -208,27 +208,12 @@ module.exports = function ($scope, $rootScope, $stateParams, Metric, Config, Pro
         callback(null, values);
       });
     }, name);
-  };
+  }
 
   function setIntervalAndRunNow(fn, ms) {
     fn();
     return setInterval(fn, ms);
-  };
-  // Replace this with context.graphite and graphite.metric!
-  function random(x) {
-    var value = 0,
-      values = [],
-      i = 0,
-      last;
-    return context.metric(function (start, stop, step, callback) {
-      start = +start, stop = +stop;
-      if (isNaN(last)) last = start;
-      while (last < stop) {
-        last += step;
-        value = Math.max(-10, Math.min(10, value + .8 * Math.random() - .4 + .2 * Math.cos(i += x * .02)));
-        values.push(value);
-      }
-      callback(null, values = values.slice((start - stop) / step));
-    }, x);
   }
+
+  loadData();
 };

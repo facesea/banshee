@@ -20,8 +20,10 @@
     .clientDelay(options.clientDelay)
     .step(options.step)
     .size(options.size);
-    if (options.stop)
+    if (options.stop) {
       context.stop();
+    }
+
     // make chart rules movable on focus
     context.on('focus', function(i) {
       var offset = $(selector)[0].offsetWidth - i;
@@ -63,8 +65,9 @@
    */
   self.horizon = function() {
     var horizon = context.horizon();
-    if (dataType == 'v')
+    if (dataType === 'v') {
       return horizon;
+    }
     return horizon
     .extent([-2, 2])
     .mode('mirror')
