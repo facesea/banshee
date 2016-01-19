@@ -40,7 +40,7 @@ func (c *rulesCache) Init(db *gorm.DB) error {
 		// Share
 		r := &rule
 		r.Share()
-		c.rules.Set(rule.ID, r)
+		c.rules.Set(rule.ID, r.Copy())
 	}
 	return nil
 }

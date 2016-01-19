@@ -91,7 +91,7 @@ func (al *Alerter) work() {
 		if !ok {
 			var newCounter uint32
 			newCounter = 1
-			al.m.Set(metric.Name, &newCounter)
+			al.c.Set(metric.Name, &newCounter)
 		} else {
 			atomic.AddUint32(v.(*uint32), 1)
 		}
