@@ -1,1 +1,82 @@
-main
+<div id="main-list">
+  <div class="col-lg-12">
+    <!-- START panel-->
+    <div class="panel-container">
+      <md-toolbar>
+        <div class="md-toolbar-tools">
+          <h3></h3>
+        </div>
+      </md-toolbar>
+      <div class="panel-content">
+        <div class="panel-content-title">
+          <div layout-gt-xs="row">
+            <form name="form" ng-submit="searchPattern()"  flex="45" novalidate>
+              <md-input-container class="md-block search-pattern">
+                <label>Pattern</label>
+                <input ng-model="filter.pattern">
+              </md-input-container>
+            </form>
+            <md-autocomplete
+              class="search-project"
+              md-selected-item="autoComplete.selectedItem"
+              md-search-text="autoComplete.searchText"
+              md-selected-item-change="searchProject(project)"
+              md-items="project in projects | filter: {name: autoComplete.searchText}"
+              md-item-text="project.name"
+              md-min-length="0"
+              md-floating-label="Project Name"
+              flex="45">
+              <md-item-template>
+                <span md-highlight-text="autoComplete.searchText" md-highlight-flags="^i">{{project.name}}</span>
+              </md-item-template>
+              <md-not-found>
+                No items matching "{{autoComplete.searchText}}" were found.
+              </md-not-found>
+            </md-autocomplete>
+          </div>
+
+          <md-input-container>
+            <md-select ng-model="filter.datetime" aria-label="datetime">
+              <md-option ng-repeat="time in dateTimes" ng-value="time.seconds" ng-selected="$index === 0">
+                {{time.label}}
+              </md-option>
+            </md-select>
+          </md-input-container>
+          <md-input-container>
+            <md-select ng-model="filter.limit" aria-label="limit">
+              <md-option ng-repeat="limit in limitList" ng-value="limit.val" ng-selected="$index === 2">
+                {{limit.label}}
+              </md-option>
+            </md-select>
+          </md-input-container>
+          <md-input-container>
+            <md-select ng-model="filter.sort" aria-label="sort">
+              <md-option ng-repeat="sort in sortList" ng-value="sort.val" ng-selected="$index === 0">
+                {{sort.label}}
+              </md-option>
+            </md-select>
+          </md-input-container>
+          <md-input-container>
+            <md-select ng-model="filter.type" aria-label="sort">
+              <md-option ng-repeat="type in typeList" ng-value="type.val" ng-selected="$index === 0">
+                {{type.label}}
+              </md-option>
+            </md-select>
+          </md-input-container>
+          <md-input-container class="pull-right">
+            <md-button class="md-icon-button md-warn" aria-label="pause">
+              <md-icon class="fa fa-refresh"></md-icon>
+            </md-button>
+          </md-input-container>
+          <md-input-container class="pull-right">
+            <md-button class="md-icon-button md-primary" aria-label="pause" ng-click="toggleCubism()">
+              <md-icon class="fa" ng-class="{'fa-pause': !filter.status, 'fa-play': filter.status}"></md-icon>
+            </md-button>
+          </md-input-container>
+        </div>
+        <div id="cubism-wrap"> </div>
+      </div>
+    </div>
+    <!-- END panel-->
+  </div>
+</div>

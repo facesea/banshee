@@ -5,7 +5,7 @@
   <aside ui-view="navigation" class="aside col-md-2 padding-right-0"></aside>
 
   <!-- Main section-->
-  <section class="col-md-10 col-md-offset-2 padding-left-0">
+  <section id="section-content" class="padding-left-0" ng-class="{'col-md-10': !currentMain, 'col-md-12': currentMain, 'padding-right-10': currentMain}">
     <!-- Page content-->
     <div ui-view class="content-wrapper"></div>
   </section>

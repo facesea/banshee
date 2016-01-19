@@ -19,4 +19,4 @@ static/public/js
 static/public/node_modules
 static/jshint-output.html
 # Mr.Dev
-test-statsd/
+test-statsd

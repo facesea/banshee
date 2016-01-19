@@ -11,6 +11,8 @@
     "angular-ui-bootstrap": "~0.13.0",
     "angular-ui-router": "~0.2.15",
     "bootstrap": "~3.3.4",
+    "cubism": "^1.6.0",
+    "d3": "^3.5.6",
     "font-awesome": "~4.3.0",
     "jquery": "~2.1.4"
   }

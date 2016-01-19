@@ -52,9 +52,6 @@ body {
 
 .aside {
   min-height: 100%;
-  position: fixed;
-  top: 0;
-  left: 0;
 
   .panel-container {
     margin-top: 75px;
@@ -89,6 +86,34 @@ footer {
 .panel-content {
   border: 1px solid #ccc;
 }
+
+.topnavbar {
+  md-input-container {
+    margin-top: 33px;
+
+    md-icon {
+      top: 6px;
+    }
+    input {
+      color: #fff;
+      border-bottom-color: #fff;
+
+      &:focus {
+        border-bottom-color: #fff;
+      }
+    }
+
+    &.md-input-focused {
+      md-icon {
+        color: #fff;
+      }
+      input {
+        border-bottom-color: #fff!important;
+      }
+    }
+  }
+}
+
 // reset angular-material style
 .form-dialog {
   min-width: 600px;

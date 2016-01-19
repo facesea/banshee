@@ -46,7 +46,7 @@
                     <tr ng-repeat="rule in rules">
                       <td class="padding-left-16" ng-bind="$index+1"></td>
                       <td>
-                        <a ui-sref="FIXME">
+                        <a ui-sref="banshee.main({pattern: rule.pattern})">
                           <kbd ng-bind="rule.pattern" ng-style="{'font-weight': 'bold'}"></kbd>
                         </a>
                       </td>

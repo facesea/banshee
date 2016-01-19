@@ -5,7 +5,7 @@ var app = angular.module('banshee.main', [])
     // State
     $stateProvider
       .state('banshee.main', {
-        url: '/main',
+        url: '/main?pattern&project',
         templateUrl: 'modules/main/list.html',
         controller: 'MainListCtrl'
       });
