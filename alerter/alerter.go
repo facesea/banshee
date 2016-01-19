@@ -80,7 +80,7 @@ func (al *Alerter) work() {
 		metric := <-al.In
 		// Check interval.
 		v, ok := al.m.Get(metric.Name)
-		if ok && metric.Stamp-v.(uint32) < al.cfg.Alerter.Interval {
+		if ok && metric.Stamp-v.(*uint32) < al.cfg.Alerter.Interval {
 			return
 		}
 		// Check alert times in one day
