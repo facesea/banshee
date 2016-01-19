@@ -113,7 +113,7 @@ func (d *Detector) handle(conn net.Conn) {
 				continue
 			}
 			elapsed := time.Since(startAt)
-			log.Debug("%dμs %s %.3f", elapsed.Nanoseconds()/1000, m.Name, m.Score)
+			log.Info("%dμs detected %s %.4f", elapsed.Nanoseconds()/1000, m.Name, m.Score)
 			// Output
 			d.output(m)
 			// Store
