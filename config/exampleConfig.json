@@ -7,7 +7,10 @@
   "detector": {
     "port": 2015,
     "factor": 0.05,
-    "blacklist": []
+    "blacklist": [],
+    "intervalHitLimit": 100,
+    "defaultTrustLines": {},
+    "fillBlankZeros": []
   },
   "webapp": {
     "port": 2016,
@@ -17,6 +20,7 @@
   "alerter": {
     "command": "",
     "workers": 4,
-    "interval": 1200
+    "interval": 1200,
+    "oneDayLimit": 5
   }
 }
