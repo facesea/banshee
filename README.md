@@ -6,12 +6,18 @@ metrics.
 
 [![Build Status](https://travis-ci.org/eleme/banshee.svg?branch=master)](https://travis-ci.org/eleme/banshee)
 
-Installation
--------------
+Requirements
+------------
 
-Clone and run `make`.
+1. Go >= 1.4 and godep.
+2. Node and gulp.
 
-Or download banshee binary from https://github.com/eleme/banshee/releases.
+Build
+-----
+
+1. Clone the repo.
+2. Build binary via `make`.
+3. Build static files via `make static`.
 
 Documentation
 --------------
