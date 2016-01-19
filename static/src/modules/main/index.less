@@ -4,8 +4,45 @@
 
     md-input-container {
       margin-right: 5px;
+
+      &.search-pattern {
+        height: 40px;
+        margin-bottom: 0;
+      }
+    }
+    .search-project {
+      margin-left: 10%;
+
+      md-input-container {
+        height: 40px;
+        padding-bottom: 0;
+
+      }
+    }
+
+    >md-input-container {
+      margin-top: 0;
+    }
+
+    .md-icon-button {
+      width: 26px;
+      padding: 0px;
+      vertical-align: -15px;
     }
   }
+
+  md-input-container.md-has-icon {
+    padding: 0;
+  }
+
+  #cubism-wrap {
+    width: 100%;
+    padding: 0 10px;
+    border-top: 1px solid #ccc;
+    position: relative;
+    overflow-x: scroll;
+  }
+
   /**
  * Cubism custom styles.
  */

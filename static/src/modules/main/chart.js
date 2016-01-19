@@ -9,11 +9,11 @@
   self.init = function(options) {
     options = options || {};
     selector = options.selector || '#chart';
-    dataType = options.type || 'm';
+    dataType = options.type || 'v';
     options.serverDelay = options.serverDelay || 0;
     options.clientDelay = options.clientDelay || 0;
     options.step = options.step || 10 * 1000;
-    options.size = options.size || 3 * 60 * 60 / 10;
+    options.size = options.size || document.getElementById('section-content').offsetWidth - 70;
     options.stop = options.stop || false;
     context = cubism.context()
     .serverDelay(options.serverDelay)

@@ -1,6 +1,9 @@
 /*@ngInject*/
-module.exports = function ($scope, $stateParams, Metric, DateTimes) {
+module.exports = function ($scope, $rootScope, $stateParams, Metric, Config, Project, DateTimes) {
   var chart = require('./chart');
+  var cubism;
+  var initOpt;
+  $rootScope.currentMain = true;
   $scope.dateTimes = DateTimes;
 
   $scope.limitList = [{
@@ -29,49 +32,131 @@ module.exports = function ($scope, $stateParams, Metric, DateTimes) {
   }, {
     label: 'Trending Down',
     val: 1
-  }]
+  }];
 
-  $scope.filter = {
+  $scope.typeList = [{
+    label: 'value',
+    val: 'v'
+  }, {
+    label: 'score',
+    val: 'm'
+  }];
+
+  $scope.autoComplete = {
+    searchText: ''
+  };
+
+  initOpt = {
+    project: $stateParams.project,
+    pattern: $stateParams.pattern,
     datetime: DateTimes[0].seconds,
     limit: $scope.limitList[0].val,
-    sort: $scope.sortList[0].val
+    sort: $scope.sortList[0].val,
+    type: $scope.sortList[0].val,
+    status: false
+  };
+
+  $scope.filter = angular.copy(initOpt);
+
+  $scope.toggleCubism = function () {
+    $scope.filter.status = !$scope.filter.status;
+    if (!$scope.filter.status) {
+      buildCubism();
+    } else {
+      cubism.stop();
+    }
+  };
+
+  $scope.restart = function () {
+    $scope.filter = angular.copy(initOpt);
+    buildCubism();
   }
 
-  chart.init({
-    selector: '#cubism-wrap',
-    serverDelay: 10 * 1000,
-    step: 10 * 1000,
-    stop: false
+  $scope.searchPattern = function() {
+    $scope.filter.project = '';
+    buildCubism();
+  }
+
+  $scope.searchProject = function(project) {
+    $scope.filter.project = project.id;
+    $scope.filter.pattern = '';
+    buildCubism();
+  }
+
+  loadData();
+
+  $scope.$on("$destroy", function () {
+    $rootScope.currentMain = false;
   });
 
-  setIntervalAndRunNow(function () {
+  function loadData() {
+    Project.getAllProjects().$promise
+      .then(function (res) {
+        $scope.projects = res;
+
+        if ($stateParams.project) {
+          $scope.projects.forEach(function(el) {
+            if (el.id == $stateParams.project) {
+              $scope.autoComplete.searchText = el.name;
+            }
+          })
+        }
+      });
+
+    Config.getInterval().$promise
+      .then(function (res) {
+        $scope.filter.interval = res.interval;
+
+        setIntervalAndRunNow(buildCubism, 10 * 60 * 1000);
+
+        watchAll();
+      });
+  }
+  /**
+   * watch filter.
+   */
+  function watchAll() {
+    $scope.$watchGroup(['filter.datetime', 'filter.limit', 'filter.sort', 'filter.type'], function (newValues, oldValues) {
+      buildCubism();
+    });
+  }
+
+  function buildCubism() {
     var params = {
       limit: $scope.filter.limit,
       sort: $scope.filter.sort,
     };
-    if ($stateParams.project) {
-      params.project = $stateParams.project;
+    if ($scope.filter.project) {
+      params.project = $scope.filter.project;
     } else {
-      params.pattern = $stateParams.pattern;
+      params.pattern = $scope.filter.pattern;
     }
 
     chart.remove();
+
+    cubism = chart.init({
+      selector: '#cubism-wrap',
+      serverDelay: $scope.filter.datetime * 1000,
+      step: $scope.filter.interval * 1000,
+      stop: false
+    });
+
     Metric.getMetricIndexes(params).$promise
-      .then(function(res) {
+      .then(function (res) {
         plot(res);
       });
-  }, 10 * 60 * 1000);
+  }
 
   /**
    * Plot.
    */
   function plot(data) {
     var name, i, metrics = [];
-    for (i = 0; i < data.names.length; i++) {
-      name = data.names[i][0];
+    for (i = 0; i < data.length; i++) {
+      name = data[i].name;
       // TODO
       // metrics.push(feed(name, self.refreshTitle));
-      metrics.push(feed(name, function(){}));
+      metrics.push(feed(name, function () {}));
     }
     return chart.plot(metrics);
   };
@@ -82,37 +167,45 @@ module.exports = function ($scope, $stateParams, Metric, DateTimes) {
    * @param {Function} cb // function(data)
    * @return {Metric}
    */
-  self.feed = function(name, cb) {
-    return handlers.chart.metric(function(start, stop, step, callback) {
-      var values = [], i = 0;
+  function feed(name, cb) {
+    return chart.metric(function (start, stop, step, callback) {
+      var values = [],
+        i = 0;
       // cast to timestamp from date
-      start = (+start - delay) / 1000;
-      stop = (+stop - delay) / 1000;
-      step = +step / 1000;
+      start = parseInt((+start - $scope.filter.datetime) / 1000);
+      stop = parseInt((+stop - $scope.filter.datetime) / 1000);
+      step = parseInt(+step / 1000);
       // parameters to pull data
       var params = {
         name: name,
-        type: options.type,
+        type: $scope.filter.type,
         start: start,
         stop: stop
       };
       // request data and call `callback` with values
       // data schema: {name: {String}, times: {Array}, vals: {Array}}
-      handlers.metric.getData(params, function(err, data) {
-        if (err)
-          return handlers.error.fatal(err);
+      Metric.getMetricValues(params, function (data) {
         // the timestamps from statsd DONT have exactly steps `10`
-        while (start < stop) {
-          while (start < data.times[i]) {
+        var len = data.length;
+        while (start < stop && i < len) {
+
+          while (start < data[i].stamp) {
             start += step;
-            values.push(start > data.times[i] ? data.vals[i] : 0);
+            if ($scope.filter.type === 'v') {
+              values.push(start > data[i].stamp ? data[i].value : 0);
+            } else {
+              values.push(start > data[i].stamp ? data[i].score : 0);
+            }
           }
-          values.push(data.vals[i++]);
+
+          if ($scope.filter.type === 'v') {
+            values.push(data[i++].value);
+          } else {
+            values.push(data[i++].core);
+          }
           start += step;
         }
         callback(null, values);
-        if (cb)
-          cb(data);
       });
     }, name);
   };

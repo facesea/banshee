@@ -3,10 +3,10 @@
  */
 /*@ngInject*/
 module.exports = function ($resource) {
-  return $resource('/api/metric/:name/:start/:stop', {name: '@name', start: '@start',  stop: '@stop'}, {
+  return $resource('/api/metric/data', {name: '@name', start: '@start',  stop: '@stop'}, {
     getMetricValues: {
       method: 'GET',
-      url: '/api/metric',
+      url: '/api/metric/data',
       isArray: true
     },
     getMetricIndexes: {
