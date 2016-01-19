@@ -2,6 +2,9 @@
 echo "====== pull latest upstream/master ========"
 git pull upstream master
 git rev-parse upstream/master > commit
+echo "====== install static deps ========="
+cd static && npm install -q && cd ..
+cd static/public && npm install -q && cd ../..
 echo "====== build static files ========"
 cd static && gulp build && cd ..
 echo "====== build binary ========"
@@ -10,8 +13,8 @@ echo "====== create package ========"
 version=$(./banshee -v)
 os=$(uname | awk '{print tolower($0)}')
 arch=$(go env GOARCH)
-printf "====== banshee version: %s\n" version
-printf "====== build env: %s %s" os arch
+printf "====== banshee version: %s\n" ${version}
+printf "====== build env: %s %s" ${os} ${arch}
 dir=$(printf "banshee%s.%s-%s" ${version} ${os} ${arch})
 mkdir -p ${dir}
 mkdir -p ${dir}/static
