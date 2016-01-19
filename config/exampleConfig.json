@@ -21,6 +21,6 @@
     "command": "",
     "workers": 4,
     "interval": 1200,
-	    "oneDayLimit": 5
+    "oneDayLimit": 5
   }
 }
