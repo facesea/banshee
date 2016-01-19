@@ -129,6 +129,7 @@ func (d *Detector) match(m *models.Metric) bool {
 	// Check rules.
 	rules := d.filter.MatchedRules(m)
 	if len(rules) == 0 {
+		log.Debug("%s hit no rules", m.Name)
 		return false
 	}
 	// Check blacklist.
