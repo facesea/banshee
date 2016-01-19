@@ -3,7 +3,7 @@
  */
 /*@ngInject*/
 module.exports = function ($locationProvider, $mdThemingProvider) {
-  $locationProvider.html5Mode(true);
+  $locationProvider.html5Mode(false);
 
   $mdThemingProvider.theme('default')
     .primaryPalette('blue', {
