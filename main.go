@@ -63,11 +63,13 @@ func initConfig() {
 	}
 	// Config validation.
 	err := cfg.Validate()
-	if err == config.ErrAlerterCommandEmpty {
-		// Ignore alerter command empty.
-		log.Warn("config: %s", err)
-	} else {
-		log.Fatal("config: %s", err)
+	if err != nil {
+		if err == config.ErrAlerterCommandEmpty {
+			// Ignore alerter command empty.
+			log.Warn("config: %s", err)
+		} else {
+			log.Fatal("config: %s", err)
+		}
 	}
 }
 
