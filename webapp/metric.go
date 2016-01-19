@@ -83,14 +83,18 @@ func getMetricIndexes(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 
 // getMetrics returns metric values.
 func getMetrics(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	// Params
-	name := ps.ByName("name")
-	start, err := strconv.ParseUint(ps.ByName("start"), 10, 32)
+	// Options
+	name := r.URL.Query().Get("name")
+	if len(name) == 0 {
+		ResponseError(w, ErrBadRequest)
+		return
+	}
+	start, err := strconv.ParseUint(r.URL.Query().Get("start"), 10, 32)
 	if err != nil {
 		ResponseError(w, ErrBadRequest)
 		return
 	}
-	stop, err := strconv.ParseUint(ps.ByName("stop"), 10, 32)
+	stop, err := strconv.ParseUint(r.URL.Query().Get("stop"), 10, 32)
 	if err != nil {
 		ResponseError(w, ErrBadRequest)
 		return

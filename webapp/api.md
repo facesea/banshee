@@ -259,7 +259,7 @@ Metric
 Request:
 
 ```
-GET /api/metric/:name/:start/:stop
+GET /api/metric/data?start=1453193483&stop=1453193783&name=timer.mean_90.x
 ```
 
 Response:
@@ -279,6 +279,15 @@ Request:
 ```
 GET /api/metric/indexes?limit=50&sort=up&pattern=timer.*
 GET /api/metric/indexes?limit=50&sort=up&project=12
+```
+
+Options:
+
+```
+- limit number, default: 50
+- sort "up" or "down", default: "up"
+- project number, optional
+- pattern string, default: "*"
 ```
 
 Response:
