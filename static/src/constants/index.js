@@ -4,5 +4,7 @@
 
 
 var app = angular.module('banshee.constants', []);
-app.constant('AdminNavList', require('./AdminNavList'));
+app
+  .constant('AdminNavList', require('./AdminNavList'))
+  .constant('DateTimes', require('./DateTimes'));
 module.exports = app.name;
