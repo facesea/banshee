@@ -6,6 +6,7 @@ echo "====== install static deps ========="
 cd static && npm install -q && cd ..
 cd static/public && npm install -q && cd ../..
 echo "====== build static files ========"
+cd static && rm -rf dist/ && cd ..
 cd static && gulp build && cd ..
 echo "====== build binary ========"
 godep go build
