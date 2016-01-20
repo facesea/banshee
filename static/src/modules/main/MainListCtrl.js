@@ -306,14 +306,14 @@ module.exports = function ($scope, $rootScope, $timeout, $stateParams, Metric, C
    */
   function getTextByTrend(trend) {
     if (trend > 0) {
-      return '↑';
+      return '↑ ';
     }
 
     if (trend < 0) {
-      return '↓';
+      return '↓ ';
     }
 
-    return '-';
+    return '- ';
   }
 
   function setIntervalAndRunNow(fn, ms) {
