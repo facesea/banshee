@@ -93,20 +93,20 @@ func (al *Alerter) work() {
 		}
 		// Universals
 		var univs []models.User
-		if err := al.db.Admin.DB().Where("universal = ?", true).Find(&univs); err != nil {
+		if err := al.db.Admin.DB().Where("universal = ?", true).Find(&univs).Error; err != nil {
 			log.Error("get universal users: %v, skiping..", err)
 			continue
 		}
 		for _, rule := range metric.TestedRules {
 			// Project
 			proj := &models.Project{}
-			if err := al.db.Admin.DB().Model(rule).Related(proj); err != nil {
+			if err := al.db.Admin.DB().Model(rule).Related(proj).Error; err != nil {
 				log.Error("project not found, %v, skiping..", err)
 				continue
 			}
 			// Users
 			var users []models.User
-			if err := al.db.Admin.DB().Model(proj).Related(&users, "Users"); err != nil {
+			if err := al.db.Admin.DB().Model(proj).Related(&users, "Users").Error; err != nil {
 				log.Error("get users: %v, skiping..", err)
 				continue
 			}
