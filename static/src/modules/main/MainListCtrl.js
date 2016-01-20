@@ -218,7 +218,6 @@ module.exports = function ($scope, $rootScope, $stateParams, Metric, Config, Pro
             if ($scope.filter.type === 'v') {
               values.push(start > data[i].stamp ? data[i].value : 0);
             } else {
-              // values.push(start > data[i].stamp ? data[i].value : 0);
               values.push(start > data[i].stamp ? data[i].score : 0);
             }
           }
@@ -226,7 +225,6 @@ module.exports = function ($scope, $rootScope, $stateParams, Metric, Config, Pro
           if ($scope.filter.type === 'v') {
             values.push(data[i++].value);
           } else {
-            // values.push(data[i++].value);
             values.push(data[i++].core);
           }
           start += step;
