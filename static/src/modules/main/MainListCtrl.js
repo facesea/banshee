@@ -36,10 +36,10 @@ module.exports = function ($scope, $rootScope, $stateParams, Metric, Config, Pro
   }];
 
   $scope.typeList = [{
-    label: 'value',
+    label: 'Value',
     val: 'v'
   }, {
-    label: 'score',
+    label: 'Score',
     val: 'm'
   }];
 
@@ -187,11 +187,38 @@ module.exports = function ($scope, $rootScope, $stateParams, Metric, Config, Pro
     var name, i, metrics = [];
     for (i = 0; i < data.length; i++) {
       name = data[i].name;
-      // TODO
-      // metrics.push(feed(name, self.refreshTitle));
-      metrics.push(feed(name, function () {}));
+      metrics.push(feed(name));
     }
+    refreshTitle(data);
     return chart.plot(metrics);
+  }
+
+  function refreshTitle(data) {
+    var _titles = d3.selectAll('.title')[0];
+    _titles.forEach(function(el, index) {
+      var _el = _titles[index];
+      var currentEl = data[index];
+      var className = getClassNameByTrend(currentEl.score);
+      var str = [
+        '<a href="#/main?pattern=' + currentEl.name + '" class="' + className + '">',
+        getTextByTrend(currentEl.score),
+        currentEl.name,
+        '</a>'
+      ].join('');
+      _el.innerHTML = str;
+    });
+  }
+
+  /**
+   * Get title class name.
+   * @param {Number} trend
+   * @return {String}
+   */
+  function getClassNameByTrend(trend) {
+    if (Math.abs(trend) >= 1) {
+      return 'anomalous';
+    }
+    return 'normal';
   }
 
   /**
@@ -239,8 +266,27 @@ module.exports = function ($scope, $rootScope, $stateParams, Metric, Config, Pro
           start += step;
         }
         callback(null, values);
+
       });
+
     }, name);
+  }
+
+  /**
+   * Get trend text.
+   * @param {Number} trend
+   * @return {String}
+   */
+  function getTextByTrend(trend) {
+    if (trend > 0) {
+      return '↑';
+    }
+
+    if (trend < 0) {
+      return '↓';
+    }
+
+    return '-';
   }
 
   function setIntervalAndRunNow(fn, ms) {
