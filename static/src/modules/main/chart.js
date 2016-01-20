@@ -70,7 +70,7 @@
       return horizon;
     }
     return horizon
-    .extent([-100, 100])
+    .extent([-2, 2])
     .mode('mirror')
     .colors(['#08519C', '#6BAED6', '#6BAED6', '#08519C']);
   };
