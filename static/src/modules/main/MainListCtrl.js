@@ -89,6 +89,7 @@ module.exports = function ($scope, $rootScope, $stateParams, Metric, Config, Pro
     $scope.filter.project = project.id;
     $scope.filter.pattern = '';
     $scope.project = project;
+    $scope.projectId = project.id;
 
     buildCubism();
   };
