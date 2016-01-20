@@ -97,7 +97,7 @@ func (al *Alerter) work() {
 			log.Error("get universal users: %v, skiping..", err)
 			continue
 		}
-		for rule := range metric.MatchedRules {
+		for _, rule := range metric.MatchedRules {
 			// Project
 			proj := &models.Project{}
 			if err := al.db.Admin.DB().Model(rule).Related(proj); err != nil {
