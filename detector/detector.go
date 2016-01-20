@@ -19,7 +19,7 @@ import (
 	"github.com/eleme/banshee/util/log"
 )
 
-// Metrics with long name will be refused.
+// MaxMetricNameLen results that metrics with long name will be refused.
 const MaxMetricNameLen = 256
 
 // Detector is a tcp server to detect anomalies.
