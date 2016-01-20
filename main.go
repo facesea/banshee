@@ -119,7 +119,7 @@ func main() {
 	cleaner := cleaner.New(db, cfg.Period[0]*cfg.Period[1])
 	go cleaner.Start()
 
-	alerter := alerter.New(cfg, db, flt)
+	alerter := alerter.New(cfg, db)
 	alerter.Start()
 
 	go webapp.Start(cfg, db)

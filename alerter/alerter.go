@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/eleme/banshee/config"
-	"github.com/eleme/banshee/filter"
 	"github.com/eleme/banshee/models"
 	"github.com/eleme/banshee/storage"
 	"github.com/eleme/banshee/util/log"
@@ -28,8 +27,6 @@ type Alerter struct {
 	db *storage.DB
 	// Config
 	cfg *config.Config
-	// Filter
-	filter *filter.Filter
 	// Input
 	In chan *models.Metric
 	// Alertings stamps
@@ -46,11 +43,10 @@ type msg struct {
 }
 
 // New creates a alerter.
-func New(cfg *config.Config, db *storage.DB, filter *filter.Filter) *Alerter {
+func New(cfg *config.Config, db *storage.DB) *Alerter {
 	al := new(Alerter)
 	al.cfg = cfg
 	al.db = db
-	al.filter = filter
 	al.In = make(chan *models.Metric, bufferedMetricResultsLimit)
 	al.m = safemap.New()
 	al.c = safemap.New()
@@ -96,8 +92,7 @@ func (al *Alerter) work() {
 			atomic.AddUint32(v.(*uint32), 1)
 		}
 		// Test with rules.
-		rules := al.filter.MatchedRules(metric)
-		for _, rule := range rules {
+		for _, rule := range metric.MatchedRules {
 			// Test
 			if !rule.Test(metric, al.cfg) {
 				continue

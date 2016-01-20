@@ -140,6 +140,8 @@ func (d *Detector) match(m *models.Metric) bool {
 			return false
 		}
 	}
+	// Bind matched rules.
+	m.MatchedRules = rules
 	return true
 }
 
