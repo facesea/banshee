@@ -4,7 +4,9 @@
     <section class="panel-container">
       <md-toolbar>
         <div class="md-toolbar-tools">
-          <h3 ng-bind="project.name"></h3>
+          <h3>
+            <a ui-sref="banshee.main({project: projectId})" ng-bind="project.name"></a>
+          </h3>
           <span flex></span>
           <md-button class="md-icon-button" aria-label="Edit" ng-click="openModal($event, 'editProject', project)">
             <md-tooltip md-autohide>Edit name</md-tooltip>
