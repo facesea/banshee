@@ -149,7 +149,7 @@ func (d *Detector) handle(conn net.Conn) {
 					m.TestedRules = append(m.TestedRules, rule)
 				}
 			}
-			if len(m.TestedRules > 0) {
+			if len(m.TestedRules) > 0 {
 				d.output(m)
 			}
 			// Store
@@ -164,7 +164,6 @@ func (d *Detector) handle(conn net.Conn) {
 func (d *Detector) match(m *models.Metric) (bool, []*models.Rule) {
 	// Check rules.
 	rules := d.filter.MatchedRules(m)
-	m.TestedRules = rules
 	if len(rules) == 0 {
 		log.Debug("%s hit no rules", m.Name)
 		return false, rules
