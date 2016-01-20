@@ -39,7 +39,8 @@
                       <th> # </th>
                       <th> Pattern </th>
                       <th> Condition </th>
-                      <th> TrustLine </th>
+                      <th class="th50"> TrustLine </th>
+                      <th class="th50"></th>
                     </tr>
                   <tbody>
                     <tr ng-if="!rules || !rules.length">
@@ -59,7 +60,7 @@
                         <code ng-if="!rule.trustLine">-</code>
                         <code ng-if="rule.trustLine" ng-bind="rule.trustLine"></code>
                       </td>
-                      <td class="th100 text-right">
+                      <td class="text-right">
                         <md-button class="md-raised md-warn md-mini" aria-label="delete rule" ng-click="deleteRule($event, rule.id, $index)">
                           <i class="fa fa-trash-o"></i>
                         </md-button>

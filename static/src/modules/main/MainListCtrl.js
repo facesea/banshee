@@ -1,5 +1,5 @@
 /*@ngInject*/
-module.exports = function ($scope, $rootScope, $stateParams, Metric, Config, Project, DateTimes) {
+module.exports = function ($scope, $rootScope, $timeout, $stateParams, Metric, Config, Project, DateTimes) {
   var chart = require('./chart');
   var cubism;
   var initOpt;
@@ -79,6 +79,11 @@ module.exports = function ($scope, $rootScope, $stateParams, Metric, Config, Pro
       $scope.project = '';
       $scope.autoComplete.searchText = '';
     }
+
+    $scope.spinner = true;
+    $timeout(function() {
+      $scope.spinner = false;
+    }, 1000);
 
     buildCubism();
   };
@@ -301,14 +306,14 @@ module.exports = function ($scope, $rootScope, $stateParams, Metric, Config, Pro
    */
   function getTextByTrend(trend) {
     if (trend > 0) {
-      return '↑';
+      return '↑ ';
     }
 
     if (trend < 0) {
-      return '↓';
+      return '↓ ';
     }
 
-    return '-';
+    return '- ';
   }
 
   function setIntervalAndRunNow(fn, ms) {
