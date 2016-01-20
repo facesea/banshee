@@ -261,7 +261,7 @@ module.exports = function ($scope, $rootScope, $stateParams, Metric, Config, Pro
           if ($scope.filter.type === 'v') {
             values.push(data[i++].value);
           } else {
-            values.push(data[i++].core);
+            values.push(data[i++].score);
           }
           start += step;
         }
