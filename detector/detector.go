@@ -15,9 +15,16 @@ import (
 	"github.com/eleme/banshee/models"
 	"github.com/eleme/banshee/storage"
 	"github.com/eleme/banshee/storage/indexdb"
+	"github.com/eleme/banshee/storage/metricdb"
 	"github.com/eleme/banshee/storage/statedb"
 	"github.com/eleme/banshee/util/log"
 )
+
+// MaxMetricNameLen results that metrics with long name will be refused.
+const MaxMetricNameLen = 256
+
+// Detection timed out in nanoseconds.
+const detectionTimedOut = 1000 * 1000
 
 // Detector is a tcp server to detect anomalies.
 type Detector struct {
@@ -76,6 +83,21 @@ func (d *Detector) Start() {
 	}
 }
 
+// Validate a metric.
+func (d *Detector) Validate(m *models.Metric) bool {
+	if len(m.Name) > MaxMetricNameLen {
+		// Name too long.
+		log.Error("metric name too long: %s", m.Name[:MaxMetricNameLen])
+		return false
+	}
+	if m.Stamp < metricdb.Horizon() {
+		// Stamp too small
+		log.Error("metric stamp too small: %s, %d", m.Name, m.Stamp)
+		return false
+	}
+	return true
+}
+
 // Handle a connection, it will filter the mertics by rules and detect whether
 // the metrics are anomalies.
 func (d *Detector) handle(conn net.Conn) {
@@ -104,18 +126,29 @@ func (d *Detector) handle(conn net.Conn) {
 			log.Error("parse '%s': %v, skipping..", line, err)
 			continue
 		}
-		// Filter
-		if d.match(m) {
-			// Detect
+		// Validation
+		if !d.Validate(m) {
+			continue
+		}
+		matched, rules := d.match(m)
+		if matched {
+			// Detect with states.
 			err = d.detect(m)
 			if err != nil {
 				log.Error("failed to detect: %v, skipping..", err)
 				continue
 			}
 			elapsed := time.Since(startAt)
-			log.Info("%dμs detected %s %.4f", elapsed.Nanoseconds()/1000, m.Name, m.Score)
-			// Output
-			d.output(m)
+			// Log if processing is slow.
+			if elapsed.Nanoseconds() > detectionTimedOut {
+				log.Warn("%dμs detected %s %.4f", elapsed.Nanoseconds()/1000, m.Name, m.Score)
+			}
+			// Output to alerter if test ok with matched rules.
+			for _, rule := range rules {
+				if rule.Test(m, d.cfg) {
+					d.output(m)
+				}
+			}
 			// Store
 			if err := d.store(m); err != nil {
 				log.Error("store metric %s: %v, skiping..", m.Name, err)
@@ -125,24 +158,22 @@ func (d *Detector) handle(conn net.Conn) {
 }
 
 // Test whether a metric matches the rules.
-func (d *Detector) match(m *models.Metric) bool {
+func (d *Detector) match(m *models.Metric) (bool, []*models.Rule) {
 	// Check rules.
 	rules := d.filter.MatchedRules(m)
 	if len(rules) == 0 {
 		log.Debug("%s hit no rules", m.Name)
-		return false
+		return false, rules
 	}
 	// Check blacklist.
 	for _, pattern := range d.cfg.Detector.BlackList {
 		ok, err := filepath.Match(pattern, m.Name)
 		if err == nil && ok {
 			log.Debug("%s hit black pattern %s", m.Name, pattern)
-			return false
+			return false, rules
 		}
 	}
-	// Bind matched rules.
-	m.MatchedRules = rules
-	return true
+	return true, rules
 }
 
 // Detect incoming metric with 3-sigma rule and fill the metric.Score.
