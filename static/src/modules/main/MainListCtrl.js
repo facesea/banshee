@@ -51,9 +51,9 @@ module.exports = function ($scope, $rootScope, $stateParams, Metric, Config, Pro
     project: $stateParams.project,
     pattern: $stateParams.pattern,
     datetime: DateTimes[0].seconds,
-    limit: $scope.limitList[0].val,
+    limit: $scope.limitList[2].val,
     sort: $scope.sortList[0].val,
-    type: $scope.sortList[0].val,
+    type: $scope.typeList[0].val,
     status: false
   };
 
