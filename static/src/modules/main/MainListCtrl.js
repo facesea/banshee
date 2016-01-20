@@ -71,21 +71,24 @@ module.exports = function ($scope, $rootScope, $stateParams, Metric, Config, Pro
   $scope.restart = function () {
     $scope.filter = angular.copy(initOpt);
 
-    if($scope.initProject) {
+    if ($scope.initProject) {
       $scope.project = $scope.initProject;
       $scope.autoComplete.searchText = $scope.project.name;
+    } else {
+      $scope.project = '';
+      $scope.autoComplete.searchText = '';
     }
 
     buildCubism();
   };
 
-  $scope.searchPattern = function() {
+  $scope.searchPattern = function () {
     $scope.filter.project = '';
     $scope.autoComplete.searchText = '';
     buildCubism();
   };
 
-  $scope.searchProject = function(project) {
+  $scope.searchProject = function (project) {
     $scope.filter.project = project.id;
     $scope.filter.pattern = '';
     $scope.project = project;
@@ -106,7 +109,7 @@ module.exports = function ($scope, $rootScope, $stateParams, Metric, Config, Pro
         $scope.projects = res;
 
         if (projectId) {
-          $scope.projects.forEach(function(el) {
+          $scope.projects.forEach(function (el) {
             if (el.id === projectId) {
               $scope.autoComplete.searchText = el.name;
               $scope.initProject = el;
@@ -151,7 +154,7 @@ module.exports = function ($scope, $rootScope, $stateParams, Metric, Config, Pro
     setTitle();
 
     cubism = chart.init({
-      selector: '#cubism-wrap',
+      selector: '#chart',
       serverDelay: $scope.filter.datetime * 1000,
       step: $scope.filter.interval * 1000,
       stop: false,
@@ -188,15 +191,16 @@ module.exports = function ($scope, $rootScope, $stateParams, Metric, Config, Pro
     var name, i, metrics = [];
     for (i = 0; i < data.length; i++) {
       name = data[i].name;
-      metrics.push(feed(name));
+      metrics.push(feed(name, data, refreshTitle));
     }
-    refreshTitle(data);
+
     return chart.plot(metrics);
   }
 
   function refreshTitle(data) {
     var _titles = d3.selectAll('.title')[0];
-    _titles.forEach(function(el, index) {
+    console.log(123123)
+    _titles.forEach(function (el, index) {
       var _el = _titles[index];
       var currentEl = data[index];
       var className = getClassNameByTrend(currentEl.score);
@@ -223,12 +227,24 @@ module.exports = function ($scope, $rootScope, $stateParams, Metric, Config, Pro
   }
 
   /**
+   * Scrollbars
+   */
+  function initScrollbars() {
+    $('.chart-box-top').scroll(function () {
+      $('.chart-box').scrollLeft($('.chart-box-top').scrollLeft());
+    });
+    $('.chart-box').scroll(function () {
+      $('.chart-box-top').scrollLeft($('.chart-box').scrollLeft());
+    });
+  }
+
+  /**
    * Feed metric.
    * @param {String} name
    * @param {Function} cb // function(data)
    * @return {Metric}
    */
-  function feed(name) {
+  function feed(name, data, cb) {
     return chart.metric(function (start, stop, step, callback) {
       var values = [],
         i = 0;
@@ -268,7 +284,7 @@ module.exports = function ($scope, $rootScope, $stateParams, Metric, Config, Pro
         callback(null, values);
 
       });
-
+      cb(data);
     }, name);
   }
 
@@ -295,4 +311,5 @@ module.exports = function ($scope, $rootScope, $stateParams, Metric, Config, Pro
   }
 
   loadData();
+  initScrollbars();
 };

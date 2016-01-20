@@ -13,7 +13,7 @@
     options.serverDelay = options.serverDelay || 0;
     options.clientDelay = options.clientDelay || 0;
     options.step = options.step || 10 * 1000;
-    options.size = options.size || document.getElementById('section-content').offsetWidth - 70;
+    options.size = options.size || 1280;
     options.stop = options.stop || false;
     context = cubism.context()
     .serverDelay(options.serverDelay)

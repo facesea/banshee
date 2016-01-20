@@ -14,22 +14,14 @@
       <div class="panel-content">
         <div class="panel-content-title">
           <div layout-gt-xs="row">
-            <form name="form" ng-submit="searchPattern()"  flex="45" novalidate>
+            <form name="form" ng-submit="searchPattern()" flex="45" novalidate>
               <md-input-container class="md-block search-pattern">
                 <label>Pattern</label>
                 <input ng-model="filter.pattern">
               </md-input-container>
             </form>
-            <md-autocomplete
-              class="search-project"
-              md-selected-item="autoComplete.selectedItem"
-              md-search-text="autoComplete.searchText"
-              md-selected-item-change="searchProject(project)"
-              md-items="project in projects | filter: {name: autoComplete.searchText}"
-              md-item-text="project.name"
-              md-min-length="0"
-              md-floating-label="Project Name"
-              flex="45">
+            <md-autocomplete class="search-project" md-selected-item="autoComplete.selectedItem" md-search-text="autoComplete.searchText" md-selected-item-change="searchProject(project)" md-items="project in projects | filter: {name: autoComplete.searchText}" md-item-text="project.name"
+            md-min-length="0" md-floating-label="Project Name" flex="45">
               <md-item-template>
                 <span md-highlight-text="autoComplete.searchText" md-highlight-flags="^i">{{project.name}}</span>
               </md-item-template>
@@ -78,7 +70,15 @@
             </md-button>
           </md-input-container>
         </div>
-        <div id="cubism-wrap"> </div>
+        <div id="cubism-wrap">
+          <div class="chart-box-top chart-box-force-scrollbar">
+            <div class="chart-box-top-div">
+            </div>
+          </div>
+          <div class="chart-box chart-box-force-scrollbar">
+            <div id="chart" class="chart"></div>
+          </div>
+        </div>
       </div>
     </div>
     <!-- END panel-->
