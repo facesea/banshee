@@ -5,7 +5,7 @@ module.exports = function ($scope, $rootScope, $stateParams, Metric, Config, Pro
   var initOpt;
   $rootScope.currentMain = true;
   $scope.dateTimes = DateTimes;
-  $scope.projectId = $stateParams.project
+  $scope.projectId = $stateParams.project;
 
   $scope.limitList = [{
     label: 'Limit1',
@@ -200,7 +200,7 @@ module.exports = function ($scope, $rootScope, $stateParams, Metric, Config, Pro
    * @param {Function} cb // function(data)
    * @return {Metric}
    */
-  function feed(name, cb) {
+  function feed(name) {
     return chart.metric(function (start, stop, step, callback) {
       var values = [],
         i = 0;

@@ -18,6 +18,9 @@
     "angular",
     "_",
     "AMap",
-    "document"
+    "document",
+    "d3",
+    "cubism",
+    "$"
   ]
 }
