@@ -15,6 +15,7 @@ import (
 	"github.com/eleme/banshee/models"
 	"github.com/eleme/banshee/storage"
 	"github.com/eleme/banshee/storage/indexdb"
+	"github.com/eleme/banshee/storage/metricdb"
 	"github.com/eleme/banshee/storage/statedb"
 	"github.com/eleme/banshee/util/log"
 )
@@ -79,6 +80,21 @@ func (d *Detector) Start() {
 	}
 }
 
+// Validate a metric.
+func (d *Detector) Validate(m *models.Metric) bool {
+	if len(m.Name) > MaxMetricNameLen {
+		// Name too long.
+		log.Error("metric name too long: %s", m.Name[:MaxMetricNameLen])
+		return false
+	}
+	if m.Stamp < metricdb.Horizon() {
+		// Stamp too small
+		log.Error("metric stamp too small: %s, %d", m.Name, m.Stamp)
+		return false
+	}
+	return true
+}
+
 // Handle a connection, it will filter the mertics by rules and detect whether
 // the metrics are anomalies.
 func (d *Detector) handle(conn net.Conn) {
@@ -108,8 +124,7 @@ func (d *Detector) handle(conn net.Conn) {
 			continue
 		}
 		// Validation
-		if len(m.Name) > MaxMetricNameLen {
-			log.Error("metric name too long: %s", m.Name[:MaxMetricNameLen])
+		if !d.Validate(m) {
 			continue
 		}
 		// Filter

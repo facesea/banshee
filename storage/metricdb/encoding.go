@@ -22,6 +22,11 @@ const (
 	stampLen = 7
 )
 
+// Horizon returns the timestamp horizon
+func Horizon() uint32 {
+	return horizon
+}
+
 // encodeKey encodes db key from metric.
 func encodeKey(m *models.Metric) []byte {
 	// Key format is Name+Stamp.
