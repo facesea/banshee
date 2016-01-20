@@ -32,6 +32,7 @@
     });
     return context;
   };
+  
   /**
    * Remove chart.
    */
@@ -39,6 +40,7 @@
     return d3.select(selector).selectAll('*')
     .remove();
   };
+
   /**
    * Plot chart with metrics.
    */

@@ -3,6 +3,7 @@ module.exports = function ($scope, $rootScope, $stateParams, Metric, Config, Pro
   var chart = require('./chart');
   var cubism;
   var initOpt;
+  var isInit = false;
   $rootScope.currentMain = true;
   $scope.dateTimes = DateTimes;
   $scope.projectId = $stateParams.project;
@@ -153,6 +154,8 @@ module.exports = function ($scope, $rootScope, $stateParams, Metric, Config, Pro
 
     setTitle();
 
+    isInit = false;
+
     cubism = chart.init({
       selector: '#chart',
       serverDelay: $scope.filter.datetime * 1000,
@@ -199,7 +202,9 @@ module.exports = function ($scope, $rootScope, $stateParams, Metric, Config, Pro
 
   function refreshTitle(data) {
     var _titles = d3.selectAll('.title')[0];
-    console.log(123123)
+    if (isInit) {
+      return;
+    }
     _titles.forEach(function (el, index) {
       var _el = _titles[index];
       var currentEl = data[index];
@@ -211,6 +216,7 @@ module.exports = function ($scope, $rootScope, $stateParams, Metric, Config, Pro
         '</a>'
       ].join('');
       _el.innerHTML = str;
+      isInit = true;
     });
   }
 
