@@ -92,7 +92,7 @@ func (al *Alerter) work() {
 			atomic.AddUint32(v.(*uint32), 1)
 		}
 		// Project
-		var proj *models.Project
+		proj := &models.Project{}
 		if err := al.db.Admin.DB().Model(&models.Rule{}).Related(proj); err != nil {
 			log.Error("project not found, %v, skiping..", err)
 			continue
