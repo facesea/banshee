@@ -15,7 +15,7 @@ type Metric struct {
 	// Average old
 	Average float64 `json:"average"`
 	// Matched rules
-	MatchedRules []*Rule `json:"-"`
+	TestedRules []*Rule `json:"-"`
 }
 
 // IsAnomalous test whether the metric is anomalous.
