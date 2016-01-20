@@ -70,6 +70,12 @@ module.exports = function ($scope, $rootScope, $stateParams, Metric, Config, Pro
 
   $scope.restart = function () {
     $scope.filter = angular.copy(initOpt);
+
+    if($scope.initProject) {
+      $scope.project = $scope.initProject;
+      $scope.autoComplete.searchText = $scope.project.name;
+    }
+
     buildCubism();
   };
 
@@ -82,6 +88,8 @@ module.exports = function ($scope, $rootScope, $stateParams, Metric, Config, Pro
   $scope.searchProject = function(project) {
     $scope.filter.project = project.id;
     $scope.filter.pattern = '';
+    $scope.project = project;
+
     buildCubism();
   };
 
@@ -100,6 +108,7 @@ module.exports = function ($scope, $rootScope, $stateParams, Metric, Config, Pro
           $scope.projects.forEach(function(el) {
             if (el.id === projectId) {
               $scope.autoComplete.searchText = el.name;
+              $scope.initProject = el;
               $scope.project = el;
               setTitle();
             }
