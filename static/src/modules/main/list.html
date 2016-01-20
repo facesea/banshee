@@ -4,7 +4,11 @@
     <div class="panel-container">
       <md-toolbar>
         <div class="md-toolbar-tools">
-          <h3></h3>
+          <h3 ng-bind="title"></h3>
+          <span flex></span>
+          <md-button class="md-icon-button md-ink-ripple" aria-label="link" ui-sref="banshee.admin.project.detail({id: projectId})" ng-if="showLink">
+            <md-icon class="fa fa-cog"></md-icon>
+          </md-button>
         </div>
       </md-toolbar>
       <div class="panel-content">

@@ -5,6 +5,7 @@ module.exports = function ($scope, $rootScope, $stateParams, Metric, Config, Pro
   var initOpt;
   $rootScope.currentMain = true;
   $scope.dateTimes = DateTimes;
+  $scope.projectId = $stateParams.project
 
   $scope.limitList = [{
     label: 'Limit1',
@@ -74,6 +75,7 @@ module.exports = function ($scope, $rootScope, $stateParams, Metric, Config, Pro
 
   $scope.searchPattern = function() {
     $scope.filter.project = '';
+    $scope.autoComplete.searchText = '';
     buildCubism();
   };
 
@@ -98,6 +100,8 @@ module.exports = function ($scope, $rootScope, $stateParams, Metric, Config, Pro
           $scope.projects.forEach(function(el) {
             if (el.id === projectId) {
               $scope.autoComplete.searchText = el.name;
+              $scope.project = el;
+              setTitle();
             }
           });
         }
@@ -134,6 +138,8 @@ module.exports = function ($scope, $rootScope, $stateParams, Metric, Config, Pro
 
     chart.remove();
 
+    setTitle();
+
     cubism = chart.init({
       selector: '#cubism-wrap',
       serverDelay: $scope.filter.datetime * 1000,
@@ -146,6 +152,23 @@ module.exports = function ($scope, $rootScope, $stateParams, Metric, Config, Pro
       .then(function (res) {
         plot(res);
       });
+  }
+
+  function setTitle() {
+    if ($scope.filter.project && $scope.project) {
+      $scope.title = 'Project: ' + $scope.project.name;
+      $scope.showLink = true;
+      return;
+    }
+
+    $scope.showLink = false;
+
+    if ($scope.filter.pattern) {
+      $scope.title = 'Pattern: ' + $scope.filter.pattern;
+      return;
+    }
+
+    $scope.title = 'Pattern: *';
   }
 
   /**
