@@ -238,7 +238,6 @@ module.exports = function ($scope, $rootScope, $stateParams, Metric, Config, Pro
       // parameters to pull data
       var params = {
         name: name,
-        type: $scope.filter.type,
         start: start,
         stop: stop
       };
