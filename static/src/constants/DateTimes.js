@@ -1,6 +1,6 @@
 module.exports = [
 	{
-		label: 'now',
+		label: 'Now',
 		seconds: 0
 	},
 	{
