@@ -65,13 +65,14 @@
    */
   self.horizon = function() {
     var horizon = context.horizon();
+
     if (dataType === 'v') {
       return horizon;
     }
     return horizon
-    .extent([-2, 2])
+    .extent([-100, 100])
     .mode('mirror')
-    .colors(['#dd1144', 'teal', 'teal', '#dd1144']);
+    .colors(['#08519C', '#6BAED6', '#6BAED6', '#08519C']);
   };
   /**
    * Make metric.
