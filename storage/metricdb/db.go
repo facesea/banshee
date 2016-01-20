@@ -32,6 +32,9 @@ func (db *DB) Close() error {
 
 // Put a metric into db.
 func (db *DB) Put(m *models.Metric) error {
+	if m.Stamp < horizon {
+		return ErrStampTooSmall
+	}
 	key := encodeKey(m)
 	value := encodeValue(m)
 	return db.db.Put(key, value, nil)

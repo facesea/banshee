@@ -22,10 +22,20 @@ const (
 	stampLen = 7
 )
 
+// Horizon returns the timestamp horizon
+func Horizon() uint32 {
+	return horizon
+}
+
 // encodeKey encodes db key from metric.
 func encodeKey(m *models.Metric) []byte {
+	stamp := m.Stamp
+	// As horizon if stamp is too small.
+	if m.Stamp < horizon {
+		stamp = horizon
+	}
 	// Key format is Name+Stamp.
-	t := m.Stamp - horizon
+	t := stamp - horizon
 	v := strconv.FormatUint(uint64(t), convBase)
 	s := fmt.Sprintf("%s%0*s", m.Name, stampLen, v)
 	return []byte(s)
