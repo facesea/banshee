@@ -91,45 +91,47 @@ func (al *Alerter) work() {
 		} else {
 			atomic.AddUint32(v.(*uint32), 1)
 		}
-		// Project
-		proj := &models.Project{}
-		if err := al.db.Admin.DB().Model(&models.Rule{}).Related(proj); err != nil {
-			log.Error("project not found, %v, skiping..", err)
-			continue
-		}
-		// Users
-		var users []models.User
-		if err := al.db.Admin.DB().Model(proj).Related(&users, "Users"); err != nil {
-			log.Error("get users: %v, skiping..", err)
-			continue
-		}
 		// Universals
 		var univs []models.User
-		if err := al.db.Admin.DB().Where("universal = ?", true).Find(&univs); err != nil {
+		if err := al.db.Admin.DB().Where("universal = ?", true).Find(&univs).Error; err != nil {
 			log.Error("get universal users: %v, skiping..", err)
 			continue
 		}
-		users = append(users, univs...)
-		// Send
-		for _, user := range users {
-			d := &msg{
-				Project: proj,
-				Metric:  metric,
-				User:    &user,
-			}
-			// Exec
-			if len(al.cfg.Alerter.Command) == 0 {
-				log.Warn("alert command not configured")
+		for _, rule := range metric.TestedRules {
+			// Project
+			proj := &models.Project{}
+			if err := al.db.Admin.DB().Model(rule).Related(proj).Error; err != nil {
+				log.Error("project not found, %v, skiping..", err)
 				continue
 			}
-			b, _ := json.Marshal(d)
-			cmd := exec.Command(al.cfg.Alerter.Command, string(b))
-			if err := cmd.Run(); err != nil {
-				log.Error("exec %s: %v", al.cfg.Alerter.Command, err)
+			// Users
+			var users []models.User
+			if err := al.db.Admin.DB().Model(proj).Related(&users, "Users").Error; err != nil {
+				log.Error("get users: %v, skiping..", err)
+				continue
 			}
-		}
-		if len(users) != 0 {
-			al.m.Set(metric.Name, metric.Stamp)
+			users = append(users, univs...)
+			// Send
+			for _, user := range users {
+				d := &msg{
+					Project: proj,
+					Metric:  metric,
+					User:    &user,
+				}
+				// Exec
+				if len(al.cfg.Alerter.Command) == 0 {
+					log.Warn("alert command not configured")
+					continue
+				}
+				b, _ := json.Marshal(d)
+				cmd := exec.Command(al.cfg.Alerter.Command, string(b))
+				if err := cmd.Run(); err != nil {
+					log.Error("exec %s: %v", al.cfg.Alerter.Command, err)
+				}
+			}
+			if len(users) != 0 {
+				al.m.Set(metric.Name, metric.Stamp)
+			}
 		}
 	}
 }
