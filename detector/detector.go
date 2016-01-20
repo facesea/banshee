@@ -23,6 +23,9 @@ import (
 // MaxMetricNameLen results that metrics with long name will be refused.
 const MaxMetricNameLen = 256
 
+// Detection timed out in nanoseconds.
+const detectionTimedOut = 1000 * 1000
+
 // Detector is a tcp server to detect anomalies.
 type Detector struct {
 	// Config
@@ -136,7 +139,10 @@ func (d *Detector) handle(conn net.Conn) {
 				continue
 			}
 			elapsed := time.Since(startAt)
-			log.Info("%dμs detected %s %.4f", elapsed.Nanoseconds()/1000, m.Name, m.Score)
+			// Log if processing is slow.
+			if elapsed.Nanoseconds() > detectionTimedOut {
+				log.Warn("%dμs detected %s %.4f", elapsed.Nanoseconds()/1000, m.Name, m.Score)
+			}
 			// Output to alerter if test ok with matched rules.
 			for _, rule := range rules {
 				if rule.Test(m, d.cfg) {
