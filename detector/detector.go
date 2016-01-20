@@ -19,6 +19,9 @@ import (
 	"github.com/eleme/banshee/util/log"
 )
 
+// Metrics with long name will be refused.
+const MaxMetricNameLen = 256
+
 // Detector is a tcp server to detect anomalies.
 type Detector struct {
 	// Config
@@ -102,6 +105,11 @@ func (d *Detector) handle(conn net.Conn) {
 				line = line[:10]
 			}
 			log.Error("parse '%s': %v, skipping..", line, err)
+			continue
+		}
+		// Validation
+		if len(m.Name) > MaxMetricNameLen {
+			log.Error("metric name too long: %s", m.Name[:MaxMetricNameLen])
 			continue
 		}
 		// Filter
