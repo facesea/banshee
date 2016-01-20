@@ -2,6 +2,7 @@
   .panel-content {
     padding: 0 10px;
   }
+
   .panel-content-title {
     padding: 0 10px;
 
@@ -13,13 +14,13 @@
         margin-bottom: 0;
       }
     }
+
     .search-project {
       margin-left: 10%;
 
       md-input-container {
         height: 40px;
         padding-bottom: 0;
-
       }
     }
 
@@ -29,7 +30,7 @@
 
     .md-icon-button {
       width: 26px;
-      padding: 0px;
+      padding: 0;
       vertical-align: -15px;
     }
   }
@@ -49,13 +50,79 @@
     .title {
       a {
         color: #333;
+
         &.anomalous {
           color: #c03;
         }
       }
     }
   }
+  /**
+   * Chart
+   */
+  .chart-box,
+  .chart-box-top {
+    width: 100%;
+    overflow-x: scroll;
+    border: 0;
+  }
 
+  .chart-box-top {
+    overflow-y: hidden;
+    padding: 0;
+    margin: 0;
+  }
+
+  .chart-box-top-div {
+    width: 1280px;
+    height: 20px;
+  }
+
+  .chart {
+    position: relative;
+    width: 1280px;
+    margin: 0 auto;
+    padding: 15px 0;
+  }
+
+  .chart .title {
+    background-color: rgba(255, 255, 255, .85);
+    margin-left: 0;
+    padding: 0 7px;
+  }
+
+  .chart .title a {
+    color: #333;
+  }
+
+  .chart .title a.anomalous {
+    color: #c03;
+  }
+
+  .chart .value {
+    color: black;
+  }
+  
+  /* Force chart-box scrollbars to display on mac */
+  .chart-box-force-scrollbar::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  .chart-box-force-scrollbar::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px #bbb;
+    -webkit-border-radius: 6px;
+    border-radius: 6px;
+  }
+
+  .chart-box-force-scrollbar::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 6px;
+    border-radius: 6px;
+    background: #aaa;
+  }
+
+  .chart-box-force-scrollbar::-webkit-scrollbar-thumb:window-inactive {
+    background: #eee;
+  }
   /**
  * Cubism custom styles.
  */
