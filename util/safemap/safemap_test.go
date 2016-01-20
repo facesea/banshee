@@ -10,24 +10,25 @@ import (
 func TestBasic(t *testing.T) {
 	m := New()
 	// Set
-	m.Set("key", "val")
-	assert.Ok(t, m.Len() == 1)
+	m.Set("key1", "val1")
+	m.Set("key2", "val2")
+	m.Set("key3", "val3")
+	assert.Ok(t, m.Len() == 3)
 	// Get
-	val, ok := m.Get("key")
+	val1, ok := m.Get("key1")
 	assert.Ok(t, ok)
-	assert.Ok(t, val == "val")
+	assert.Ok(t, val1 == "val1")
 	// Items
-	d := map[string]string{"key": "val"}
-	assert.Ok(t, len(d) == m.Len())
-	assert.Ok(t, m.Items()["key"] == "val")
+	assert.Ok(t, m.Items()["key1"] == "val1")
+	assert.Ok(t, m.Items()["key2"] == "val2")
+	assert.Ok(t, m.Items()["key3"] == "val3")
 	// Len
-	assert.Ok(t, m.Len() == 1)
+	assert.Ok(t, m.Len() == 3)
 	// Delete
-	assert.Ok(t, m.Delete("key"))
-	assert.Ok(t, !m.Delete("key1"))
-	assert.Ok(t, m.Len() == 0)
+	assert.Ok(t, m.Delete("key1"))
+	assert.Ok(t, !m.Delete("key-not-exist"))
+	assert.Ok(t, m.Len() == 2)
 	// Clear
-	m.Set("key", "val")
 	m.Clear()
 	assert.Ok(t, m.Len() == 0)
 }
