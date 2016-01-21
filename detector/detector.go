@@ -24,7 +24,7 @@ import (
 const MaxMetricNameLen = 256
 
 // Detection timed out in nanoseconds.
-const detectionTimedOut = 100 * 1000 * 1000 // 100ms
+const detectionTimedOut = 500 * 1000 * 1000 // 500ms
 
 // Detector is a tcp server to detect anomalies.
 type Detector struct {
