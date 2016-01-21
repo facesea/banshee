@@ -128,7 +128,9 @@ func (al *Alerter) work() {
 				cmd := exec.Command(al.cfg.Alerter.Command, string(b))
 				if err := cmd.Run(); err != nil {
 					log.Error("exec %s: %v", al.cfg.Alerter.Command, err)
+					continue
 				}
+				log.Info("send message to %s with %s ok", user.Name, metric.Name)
 			}
 			if len(users) != 0 {
 				al.m.Set(metric.Name, metric.Stamp)
