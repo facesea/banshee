@@ -231,7 +231,7 @@ func Test3DayCase1(t *testing.T) {
 	for idx, m := range l {
 		s = c.Next(s, m)
 		if idx >= 60 {
-			// 4rd day must be normal
+			// 3rd day must be normal
 			assert.Ok(t, !m.IsAnomalous())
 		}
 	}
