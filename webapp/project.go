@@ -58,8 +58,8 @@ func createProject(w http.ResponseWriter, r *http.Request, _ httprouter.Params) 
 		return
 	}
 	// Validate
-	if len(req.Name) <= 0 {
-		ResponseError(w, ErrProjectName)
+	if err := validateProjectName(req.Name); err != nil {
+		ResponseError(w, err)
 		return
 	}
 	// Save.
@@ -105,8 +105,8 @@ func updateProject(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
 		return
 	}
 	// Validate
-	if len(req.Name) <= 0 {
-		ResponseError(w, ErrProjectName)
+	if err := validateProjectName(req.Name); err != nil {
+		ResponseError(w, err)
 		return
 	}
 	// Find
