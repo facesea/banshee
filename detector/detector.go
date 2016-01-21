@@ -24,7 +24,7 @@ import (
 const MaxMetricNameLen = 256
 
 // Detection timed out in nanoseconds.
-const detectionTimedOut = 100 * 1000 * 1000 // 100ms
+const detectionTimedOut = 500 * 1000 * 1000 // 500ms
 
 // Detector is a tcp server to detect anomalies.
 type Detector struct {
@@ -147,7 +147,7 @@ func (d *Detector) handle(conn net.Conn) {
 			// Output to alerter if test ok with matched rules.
 			for _, rule := range rules {
 				if rule.Test(m, d.cfg) {
-					log.Info("%s tested ok with rule %s", m.Name, rule.Pattern)
+					log.Info("%dμs %s tested ok with rule %s", m.Name, rule.Pattern, elapsed.Nanoseconds()/1000)
 					m.TestedRules = append(m.TestedRules, rule)
 				}
 			}
