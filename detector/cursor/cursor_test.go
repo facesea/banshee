@@ -190,3 +190,49 @@ func TestAnomalyHighToLow(t *testing.T) {
 		assert.Ok(t, !m.IsAnomalous())
 	}
 }
+
+// Case the first day is ok, the 2nd day is anomalous, and the 3rd day is ok,
+// then the 4th day should be ok.
+func Test4DaysCase1(t *testing.T) {
+	wf := 0.05
+	leastC := uint32(18)
+	c := New(wf, leastC)
+	// Frist day
+	l := genMetrics(100.0, 120.0, 30)
+	// 2nd day
+	l = append(l, genMetrics(300.0, 360.0, 30)...)
+	// 3rd day
+	l = append(l, genMetrics(100.0, 120.0, 30)...)
+	// 4th day
+	l = append(l, genMetrics(100.0, 120.0, 30)...)
+	var s *models.State
+	for idx, m := range l {
+		s = c.Next(s, m)
+		if idx >= 90 {
+			// 4th day must be normal
+			assert.Ok(t, !m.IsAnomalous())
+		}
+	}
+}
+
+// Case the first day is anomalous, the 2nd day is ok, then the 3rd day should
+// be ok.
+func Test3DayCase1(t *testing.T) {
+	wf := 0.05
+	leastC := uint32(18)
+	c := New(wf, leastC)
+	// Frist day
+	l := genMetrics(100.0, 120.0, 30)
+	// 2nd day
+	l = append(l, genMetrics(300.0, 360.0, 30)...)
+	// 3rd day
+	l = append(l, genMetrics(300.0, 360.0, 30)...)
+	var s *models.State
+	for idx, m := range l {
+		s = c.Next(s, m)
+		if idx >= 60 {
+			// 4rd day must be normal
+			assert.Ok(t, !m.IsAnomalous())
+		}
+	}
+}
