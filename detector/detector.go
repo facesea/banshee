@@ -24,7 +24,7 @@ import (
 const MaxMetricNameLen = 256
 
 // Detection timed out in nanoseconds.
-const detectionTimedOut = 10 * 1000 * 1000 // 10ms
+const detectionTimedOut = 100 * 1000 * 1000 // 100ms
 
 // Detector is a tcp server to detect anomalies.
 type Detector struct {
@@ -134,6 +134,7 @@ func (d *Detector) handle(conn net.Conn) {
 		if matched {
 			// Detect with states.
 			err = d.detect(m)
+			log.Debug("detected %s %.3f", m.Name, m.Score)
 			if err != nil {
 				log.Error("failed to detect: %v, skipping..", err)
 				continue
@@ -141,11 +142,12 @@ func (d *Detector) handle(conn net.Conn) {
 			elapsed := time.Since(startAt)
 			// Log if processing is slow.
 			if elapsed.Nanoseconds() > detectionTimedOut {
-				log.Warn("%dμs detected %s %.4f", elapsed.Nanoseconds()/1000, m.Name, m.Score)
+				log.Warn("detection is slow: %dμs", elapsed.Nanoseconds()/1000)
 			}
 			// Output to alerter if test ok with matched rules.
 			for _, rule := range rules {
 				if rule.Test(m, d.cfg) {
+					log.Info("%s tested ok with rule %s", m.Name, rule.Pattern)
 					m.TestedRules = append(m.TestedRules, rule)
 				}
 			}
@@ -165,7 +167,6 @@ func (d *Detector) match(m *models.Metric) (bool, []*models.Rule) {
 	// Check rules.
 	rules := d.filter.MatchedRules(m)
 	if len(rules) == 0 {
-		log.Debug("%s hit no rules", m.Name)
 		return false, rules
 	}
 	// Check blacklist.
