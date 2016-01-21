@@ -101,7 +101,7 @@ func (al *Alerter) work() {
 		for _, rule := range metric.TestedRules {
 			// Project
 			proj := &models.Project{}
-			if err := al.db.Admin.DB().Model(rule).Related(proj); err != nil {
+			if err := al.db.Admin.DB().Model(rule).Related(proj).Error; err != nil {
 				log.Error("project, %v, skiping..", err)
 				continue
 			}
