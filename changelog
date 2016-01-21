@@ -1,3 +1,27 @@
+0.0.4
+-----
+
+* Alerter: Fix type assertion. #266
+* Alerter: Remove filter in alerter. #277
+* Alerter: Fix call of reflect.Value.Type on zero Value. #286
+* Detector: Bind MatchedRules in detector after match. #277
+* Detector: Logging level. #268 #270 #284
+* Detector: Add incoming metrics validation. #281 #282
+* Detector: Test rules in detector instead of in alerter. #283
+* Main: Fix config validation url. #262
+* Models: Add Metric.TestedRules. #289 #290
+* Release: Add license and update release.sh. #258 #259 #260
+* Release: Dont use github release. #263
+* Static: Disable html5 mode for angular. #264
+* Static: Strong font for kbd rule pattern. #267
+* Static: Finish main page. #275
+* Static: Fix score extent for cubism horizon. #291
+* Static: Add scroll bar in main page. #297
+* Static: Lock file refresh when normal. #298
+* Storage: Fix admindb cache init adding the same rules. #272
+* Webapp: Use url options instead of url params in getMetrics. #265
+* Util: Add multiple elements to safemap testing. #278
+
 0.0.3
 -----
 
