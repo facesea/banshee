@@ -147,7 +147,7 @@ func (d *Detector) handle(conn net.Conn) {
 			// Output to alerter if test ok with matched rules.
 			for _, rule := range rules {
 				if rule.Test(m, d.cfg) {
-					log.Info("%dμs %s tested ok with rule %s", m.Name, rule.Pattern, elapsed.Nanoseconds()/1000)
+					log.Info("%dμs %s tested ok with rule %s", elapsed.Nanoseconds()/1000, m.Name, rule.Pattern)
 					m.TestedRules = append(m.TestedRules, rule)
 				}
 			}
