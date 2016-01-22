@@ -74,7 +74,7 @@ func (db *DB) Get(name string, start, end uint32) ([]*models.Metric, error) {
 
 // Delete metrics in a timestamp range, the range is left open and right
 // closed.
-func (db *DB) Delete(name string, start, end uint32) error {
+func (db *DB) Delete(name string, start, end uint32) (int, error) {
 	// Key encoding.
 	startMetric := &models.Metric{Name: name, Stamp: start}
 	endMetric := &models.Metric{Name: name, Stamp: end}
@@ -86,17 +86,19 @@ func (db *DB) Delete(name string, start, end uint32) error {
 		Limit: endKey,
 	}, nil)
 	batch := new(leveldb.Batch)
+	n := 0
 	for iter.Next() {
 		key := iter.Key()
 		batch.Delete(key)
+		n++
 	}
 	if batch.Len() > 0 {
-		return db.db.Write(batch, nil)
+		return n, db.db.Write(batch, nil)
 	}
-	return nil
+	return n, nil
 }
 
 // DeleteTo deletes metrics ranging to a stamp by name.
-func (db *DB) DeleteTo(name string, end uint32) error {
+func (db *DB) DeleteTo(name string, end uint32) (int, error) {
 	return db.Delete(name, horizon, end)
 }
