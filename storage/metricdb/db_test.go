@@ -80,16 +80,16 @@ func TestDelete(t *testing.T) {
 	defer os.RemoveAll(fileName)
 	defer db.Close()
 	// Nothing.
-	err := db.Delete("foo", 0, 1452758773)
-	assert.Ok(t, err == nil)
+	n, err := db.Delete("foo", 0, 1452758773)
+	assert.Ok(t, err == nil && n == 0)
 	// Put some.
 	db.Put(&models.Metric{Name: "foo", Stamp: 1452758723})
 	db.Put(&models.Metric{Name: "foo", Stamp: 1452758733})
 	db.Put(&models.Metric{Name: "foo", Stamp: 1452758743})
 	db.Put(&models.Metric{Name: "foo", Stamp: 1452758753})
 	// Delete again
-	err = db.Delete("foo", 1452758733, 1452758753)
-	assert.Ok(t, err == nil)
+	n, err = db.Delete("foo", 1452758733, 1452758753)
+	assert.Ok(t, err == nil && n == 2)
 	// Get
 	ms, err := db.Get("foo", 1452758723, 1452758763)
 	assert.Ok(t, len(ms) == 2)
