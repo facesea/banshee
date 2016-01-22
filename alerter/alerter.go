@@ -82,6 +82,7 @@ func (al *Alerter) work() {
 		// Check alert times in one day
 		v, ok = al.c.Get(metric.Name)
 		if ok && atomic.LoadUint32(v.(*uint32)) > al.cfg.Alerter.OneDayLimit {
+			log.Warn("%s hit alerting one day limit, skipping..", metric.Name)
 			return
 		}
 		if !ok {
@@ -101,7 +102,7 @@ func (al *Alerter) work() {
 			// Project
 			proj := &models.Project{}
 			if err := al.db.Admin.DB().Model(rule).Related(proj).Error; err != nil {
-				log.Error("project not found, %v, skiping..", err)
+				log.Error("project, %v, skiping..", err)
 				continue
 			}
 			// Users
@@ -127,7 +128,9 @@ func (al *Alerter) work() {
 				cmd := exec.Command(al.cfg.Alerter.Command, string(b))
 				if err := cmd.Run(); err != nil {
 					log.Error("exec %s: %v", al.cfg.Alerter.Command, err)
+					continue
 				}
+				log.Info("send message to %s with %s ok", user.Name, metric.Name)
 			}
 			if len(users) != 0 {
 				al.m.Set(metric.Name, metric.Stamp)

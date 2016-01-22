@@ -8,9 +8,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"github.com/mattn/go-sqlite3"
 	"net/http"
-	"regexp"
 	"strconv"
-	"strings"
 )
 
 // getUsers returns all users.
@@ -69,20 +67,16 @@ func createUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		return
 	}
 	// Validation
-	if len(req.Name) == 0 {
-		ResponseError(w, ErrUserName)
+	if err := validateUserName(req.Name); err != nil {
+		ResponseError(w, err)
 		return
 	}
-	if len(req.Email) == 0 || !strings.Contains(req.Email, "@") {
-		ResponseError(w, ErrUserEmail)
+	if err := validateUserEmail(req.Email); err != nil {
+		ResponseError(w, err)
 		return
 	}
-	if len(req.Phone) != 10 && len(req.Phone) != 11 {
-		ResponseError(w, ErrUserPhone)
-		return
-	}
-	if ok, _ := regexp.MatchString("^\\d{10,11}", req.Phone); !ok {
-		ResponseError(w, ErrUserPhone)
+	if err := validateUserPhone(req.Phone); err != nil {
+		ResponseError(w, err)
 		return
 	}
 	// Save
@@ -163,20 +157,16 @@ func updateUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		return
 	}
 	// Validation
-	if len(req.Name) == 0 {
-		ResponseError(w, ErrUserName)
+	if err := validateUserName(req.Name); err != nil {
+		ResponseError(w, err)
 		return
 	}
-	if len(req.Email) == 0 || !strings.Contains(req.Email, "@") {
-		ResponseError(w, ErrUserEmail)
+	if err := validateUserEmail(req.Email); err != nil {
+		ResponseError(w, err)
 		return
 	}
-	if len(req.Phone) != 10 && len(req.Phone) != 11 {
-		ResponseError(w, ErrUserPhone)
-		return
-	}
-	if ok, _ := regexp.MatchString("^\\d{10,11}", req.Phone); !ok {
-		ResponseError(w, ErrUserPhone)
+	if err := validateUserPhone(req.Phone); err != nil {
+		ResponseError(w, err)
 		return
 	}
 	// Find

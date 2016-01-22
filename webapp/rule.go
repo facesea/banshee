@@ -40,9 +40,8 @@ func createRule(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		return
 	}
 	// Validate
-	if len(req.Pattern) <= 0 {
-		// Pattern is empty.
-		ResponseError(w, ErrRulePattern)
+	if err := validateRulePattern(req.Pattern); err != nil {
+		ResponseError(w, err)
 		return
 	}
 	if projectID <= 0 {
