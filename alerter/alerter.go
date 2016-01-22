@@ -114,6 +114,9 @@ func (al *Alerter) work() {
 			users = append(users, univs...)
 			// Send
 			for _, user := range users {
+				if !user.EnableEmail && !user.EnablePhone {
+					continue
+				}
 				d := &msg{
 					Project: proj,
 					Metric:  metric,
