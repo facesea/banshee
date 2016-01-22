@@ -56,6 +56,7 @@ func Start(c *config.Config, d *storage.DB) {
 	router.DELETE("/api/rule/:id", auth.handler(deleteRule))
 	router.GET("/api/metric/indexes", getMetricIndexes)
 	router.GET("/api/metric/data", getMetrics)
+	router.GET("/api/info", getInfo)
 	// Static
 	router.NotFound = newStaticHandler(http.Dir(cfg.Webapp.Static), auth)
 	// Serve
