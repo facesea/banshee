@@ -96,3 +96,40 @@ func TestDelete(t *testing.T) {
 	assert.Ok(t, ms[0].Stamp == 1452758723)
 	assert.Ok(t, ms[1].Stamp == 1452758753)
 }
+
+func BenchmarkPut(b *testing.B) {
+	// Open db.
+	fileName := "db-bench"
+	db, _ := Open(fileName)
+	defer os.RemoveAll(fileName)
+	defer db.Close()
+	horizon := Horizon()
+	// Bench
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		db.Put(&models.Metric{Name: "foo", Stamp: horizon + uint32(10*i)})
+	}
+}
+
+func BenchmarkGet(b *testing.B) {
+	// Open db.
+	fileName := "db-bench"
+	db, _ := Open(fileName)
+	defer os.RemoveAll(fileName)
+	defer db.Close()
+	// Put
+	horizon := Horizon()
+	name := "foo"
+	n := 3600 * 24 * 7 / 10 // 7 days count
+	for i := 0; i < n; i++ {
+		db.Put(&models.Metric{Name: name, Stamp: horizon + uint32(10*i)})
+	}
+	// Bench
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		// Get 30 metrics for 5 times
+		for j := 0; j < 5; j++ {
+			db.Get(name, horizon, horizon+30*10)
+		}
+	}
+}
