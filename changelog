@@ -1,3 +1,23 @@
+0.0.5
+-----
+
+* Alerter: Fix getting error with gorm. #317
+* Alerter: Fix alerter goroutine return early. #320
+* Alerter: Don't execute command if user disable both email and phone. #324
+* Alerter: Don't alerter for the first time. #326
+* Cleaner: Add cleaner test. #321
+* Cleaner: Add Implementation to clean outdated metrics. #321
+* Detector: Add two more test cases for cursor. #313
+* Logging: Fix detector and alerter logging. #304 #308
+* Static: Reload page on header link clicked. #318
+* Static: Add 3-7 days to past tabs. #322
+* Storage: Return number of metrics deleted in metricdb.Delete. #325
+* Storage: Add indexdb method Len. #327
+* Storage: Add benchmark for metricdb Put and Get. #328
+* Webapp: Add more validations for create and update apis. #303
+* Webapp: Move webapo docs to doc.go instead of in api.md. #314
+* Webapp: Add new api to get info. #327
+
 0.0.4
 -----
 
