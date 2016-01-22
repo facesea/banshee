@@ -60,8 +60,10 @@ func (c *Cleaner) clean() {
 			log.Info("%s fully cleaned", idx.Name)
 		} else {
 			// Clean outdated metrics.
-			c.db.Metric.DeleteTo(idx.Name, now-c.metricExpiration)
-			log.Info("%s outdated metrics cleaned", idx.Name)
+			n, _ := c.db.Metric.DeleteTo(idx.Name, now-c.metricExpiration)
+			if n > 0 {
+				log.Info("%s %d outdated metrics cleaned", idx.Name, n)
+			}
 		}
 	}
 }
