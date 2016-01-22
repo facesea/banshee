@@ -3,4 +3,4 @@
 package version
 
 // Version exports
-const Version = "0.0.4"
+const Version = "0.0.5"
