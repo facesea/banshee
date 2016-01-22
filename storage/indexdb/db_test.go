@@ -120,3 +120,17 @@ func TestFilter(t *testing.T) {
 	assert.Ok(t, len(l) == 2)
 	assert.Ok(t, l[0].Name != excludeName && l[1].Name != excludeName)
 }
+
+func TestLen(t *testing.T) {
+	// Open db.
+	fileName := "db-testing"
+	db, _ := Open(fileName)
+	defer os.RemoveAll(fileName)
+	defer db.Close()
+	// Add indexes.
+	db.Put(&models.Index{Name: "abc"})
+	db.Put(&models.Index{Name: "efg"})
+	db.Put(&models.Index{Name: "fgh"})
+	// Len
+	assert.Ok(t, db.Len() == 3)
+}

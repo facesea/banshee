@@ -245,5 +245,14 @@ Baisc auth required.
 		...
 	]
 
+22. Get info.
+
+	GET /api/info
+
+	200
+	{
+		"numMetric": 1000
+	}
+
 */
 package webapp
