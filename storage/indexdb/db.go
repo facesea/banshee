@@ -127,3 +127,8 @@ func (db *DB) All() (l []*models.Index) {
 	}
 	return l
 }
+
+// Len returns the number of indexes.
+func (db *DB) Len() int {
+	return db.m.Len()
+}
