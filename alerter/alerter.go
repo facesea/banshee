@@ -77,13 +77,13 @@ func (al *Alerter) work() {
 		// Check interval.
 		v, ok := al.m.Get(metric.Name)
 		if ok && metric.Stamp-v.(uint32) < al.cfg.Alerter.Interval {
-			return
+			continue
 		}
 		// Check alert times in one day
 		v, ok = al.c.Get(metric.Name)
 		if ok && atomic.LoadUint32(v.(*uint32)) > al.cfg.Alerter.OneDayLimit {
 			log.Warn("%s hit alerting one day limit, skipping..", metric.Name)
-			return
+			continue
 		}
 		if !ok {
 			var newCounter uint32
