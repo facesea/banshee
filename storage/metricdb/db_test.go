@@ -87,10 +87,12 @@ func TestDelete(t *testing.T) {
 	db.Put(&models.Metric{Name: "foo", Stamp: 1452758733})
 	db.Put(&models.Metric{Name: "foo", Stamp: 1452758743})
 	db.Put(&models.Metric{Name: "foo", Stamp: 1452758753})
-	// Delete again.
+	// Delete again
 	err = db.Delete("foo", 1452758733, 1452758753)
 	assert.Ok(t, err == nil)
 	// Get
-	ms, err := db.Get("foo", 1452758733, 1452758753)
-	assert.Ok(t, len(ms) == 0)
+	ms, err := db.Get("foo", 1452758723, 1452758763)
+	assert.Ok(t, len(ms) == 2)
+	assert.Ok(t, ms[0].Stamp == 1452758723)
+	assert.Ok(t, ms[1].Stamp == 1452758753)
 }
