@@ -78,14 +78,9 @@ func initDB() {
 	if cfg == nil {
 		panic(errors.New("db require config"))
 	}
-	// Open db with options.
-	options := &storage.Options{
-		NumGrid: cfg.Period[0],
-		GridLen: cfg.Period[1],
-	}
 	path := cfg.Storage.Path
 	var err error
-	db, err = storage.Open(path, options)
+	db, err = storage.Open(path)
 	if err != nil {
 		log.Fatal("failed to open %s: %v", path, err)
 	}

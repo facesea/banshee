@@ -3,11 +3,9 @@
 package storage
 
 import (
-	"fmt"
 	"github.com/eleme/banshee/storage/admindb"
 	"github.com/eleme/banshee/storage/indexdb"
 	"github.com/eleme/banshee/storage/metricdb"
-	"github.com/eleme/banshee/storage/statedb"
 	"github.com/eleme/banshee/util/log"
 	"os"
 	"path"
@@ -21,15 +19,7 @@ const (
 	admindbFileName  = "admin"
 	indexdbFileName  = "index"
 	metricdbFileName = "metric"
-	statedbFileName  = "state"
 )
-
-// Options is for db opening.
-type Options struct {
-	// statedb
-	NumGrid uint32
-	GridLen uint32
-}
 
 // DB handles the storage on leveldb.
 type DB struct {
@@ -37,11 +27,10 @@ type DB struct {
 	Admin  *admindb.DB
 	Index  *indexdb.DB
 	Metric *metricdb.DB
-	State  *statedb.DB
 }
 
 // Open a DB by fileName and options.
-func Open(fileName string, options *Options) (*DB, error) {
+func Open(fileName string) (*DB, error) {
 	// Create if not exist
 	_, err := os.Stat(fileName)
 	if os.IsNotExist(err) {
@@ -67,13 +56,6 @@ func Open(fileName string, options *Options) (*DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	name := fmt.Sprintf("%s-%dx%d", statedbFileName, options.NumGrid, options.GridLen)
-	opts := &statedb.Options{NumGrid: options.NumGrid, GridLen: options.GridLen}
-	// Statedb.
-	db.State, err = statedb.Open(path.Join(fileName, name), opts)
-	if err != nil {
-		return nil, err
-	}
 	log.Debug("storage is opened successfully")
 	return db, nil
 }
@@ -90,10 +72,6 @@ func (db *DB) Close() error {
 	}
 	// Metricdb.
 	if err := db.Metric.Close(); err != nil {
-		return err
-	}
-	// Statedb.
-	if err := db.State.Close(); err != nil {
 		return err
 	}
 	return nil
