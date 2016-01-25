@@ -3,6 +3,7 @@
 package cleaner
 
 import (
+	"github.com/eleme/banshee/config"
 	"github.com/eleme/banshee/models"
 	"github.com/eleme/banshee/storage"
 	"github.com/eleme/banshee/storage/indexdb"
@@ -12,29 +13,16 @@ import (
 	"time"
 )
 
-func TestNew(t *testing.T) {
-	period := uint32(86400) // 1 day
-	// Open storage
-	dbFileName := "db-test"
-	db, _ := storage.Open(dbFileName)
-	defer os.RemoveAll(dbFileName)
-	defer db.Close()
-	// Create cleaner
-	c := New(db, period)
-	assert.Ok(t, c.expiration == expirationNumToPeriod*period)
-	assert.Ok(t, c.metricExpiration == metricExpirationNumToPeriod*period)
-	assert.Ok(t, c.interval*periodNumToInterval == period)
-}
-
 func TestClean(t *testing.T) {
-	period := uint32(86400) // 1 day
+	// Config
+	cfg := config.New()
 	// Open storage
 	dbFileName := "db-test"
 	db, _ := storage.Open(dbFileName)
 	defer os.RemoveAll(dbFileName)
 	defer db.Close()
 	// Create cleaner
-	c := New(db, period)
+	c := New(cfg, db)
 	// Add outdated data.
 	// Case fully cleaned: 3 days no new data
 	m1 := &models.Metric{Name: "fully-case", Stamp: uint32(time.Now().Unix() - 3*3600*24 - 1)}
