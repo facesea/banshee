@@ -25,8 +25,16 @@ const (
 	DefaultIntervalHitLimit int = 100
 	// Default period for all metrics in seconds.
 	DefaultPeriod uint32 = 1 * Day
+	// Default metric expiration.
+	DefaultExpiration uint32 = 7 * Day
 	// Default weight factor for moving average.
 	DefaultWeightFactor float64 = 0.05
+	// Default filter offset to query history metrics.
+	DefaultFilterOffset float64 = 0.01
+	// Default cleaner interval.
+	DefaultCleanerInterval uint32 = 3 * Hour
+	// Default cleaner threshold.
+	DefaultCleanerThreshold uint32 = 3 * Day
 	// Default value of alerting interval.
 	DefaultAlerterInterval uint32 = 20 * Minute
 	// Default value of alert times limit in one day for the same metric
@@ -41,16 +49,22 @@ const (
 	MaxDefaltTrustLinesLen = 8
 	// Max value for the number of FillBlankZeros.
 	MaxFillBlankZerosLen = 8
+	// Min value for the expiration to period.
+	MinExpirationNumToPeriod uint32 = 5
+	// Min value for the cleaner threshold to period.
+	MinCleanerThresholdNumToPeriod uint32 = 2
 )
 
 // Config is the configuration container.
 type Config struct {
-	Interval uint32         `json:"interval"`
-	Period   uint32         `json:"period"`
-	Storage  configStorage  `json:"storage"`
-	Detector configDetector `json:"detector"`
-	Webapp   configWebapp   `json:"webapp"`
-	Alerter  configAlerter  `json:"alerter"`
+	Interval   uint32         `json:"interval"`
+	Period     uint32         `json:"period"`
+	Expiration uint32         `json:"expiration"`
+	Storage    configStorage  `json:"storage"`
+	Detector   configDetector `json:"detector"`
+	Webapp     configWebapp   `json:"webapp"`
+	Alerter    configAlerter  `json:"alerter"`
+	Cleaner    configCleaner  `json:"cleaner"`
 }
 
 type configStorage struct {
@@ -60,6 +74,7 @@ type configStorage struct {
 type configDetector struct {
 	Port              int                `json:"port"`
 	Factor            float64            `json:"factor"`
+	FilterOffset      float64            `json:"filterOffset"`
 	LeastCount        uint32             `json:"leastCount"`
 	BlackList         []string           `json:"blackList"`
 	IntervalHitLimit  int                `json:"intervalHitLimit"`
@@ -80,14 +95,21 @@ type configAlerter struct {
 	OneDayLimit uint32 `json:"oneDayLimit"`
 }
 
+type configCleaner struct {
+	Interval  uint32 `json:"interval"`
+	Threshold uint32 `json:"threshold"`
+}
+
 // New creates a Config with default values.
 func New() *Config {
 	config := new(Config)
 	config.Interval = DefaultInterval
 	config.Period = DefaultPeriod
+	config.Expiration = DefaultExpiration
 	config.Storage.Path = "storage/"
 	config.Detector.Port = 2015
 	config.Detector.Factor = DefaultWeightFactor
+	config.Detector.FilterOffset = DefaultFilterOffset
 	config.Detector.LeastCount = DefaultLeastCount
 	config.Detector.BlackList = []string{}
 	config.Detector.IntervalHitLimit = DefaultIntervalHitLimit
@@ -100,6 +122,8 @@ func New() *Config {
 	config.Alerter.Workers = 4
 	config.Alerter.Interval = DefaultAlerterInterval
 	config.Alerter.OneDayLimit = DefaultAlerterOneDayLimit
+	config.Cleaner.Interval = DefaultCleanerInterval
+	config.Cleaner.Threshold = DefaultCleanerThreshold
 	return config
 }
 
@@ -122,9 +146,11 @@ func (config *Config) Copy() *Config {
 	c := New()
 	c.Interval = config.Interval
 	c.Period = config.Period
+	c.Expiration = config.Expiration
 	c.Storage.Path = config.Storage.Path
 	c.Detector.Port = config.Detector.Port
 	c.Detector.Factor = config.Detector.Factor
+	c.Detector.FilterOffset = config.Detector.FilterOffset
 	c.Detector.LeastCount = config.Detector.LeastCount
 	c.Detector.BlackList = config.Detector.BlackList
 	c.Detector.DefaultTrustLines = config.Detector.DefaultTrustLines
@@ -137,6 +163,8 @@ func (config *Config) Copy() *Config {
 	c.Alerter.Workers = config.Alerter.Workers
 	c.Alerter.Interval = config.Alerter.Interval
 	c.Alerter.OneDayLimit = config.Alerter.OneDayLimit
+	c.Cleaner.Interval = config.Cleaner.Interval
+	c.Cleaner.Threshold = config.Cleaner.Threshold
 	return c
 }
 
@@ -149,12 +177,18 @@ func (config *Config) Validate() error {
 	if config.Interval > config.Period {
 		return ErrPeriod
 	}
+	if config.Expiration < config.Period*MinExpirationNumToPeriod {
+		return ErrExpiration
+	}
 	// Detector
 	if config.Detector.Port < 1 || config.Detector.Port > 65535 {
 		return ErrDetectorPort
 	}
-	if config.Detector.Factor < 0 || config.Detector.Factor > 1 {
+	if config.Detector.Factor <= 0 || config.Detector.Factor >= 1 {
 		return ErrDetectorFactor
+	}
+	if config.Detector.FilterOffset <= 0 || config.Detector.FilterOffset >= 1 {
+		return ErrDetectorFilterOffset
 	}
 	if len(config.Detector.DefaultTrustLines) > MaxDefaltTrustLinesLen {
 		return ErrDetectorDefaultTrustLinesLen
@@ -180,6 +214,10 @@ func (config *Config) Validate() error {
 	}
 	if config.Alerter.OneDayLimit <= 0 {
 		return ErrAlerterOneDayLimit
+	}
+	// Cleaner
+	if config.Cleaner.Threshold < config.Period*MinCleanerThresholdNumToPeriod {
+		return ErrCleanerThreshold
 	}
 	return nil
 }
