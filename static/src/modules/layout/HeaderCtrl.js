@@ -5,8 +5,8 @@
 module.exports = function ($scope, $state) {
   $scope.goMain = function() {
     $state.go('banshee.main', {project: '', pattern: ''}, {reload: true});
-  }
-  
+  };
+
   $scope.includes = function(state) {
     return $state.includes(state);
   };
