@@ -1,12 +1,13 @@
 {
   "interval": 10,
-  "period": [288, 300],
+  "period": 86400,
   "storage": {
     "path": "storage/"
   },
   "detector": {
     "port": 2015,
     "factor": 0.05,
+    "leastCount": 30,
     "blacklist": [],
     "intervalHitLimit": 100,
     "defaultTrustLines": {},
