@@ -20,7 +20,7 @@ const periodNumToInterval uint32 = 6
 // expiration should be 7 days.
 const metricExpirationNumToPeriod uint32 = 7
 
-// The time expiration for metric/index/state is:
+// The time expiration for metric/index is:
 // period * expirationNumToPeriod. If the period is 1 day, this expiration
 // should be 3 days.
 const expirationNumToPeriod uint32 = 3
@@ -54,7 +54,6 @@ func (c *Cleaner) clean() {
 	for _, idx := range idxs {
 		if idx.Stamp+c.expiration < now {
 			// Long time no data, clean all.
-			c.db.State.Delete(idx.Name)
 			c.db.Index.Delete(idx.Name)
 			c.db.Metric.DeleteTo(idx.Name, idx.Stamp+1) // DeleteTo is right closed
 			log.Info("%s fully cleaned", idx.Name)

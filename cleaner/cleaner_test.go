@@ -6,7 +6,6 @@ import (
 	"github.com/eleme/banshee/models"
 	"github.com/eleme/banshee/storage"
 	"github.com/eleme/banshee/storage/indexdb"
-	"github.com/eleme/banshee/storage/statedb"
 	"github.com/eleme/banshee/util/assert"
 	"os"
 	"testing"
@@ -14,13 +13,10 @@ import (
 )
 
 func TestNew(t *testing.T) {
-	numGrid := uint32(288)
-	gridLen := uint32(300)
-	period := numGrid * gridLen
+	period := uint32(86400) // 1 day
 	// Open storage
 	dbFileName := "db-test"
-	dbOptions := &storage.Options{numGrid, gridLen}
-	db, _ := storage.Open(dbFileName, dbOptions)
+	db, _ := storage.Open(dbFileName)
 	defer os.RemoveAll(dbFileName)
 	defer db.Close()
 	// Create cleaner
@@ -31,13 +27,10 @@ func TestNew(t *testing.T) {
 }
 
 func TestClean(t *testing.T) {
-	numGrid := uint32(288)
-	gridLen := uint32(300)
-	period := numGrid * gridLen
+	period := uint32(86400) // 1 day
 	// Open storage
 	dbFileName := "db-test"
-	dbOptions := &storage.Options{numGrid, gridLen}
-	db, _ := storage.Open(dbFileName, dbOptions)
+	db, _ := storage.Open(dbFileName)
 	defer os.RemoveAll(dbFileName)
 	defer db.Close()
 	// Create cleaner
@@ -55,10 +48,6 @@ func TestClean(t *testing.T) {
 	db.Metric.Put(m1)
 	db.Metric.Put(m2)
 	db.Metric.Put(m3)
-	// Pit States.
-	db.State.Put(m1, &models.State{})
-	db.State.Put(m2, &models.State{})
-	db.State.Put(m3, &models.State{})
 	// Put indexes.
 	db.Index.Put(i1)
 	db.Index.Put(i2)
@@ -68,8 +57,6 @@ func TestClean(t *testing.T) {
 	var err error
 	_, err = db.Index.Get(m1.Name)
 	assert.Ok(t, err == indexdb.ErrNotFound)
-	_, err = db.State.Get(m1)
-	assert.Ok(t, err == statedb.ErrNotFound)
 	l, err := db.Metric.Get(m1.Name, 0, uint32(time.Now().Unix()))
 	assert.Ok(t, len(l) == 0)
 	// m2 should be cleaned and m3 shouldn't be cleaned
@@ -77,9 +64,7 @@ func TestClean(t *testing.T) {
 	assert.Ok(t, len(l) == 1)
 	assert.Ok(t, l[0].Name == m2.Name)
 	assert.Ok(t, l[0].Stamp == m3.Stamp && l[0].Stamp != m2.Stamp)
-	// m2/m3's state and index shouldn't be cleaned
+	// m2/m3's index shouldn't be cleaned
 	i, err := db.Index.Get(m2.Name)
 	assert.Ok(t, err == nil && i.Name == m2.Name)
-	s, err := db.State.Get(m2)
-	assert.Ok(t, err == nil && s != nil)
 }

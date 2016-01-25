@@ -111,7 +111,7 @@ func main() {
 	initFilter()
 
 	// Service
-	cleaner := cleaner.New(db, cfg.Period[0]*cfg.Period[1])
+	cleaner := cleaner.New(db, cfg.Period)
 	go cleaner.Start()
 
 	alerter := alerter.New(cfg, db)
