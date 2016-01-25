@@ -10,13 +10,14 @@ Configuration is in JSON file, for example:
 
 	{
 	  "interval": 10,
-	  "period": [288, 300],
+	  "period": 86400,
 	  "storage": {
 	    "path": "storage/"
 	  },
 	  "detector": {
 	    "port": 2015,
 	    "factor": 0.05,
+		"leastCount": 30,
 	    "blacklist": ["statsd.*"],
 	    "intervalHitLimit": 100,
 	    "defaultTrustLines": {"timer.count_ps.*": 30},
@@ -44,10 +45,11 @@ Documents
 The documents for each configuration item with default values:
 
 	interval                   // All metrics incoming interval (in seconds), default: 10
-	period                     // All metrics period (in seconds), in form of [NumGrid, GirdLen], default: [288, 300]
+	period                     // All metrics period (in seconds), default: 86400 (1 day).
 	storage.path               // Storage directory path.
 	detector.port              // Detector tcp port to listen.
 	detector.factor            // Detection weighted moving factor, should be a number between 0 and 1, default: 0.05
+	detector.leastCount        // Least count to start detection. default: 30
 	detector.blacklist         // Incoming metrics blacklist, each one should be a wildcard pattern, default: []
 	detector.intervalHitLimit  // Limitation for number of filtered metrics for each rule in one interval. default: 100
 	detector.defaultTrustLines // Default trustlines for rules, a wildcard pattern to trustline number map. default: {}
