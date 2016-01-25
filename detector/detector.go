@@ -10,21 +10,15 @@ import (
 	"time"
 
 	"github.com/eleme/banshee/config"
-	"github.com/eleme/banshee/detector/cursor"
 	"github.com/eleme/banshee/filter"
 	"github.com/eleme/banshee/models"
 	"github.com/eleme/banshee/storage"
 	"github.com/eleme/banshee/storage/indexdb"
-	"github.com/eleme/banshee/storage/metricdb"
-	"github.com/eleme/banshee/storage/statedb"
 	"github.com/eleme/banshee/util/log"
 )
 
-// MaxMetricNameLen results that metrics with long name will be refused.
-const MaxMetricNameLen = 256
-
-// Detection timed out in nanoseconds.
-const detectionTimedOut = 500 * 1000 * 1000 // 500ms
+// Detection timed out in ms.
+const detectionTimedOut = 100
 
 // Detector is a tcp server to detect anomalies.
 type Detector struct {
@@ -33,20 +27,18 @@ type Detector struct {
 	// Storage
 	db *storage.DB
 	// Filter
-	filter *filter.Filter
-	// Cursor
-	cursor *cursor.Cursor
+	flt *filter.Filter
 	// Output
 	outs []chan *models.Metric
 }
 
 // New creates a detector.
-func New(cfg *config.Config, db *storage.DB, filter *filter.Filter) *Detector {
+func New(cfg *config.Config, db *storage.DB, flt *filter.Filter) *Detector {
 	d := new(Detector)
 	d.cfg = cfg
 	d.db = db
-	d.filter = filter
-	d.cursor = cursor.New(cfg.Detector.Factor, cfg.LeastC())
+	d.flt = flt
+	d.outs = make([]chan *models.Metric, 0)
 	return d
 }
 
@@ -66,53 +58,42 @@ func (d *Detector) output(m *models.Metric) {
 	}
 }
 
-// Start detector.
+// Start the detector server.
 func (d *Detector) Start() {
+	// Listen
 	addr := fmt.Sprintf("0.0.0.0:%d", d.cfg.Detector.Port)
 	ln, err := net.Listen("tcp", addr)
 	if err != nil {
-		log.Fatal("failed to bind tcp://%s: %v", addr, err)
+		log.Fatal("cannot bind %s: %v", addr, err)
 	}
-	log.Info("detector is listening on tcp://%s..", addr)
+	log.Info("detector is listening on %s", addr)
+	// Accept
 	for {
 		conn, err := ln.Accept()
 		if err != nil {
-			log.Fatal("accept conn: %v", err)
+			log.Error("cannot accept conn: %v, skipping..", err)
+			continue
 		}
 		go d.handle(conn)
 	}
 }
 
-// Validate a metric.
-func (d *Detector) Validate(m *models.Metric) bool {
-	if len(m.Name) > MaxMetricNameLen {
-		// Name too long.
-		log.Error("metric name too long: %s", m.Name[:MaxMetricNameLen])
-		return false
-	}
-	if m.Stamp < metricdb.Horizon() {
-		// Stamp too small
-		log.Error("metric stamp too small: %s, %d", m.Name, m.Stamp)
-		return false
-	}
-	return true
-}
-
-// Handle a connection, it will filter the mertics by rules and detect whether
+// handle a connection, it will filter the metrics by rules and detect whether
 // the metrics are anomalies.
 func (d *Detector) handle(conn net.Conn) {
-	// New conn
+	// Conn
 	addr := conn.RemoteAddr()
 	defer func() {
 		conn.Close()
 		log.Info("conn %s disconnected", addr)
 	}()
 	log.Info("conn %s established", addr)
-	// Scan line by line.
+	// Scan lines.
 	scanner := bufio.NewScanner(conn)
 	for scanner.Scan() {
 		if err := scanner.Err(); err != nil {
-			log.Info("read conn: %v, closing it..", err)
+			//  Read err.
+			log.Error("cannot read conn: %v, closing..", err)
 			break
 		}
 		startAt := time.Now()
@@ -123,41 +104,17 @@ func (d *Detector) handle(conn net.Conn) {
 			if len(line) > 10 {
 				line = line[:10]
 			}
-			log.Error("parse '%s': %v, skipping..", line, err)
+			log.Error("cannot parse: %s: %v, skipping..", line, err)
 			continue
 		}
-		// Validation
-		if !d.Validate(m) {
+		// Validate
+		if err := validateMetric(m); err != nil {
+			log.Error("invalid metric: %s, %v", m.Name, err)
 			continue
 		}
-		matched, rules := d.match(m)
-		if matched {
-			// Detect with states.
-			err = d.detect(m)
-			log.Debug("detected %s %.3f", m.Name, m.Score)
-			if err != nil {
-				log.Error("failed to detect: %v, skipping..", err)
-				continue
-			}
-			elapsed := time.Since(startAt)
-			// Log if processing is slow.
-			if elapsed.Nanoseconds() > detectionTimedOut {
-				log.Warn("detection is slow: %dμs", elapsed.Nanoseconds()/1000)
-			}
-			// Output to alerter if test ok with matched rules.
-			for _, rule := range rules {
-				if rule.Test(m, d.cfg) {
-					log.Info("%dμs %s tested ok with rule %s", elapsed.Nanoseconds()/1000, m.Name, rule.Pattern)
-					m.TestedRules = append(m.TestedRules, rule)
-				}
-			}
-			if len(m.TestedRules) > 0 {
-				d.output(m)
-			}
-			// Store
-			if err := d.store(m); err != nil {
-				log.Error("store metric %s: %v, skiping..", m.Name, err)
-			}
+		ok, rules := d.match(m)
+		if ok {
+			// TODO
 		}
 	}
 }
@@ -165,14 +122,20 @@ func (d *Detector) handle(conn net.Conn) {
 // Test whether a metric matches the rules.
 func (d *Detector) match(m *models.Metric) (bool, []*models.Rule) {
 	// Check rules.
-	rules := d.filter.MatchedRules(m)
+	rules := d.flt.MatchedRules(m)
 	if len(rules) == 0 {
+		// Hit no rules.
 		return false, rules
 	}
 	// Check blacklist.
 	for _, pattern := range d.cfg.Detector.BlackList {
 		ok, err := filepath.Match(pattern, m.Name)
+		if err != nil {
+			log.Error("invalid black pattern: %s, %v", pattern, err)
+			continue
+		}
 		if err == nil && ok {
+			// Hit blacklist.
 			log.Debug("%s hit black pattern %s", m.Name, pattern)
 			return false, rules
 		}
@@ -180,77 +143,126 @@ func (d *Detector) match(m *models.Metric) (bool, []*models.Rule) {
 	return true, rules
 }
 
-// Detect incoming metric with 3-sigma rule and fill the metric.Score.
+// detect incoming metric with history values.
 func (d *Detector) detect(m *models.Metric) error {
-	// Get pervious state.
-	s, err := d.db.State.Get(m)
-	if err != nil && err != statedb.ErrNotFound {
-		return err
-	}
-	if err == statedb.ErrNotFound {
-		s = nil
-	}
-	// Fill blank with zeros.
-	for _, pattern := range d.cfg.Detector.FillBlankZeros {
-		if ok, _ := filepath.Match(pattern, m.Name); ok {
-			// Need to fill zeros.
-			if s, err = d.fillBlankZeros(m, s); err != nil {
-				return err
-			}
-			break
-		}
-	}
-	// Move state next.
-	s = d.cursor.Next(s, m)
-	// Put the next state to db.
-	return d.db.State.Put(m, s)
-}
-
-// store detected metrics.
-func (d *Detector) store(m *models.Metric) error {
-	// Metric.
-	if err := d.db.Metric.Put(m); err != nil {
-		return err
-	}
-	// Index.
-	idx := &models.Index{}
-	idx.WriteMetric(m)
-	if err := d.db.Index.Put(idx); err != nil {
-		return err
-	}
-	return nil
-}
-
-// fillBlankZeros moves the state with zero on blanks.
-func (d *Detector) fillBlankZeros(m *models.Metric, s *models.State) (*models.State, error) {
 	// Get index.
 	idx, err := d.db.Index.Get(m.Name)
-	if err != nil && err != indexdb.ErrNotFound {
-		return nil, err
-	}
-	if err == indexdb.ErrNotFound {
-		// Not found, the metric is the first time seen and s must be nil.
-		// The metric will be trusted since its state is nil.
-		return s, nil
-	}
-	// Fill history blanks with zeros.
-	numGrid := d.cfg.Period[0]
-	gridLen := d.cfg.Period[1]
-	period := numGrid * gridLen
-	periodNo := m.Stamp / period
-	gridNo := (m.Stamp % period) / gridLen
-	// Find the start grid stamp
-	gridStart := gridNo*gridLen + periodNo*period
-	for gridStart-period >= idx.Stamp {
-		gridStart -= period
-	}
-	for ; gridStart < m.Stamp; gridStart += period {
-		for stamp := gridStart; stamp < gridStart+gridLen && stamp < m.Stamp; stamp += d.cfg.Interval {
-			if stamp > idx.Stamp {
-				// Move state with zero.
-				s = d.cursor.Next(s, &models.Metric{Stamp: stamp})
-			}
+	if err != nil {
+		if err == indexdb.ErrNotFound {
+			idx = nil
+		} else {
+			return err
 		}
 	}
-	return s, nil
+	// TODO
+}
+
+// save detected metric and its index.
+func (d *Detector) save(m *models.Metric, idx *models.Index) error {
+
+}
+
+// getIndex returns index by metric.
+func (d *Detector) getIndex(m *models.Metric) (*models.Index, error) {
+	// Index
+	idx, err := d.db.Index.Get(m.Name)
+	if err != nil {
+		if err == indexdb.ErrNotFound {
+			// Nil on not found.
+			return nil, nil
+		}
+		return nil, err
+	}
+	return idx, nil
+}
+
+// getValues returns history values by metric.
+func (d *Detector) getValues(m *models.Metric, idx *models.Index) (values []float64, err error) {
+	span := uint32(d.cfg.Detector.FilterOffset * float64(d.cfg.Period))
+	fz := d.needFillBlankZeros(m, idx)
+	for stamp := m.Stamp; stamp+d.cfg.Expiration > m.Stamp; stamp -= d.cfg.Period {
+		start := stamp - span
+		stop := stamp + span
+		l, err := d.db.Metric.Get(m.Name, start, stop)
+		if err != nil {
+			return
+		}
+		if !fz {
+			// No need to fill
+			for i := 0; i < len(l); i++ {
+				values = append(values, l[i].Value)
+			}
+		} else {
+			values = append(values, d.fillBlankZeros(l, start, stop)...)
+		}
+	}
+	// Push current value.
+	values = append(values, m.Value)
+	return
+}
+
+// test whether need to fill blanks with zeros.
+func (d *Detector) needFillBlankZeros(m *models.Metric, idx *models.Index) bool {
+	for _, pattern := range d.cfg.Detector.FillBlankZeros {
+		ok, err := filepath.Match(pattern, m.Name)
+		if err != nil {
+			log.Error("invalid fillBlankZeros pattern: %s, %v", pattern, err)
+			continue
+		}
+		if ok {
+			if idx != nil {
+				// Only fill blanks with zeros if the metric isn't a new one.
+				return true
+			}
+			return false
+		}
+	}
+	return false
+}
+
+// fill blanks with zeros.
+func (d *Detector) fillBlankZeros(l []*models.Metric, start, stop uint32) (values []float64) {
+	i := 0
+	step := d.cfg.Interval
+	for start < stop {
+		if i < len(l) {
+			m := l[i]
+			// Fill zeros if the start is too small.
+			for ; start < m.Stamp; start += step {
+				values = append(values, 0)
+			}
+			values = append(values, m.Value)
+			i += 1
+		} else {
+			// End of history real-metrics.
+			values = append(values, 0)
+		}
+		start += step
+	}
+	return
+}
+
+// div3sigma returns the score by values.
+func (d *Detector) div3sigma(values []float64) (score float64, mean float64) {
+	if len(values) == 0 {
+		// Empty
+		return 0, 0
+	}
+	// Mean
+	mean = getMean(values)
+	// Std
+	std := getStd(values, mean)
+	if len(values) < int(d.cfg.Detector.LeastCount) {
+		return
+	}
+	// Latest value
+	tail := values[len(values)-1]
+	if std == 0 {
+		if tail != mean {
+			score = 1
+		}
+		return
+	}
+	score = (tail - mean) / (3 * std)
+	return
 }
