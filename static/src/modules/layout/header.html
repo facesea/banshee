@@ -3,7 +3,8 @@
     <md-toolbar>
       <div class="md-toolbar-tools">
         <h3>
-          <a ui-sref="banshee.main" ui-sref-opts="{reload: true}">Banshee</a>
+          <!-- <a ui-sref="banshee.main" ui-sref-opts="{reload: true}">Banshee</a> -->
+          <a href="javascrit:;" ng-click="goMain()">Banshee</a>
         </h3>
         <span flex></span>
         <md-button aria-label="Administration" ui-sref="banshee.admin.project" ng-if="includes('banshee.main')">
