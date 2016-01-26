@@ -9,7 +9,7 @@ module.exports = function ($scope, $rootScope, $timeout, $stateParams, Metric, C
   $scope.projectId = $stateParams.project;
 
   $scope.limitList = [{
-    label: 'Limit1',
+    label: 'Limit 1',
     val: 1
   }, {
     label: 'Limit 30',
@@ -30,10 +30,10 @@ module.exports = function ($scope, $rootScope, $timeout, $stateParams, Metric, C
 
   $scope.sortList = [{
     label: 'Trending Up',
-    val: 0
+    val: 'up'
   }, {
     label: 'Trending Down',
-    val: 1
+    val: 'down'
   }];
 
   $scope.typeList = [{
