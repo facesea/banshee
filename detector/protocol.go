@@ -3,21 +3,25 @@
 package detector
 
 import (
+	"github.com/eleme/banshee/models"
 	"strconv"
 	"strings"
-
-	"github.com/eleme/banshee/models"
 )
 
-// parseMetric parses protocol line string into a Metric, the line protocol is:
-//   NAME  TIMESTAMP  VALUE \n
-// and the example:
-//   foo   1449481993 3.145 \n
+// Parse input line text into a metric.
 //
+// The detector's net protocol is, with an example:
+//	Name	Stamp		Value	\n
+//	foo		1449481993	3.145	\n
+//
+// Input line will be trimed at first before being processed.
 func parseMetric(line string) (*models.Metric, error) {
+	// Clean spaces.
 	line = strings.TrimSpace(line)
+	// Split fields.
 	words := strings.Fields(line)
 	if len(words) != 3 {
+		// Wrong number of fields.
 		return nil, ErrProtocol
 	}
 	var err error

@@ -23,24 +23,24 @@ const (
 	DefaultInterval uint32 = 10 * Second
 	// Default hit limit to a rule in an interval
 	DefaultIntervalHitLimit int = 100
-	// Default grid length in seconds.
-	DefaultGridLen uint32 = 5 * Minute
-	// Default number of grids in one period.
-	DefaultNumGrid uint32 = 1 * Day / DefaultGridLen
-	// Default weight factor for moving average and standard deviation.
-	DefaultWeightFactor float64 = 0.05
+	// Default period for all metrics in seconds.
+	DefaultPeriod uint32 = 1 * Day
+	// Default metric expiration.
+	DefaultExpiration uint32 = 7 * Day
+	// Default weight factor for moving average.
+	DefaultTrendingFactor float64 = 0.1
+	// Default filter offset to query history metrics.
+	DefaultFilterOffset float64 = 0.01
+	// Default cleaner interval.
+	DefaultCleanerInterval uint32 = 3 * Hour
+	// Default cleaner threshold.
+	DefaultCleanerThreshold uint32 = 3 * Day
 	// Default value of alerting interval.
 	DefaultAlerterInterval uint32 = 20 * Minute
 	// Default value of alert times limit in one day for the same metric
 	DefaultAlerterOneDayLimit uint32 = 5
-)
-
-// Least count.
-const (
-	// Min value of leastC.
-	leastCountMin uint32 = 3 * Minute / DefaultInterval
-	// Percentage the leastC in one grid.
-	leastCountGridPercent float64 = float64(leastCountMin) / float64(DefaultGridLen)
+	// Default value of least count.
+	DefaultLeastCount uint32 = 5 * Minute / DefaultInterval
 )
 
 // Limitations
@@ -49,16 +49,22 @@ const (
 	MaxDefaltTrustLinesLen = 8
 	// Max value for the number of FillBlankZeros.
 	MaxFillBlankZerosLen = 8
+	// Min value for the expiration to period.
+	MinExpirationNumToPeriod uint32 = 5
+	// Min value for the cleaner threshold to period.
+	MinCleanerThresholdNumToPeriod uint32 = 2
 )
 
 // Config is the configuration container.
 type Config struct {
-	Interval uint32         `json:"interval"`
-	Period   [2]uint32      `json:"period"`
-	Storage  configStorage  `json:"storage"`
-	Detector configDetector `json:"detector"`
-	Webapp   configWebapp   `json:"webapp"`
-	Alerter  configAlerter  `json:"alerter"`
+	Interval   uint32         `json:"interval"`
+	Period     uint32         `json:"period"`
+	Expiration uint32         `json:"expiration"`
+	Storage    configStorage  `json:"storage"`
+	Detector   configDetector `json:"detector"`
+	Webapp     configWebapp   `json:"webapp"`
+	Alerter    configAlerter  `json:"alerter"`
+	Cleaner    configCleaner  `json:"cleaner"`
 }
 
 type configStorage struct {
@@ -67,7 +73,9 @@ type configStorage struct {
 
 type configDetector struct {
 	Port              int                `json:"port"`
-	Factor            float64            `json:"factor"`
+	TrendingFactor    float64            `json:"trendingFactor"`
+	FilterOffset      float64            `json:"filterOffset"`
+	LeastCount        uint32             `json:"leastCount"`
 	BlackList         []string           `json:"blackList"`
 	IntervalHitLimit  int                `json:"intervalHitLimit"`
 	DefaultTrustLines map[string]float64 `json:"defaultTrustLines"`
@@ -87,14 +95,22 @@ type configAlerter struct {
 	OneDayLimit uint32 `json:"oneDayLimit"`
 }
 
+type configCleaner struct {
+	Interval  uint32 `json:"interval"`
+	Threshold uint32 `json:"threshold"`
+}
+
 // New creates a Config with default values.
 func New() *Config {
 	config := new(Config)
 	config.Interval = DefaultInterval
-	config.Period = [2]uint32{DefaultNumGrid, DefaultGridLen}
+	config.Period = DefaultPeriod
+	config.Expiration = DefaultExpiration
 	config.Storage.Path = "storage/"
 	config.Detector.Port = 2015
-	config.Detector.Factor = DefaultWeightFactor
+	config.Detector.TrendingFactor = DefaultTrendingFactor
+	config.Detector.FilterOffset = DefaultFilterOffset
+	config.Detector.LeastCount = DefaultLeastCount
 	config.Detector.BlackList = []string{}
 	config.Detector.IntervalHitLimit = DefaultIntervalHitLimit
 	config.Detector.DefaultTrustLines = make(map[string]float64, 0)
@@ -106,6 +122,8 @@ func New() *Config {
 	config.Alerter.Workers = 4
 	config.Alerter.Interval = DefaultAlerterInterval
 	config.Alerter.OneDayLimit = DefaultAlerterOneDayLimit
+	config.Cleaner.Interval = DefaultCleanerInterval
+	config.Cleaner.Threshold = DefaultCleanerThreshold
 	return config
 }
 
@@ -123,29 +141,21 @@ func (config *Config) UpdateWithJSONFile(fileName string) error {
 	return err
 }
 
-// LeastC returns the least count to start detection, if the count of a metric
-// is less than this value, it will be trusted without an calculation on its
-// score.
-func (config *Config) LeastC() uint32 {
-	c := uint32((float64(config.Period[1]) / float64(config.Interval)) * leastCountGridPercent)
-	if c > leastCountMin {
-		return c
-	}
-	return leastCountMin
-}
-
 // Copy config.
 func (config *Config) Copy() *Config {
 	c := New()
 	c.Interval = config.Interval
-	c.Detector.IntervalHitLimit = config.Detector.IntervalHitLimit
 	c.Period = config.Period
+	c.Expiration = config.Expiration
 	c.Storage.Path = config.Storage.Path
 	c.Detector.Port = config.Detector.Port
-	c.Detector.Factor = config.Detector.Factor
+	c.Detector.TrendingFactor = config.Detector.TrendingFactor
+	c.Detector.FilterOffset = config.Detector.FilterOffset
+	c.Detector.LeastCount = config.Detector.LeastCount
 	c.Detector.BlackList = config.Detector.BlackList
 	c.Detector.DefaultTrustLines = config.Detector.DefaultTrustLines
 	c.Detector.FillBlankZeros = config.Detector.FillBlankZeros
+	c.Detector.IntervalHitLimit = config.Detector.IntervalHitLimit
 	c.Webapp.Port = config.Webapp.Port
 	c.Webapp.Auth = config.Webapp.Auth
 	c.Webapp.Static = config.Webapp.Static
@@ -153,6 +163,8 @@ func (config *Config) Copy() *Config {
 	c.Alerter.Workers = config.Alerter.Workers
 	c.Alerter.Interval = config.Alerter.Interval
 	c.Alerter.OneDayLimit = config.Alerter.OneDayLimit
+	c.Cleaner.Interval = config.Cleaner.Interval
+	c.Cleaner.Threshold = config.Cleaner.Threshold
 	return c
 }
 
@@ -162,18 +174,21 @@ func (config *Config) Validate() error {
 	if config.Interval < 1*Second || config.Interval > 5*Minute {
 		return ErrInterval
 	}
-	if config.Period[0] < 1 {
-		return ErrPeriodNumGrid
+	if config.Interval > config.Period {
+		return ErrPeriod
 	}
-	if config.Period[1] < 3*Minute {
-		return ErrPeriodGridLen
+	if config.Expiration < config.Period*MinExpirationNumToPeriod {
+		return ErrExpiration
 	}
 	// Detector
 	if config.Detector.Port < 1 || config.Detector.Port > 65535 {
 		return ErrDetectorPort
 	}
-	if config.Detector.Factor < 0 || config.Detector.Factor > 1 {
-		return ErrDetectorFactor
+	if config.Detector.TrendingFactor <= 0 || config.Detector.TrendingFactor >= 1 {
+		return ErrDetectorTrendingFactor
+	}
+	if config.Detector.FilterOffset <= 0 || config.Detector.FilterOffset >= 1 {
+		return ErrDetectorFilterOffset
 	}
 	if len(config.Detector.DefaultTrustLines) > MaxDefaltTrustLinesLen {
 		return ErrDetectorDefaultTrustLinesLen
@@ -199,6 +214,10 @@ func (config *Config) Validate() error {
 	}
 	if config.Alerter.OneDayLimit <= 0 {
 		return ErrAlerterOneDayLimit
+	}
+	// Cleaner
+	if config.Cleaner.Threshold < config.Period*MinCleanerThresholdNumToPeriod {
+		return ErrCleanerThreshold
 	}
 	return nil
 }

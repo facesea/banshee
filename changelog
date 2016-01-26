@@ -1,3 +1,9 @@
+0.0.6
+-----
+
+* Detector: Rollback to native bell 3-sigma. #331
+* Static: Update Header link reload method. #332
+
 0.0.5
 -----
 

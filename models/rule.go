@@ -95,7 +95,11 @@ func (rule *Rule) Equal(r *Rule) bool {
 }
 
 // Test returns true if the metric hits this rule.
-func (rule *Rule) Test(m *Metric, cfg *config.Config) bool {
+//
+//	1. For trend related conditions, use index.Score.
+//	2. For value related conditions, use metric.Value
+//
+func (rule *Rule) Test(m *Metric, idx *Index, cfg *config.Config) bool {
 	// RLock if shared.
 	rule.RLock()
 	defer rule.RUnlock()
@@ -117,10 +121,10 @@ func (rule *Rule) Test(m *Metric, cfg *config.Config) bool {
 	// Match conditions.
 	ok := false
 	if !ok && (rule.When&WhenTrendUp != 0) {
-		ok = m.IsAnomalousTrendUp()
+		ok = idx.Score > 1
 	}
 	if !ok && (rule.When&WhenTrendDown != 0) {
-		ok = m.IsAnomalousTrendDown()
+		ok = idx.Score < -1
 	}
 	if !ok && (rule.When&WhenValueGt != 0) {
 		ok = m.Value >= rule.ThresholdMax
@@ -129,10 +133,10 @@ func (rule *Rule) Test(m *Metric, cfg *config.Config) bool {
 		ok = m.Value <= rule.ThresholdMin
 	}
 	if !ok && (rule.When&WhenTrendUpAndValueGt != 0) {
-		ok = m.IsAnomalousTrendUp() && m.Value >= rule.ThresholdMax
+		ok = idx.Score > 1 && m.Value >= rule.ThresholdMax
 	}
 	if !ok && (rule.When&WhenTrendDownAndValueLt != 0) {
-		ok = m.IsAnomalousTrendDown() && m.Value <= rule.ThresholdMin
+		ok = idx.Score < -1 && m.Value <= rule.ThresholdMin
 	}
 	return ok
 }

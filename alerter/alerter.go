@@ -76,31 +76,7 @@ func (al *Alerter) work() {
 		metric := <-al.In
 		// Check interval.
 		v, ok := al.m.Get(metric.Name)
-		if ok {
-			if v.(uint32)%2 == 1 {
-				//last time alert, check interval
-				if metric.Stamp-(v.(uint32)-1)/2 < al.cfg.Alerter.Interval {
-					//last time in interval, don't alert
-					continue
-				} else {
-					//don't alert set stamp+0
-					al.m.Set(metric.Name, metric.Stamp*2+0)
-					continue
-				}
-			} else {
-				//last time did not alert, check interval
-				if metric.Stamp-v.(uint32)/2 < 60 {
-					//in interval,alert
-				} else {
-					//not in interval, don't alert set stamp+0
-					al.m.Set(metric.Name, metric.Stamp*2+0)
-					continue
-				}
-
-			}
-		} else {
-			//first time don't alert, set stamp+0
-			al.m.Set(metric.Name, metric.Stamp*2+0)
+		if ok && metric.Stamp-v.(uint32) < al.cfg.Alerter.Interval {
 			continue
 		}
 		// Check alert times in one day
@@ -160,7 +136,7 @@ func (al *Alerter) work() {
 				log.Info("send message to %s with %s ok", user.Name, metric.Name)
 			}
 			if len(users) != 0 {
-				al.m.Set(metric.Name, metric.Stamp*2+1)
+				al.m.Set(metric.Name, metric.Stamp)
 			}
 		}
 	}
