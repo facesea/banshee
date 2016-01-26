@@ -12,7 +12,7 @@ type Index struct {
 	Name string `json:"name"`
 	// Latest stamp for the metric.
 	Stamp uint32 `json:"stamp"`
-	// Latest score for the metric.
+	// Latest trending score for the metric.
 	Score float64 `json:"score"`
 	// Latest average for the metric.
 	Average float64 `json:"average"`

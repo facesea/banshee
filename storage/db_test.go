@@ -3,7 +3,6 @@
 package storage
 
 import (
-	"fmt"
 	"github.com/eleme/banshee/util"
 	"github.com/eleme/banshee/util/assert"
 	"os"
@@ -14,8 +13,7 @@ import (
 func TestOpen(t *testing.T) {
 	// Open db.
 	fileName := "storage_test"
-	options := &Options{NumGrid: 288, GridLen: 300}
-	db, err := Open(fileName, options)
+	db, err := Open(fileName)
 	assert.Ok(t, err == nil)
 	assert.Ok(t, db != nil)
 	// Defer close and remove files.
@@ -25,6 +23,4 @@ func TestOpen(t *testing.T) {
 	assert.Ok(t, util.IsFileExist(path.Join(fileName, admindbFileName)))
 	assert.Ok(t, util.IsFileExist(path.Join(fileName, indexdbFileName)))
 	assert.Ok(t, util.IsFileExist(path.Join(fileName, metricdbFileName)))
-	sFileName := fmt.Sprintf("%s-%dx%d", statedbFileName, options.NumGrid, options.GridLen)
-	assert.Ok(t, util.IsFileExist(path.Join(fileName, sFileName)))
 }
