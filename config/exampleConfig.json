@@ -1,12 +1,15 @@
 {
   "interval": 10,
-  "period": [288, 300],
+  "period": 86400,
+  "expiration": 604800,
   "storage": {
     "path": "storage/"
   },
   "detector": {
     "port": 2015,
-    "factor": 0.05,
+    "trendingFactor": 0.1,
+    "filterOffset": 0.01,
+    "leastCount": 30,
     "blacklist": [],
     "intervalHitLimit": 100,
     "defaultTrustLines": {},
@@ -22,5 +25,9 @@
     "workers": 4,
     "interval": 1200,
     "oneDayLimit": 5
+  },
+  "cleaner": {
+    "interval": 10800,
+    "threshold": 259200
   }
 }
