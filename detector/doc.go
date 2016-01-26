@@ -2,8 +2,7 @@
 
 /*
 
-Package detector starts a tcp server to analyze the trendings of incoming
-metrics and send them to alerter.
+Package detector is a tcp server to detect anomalies.
 
 Detector Input protocol
 
@@ -39,23 +38,6 @@ If score > 1, that means the metric is currently anomalously trending up.
 If score < -1, that means the metric is currently anomalously trending down.
 
 If score is larger than -1 and less than 1, the metric is normal.
-
-Detection State
-
-How to get the mean and stddev? We may need to store history metrics on disk
-and each time a metric comes in, we query all metrics from db, and compute the
-mean and stddev via the traditional math formulas. That's too slow...
-
-We use exponential weighted moving average/standard deviation,
-https://en.wikipedia.org/wiki/Moving_average
-
-	// f is a float number between 0 and 1.
-	meanOld = mean
-	mean = (1 - f) * mean + value * f
-	stddev = math.Sqrt((1-f) * stddev * stddev + f * (value - meanOld) * (value - mean))
-
-The recursive formulas above make mean and stddev follow the metric trending. By this way,
-we just need to store 2 numbers for detection and the compution is much faster.
 
 */
 package detector
