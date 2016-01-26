@@ -18,7 +18,7 @@ import (
 )
 
 // Timeout in milliseconds.
-const timeout = 100
+const timeout = 300
 
 // Detector is to detect anomalies.
 type Detector struct {
