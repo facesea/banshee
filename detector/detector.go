@@ -289,3 +289,28 @@ func (d *Detector) div3Sigma(m *models.Metric, vals []float64) {
 	// 3-sigma
 	m.Score = (last - avg) / (3 * std)
 }
+
+// Calculate next score for index via ewma, called the weighted exponential
+// moving average.
+//
+//	t[0] = x[1], f: 0~1
+//	t[n] = t[n-1] * (1 - f) + f * x[n]
+//
+// The index score will follow the metric's score, and additionally the index
+// average is the latest metric average.
+//
+// Index score is the trending description of metric score.
+//
+func (d *Detector) nextIdx(idx *models.Index, m *models.Metric) *models.Index {
+	n := &models.Index{Name: m.Name, Stamp: m.Stamp}
+	if idx == nil {
+		// As first
+		n.Score = m.Score
+		n.Average = m.Value
+		return n
+	}
+	f := d.cfg.Detector.TrendingFactor
+	n.Score = idx.Score*(1-f) + f*m.Score
+	n.Average = m.Average
+	return n
+}
