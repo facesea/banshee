@@ -28,7 +28,7 @@ const (
 	// Default metric expiration.
 	DefaultExpiration uint32 = 7 * Day
 	// Default weight factor for moving average.
-	DefaultTrendingFactor float64 = 0.05
+	DefaultTrendingFactor float64 = 0.1
 	// Default filter offset to query history metrics.
 	DefaultFilterOffset float64 = 0.01
 	// Default cleaner interval.

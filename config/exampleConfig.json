@@ -7,7 +7,7 @@
   },
   "detector": {
     "port": 2015,
-    "trendingFactor": 0.05,
+    "trendingFactor": 0.1,
     "filterOffset": 0.01,
     "leastCount": 30,
     "blacklist": [],

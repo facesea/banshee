@@ -17,7 +17,7 @@ Configuration is in JSON file, for example:
 	  },
 	  "detector": {
 	    "port": 2015,
-	    "factor": 0.05,
+	    "trendingFactor": 0.1,
 	    "filterOffset": 0.01,
 	    "leastCount": 30,
 	    "blacklist": ["statsd.*"],
@@ -55,7 +55,7 @@ The documents for each configuration item with default values:
 	expiration                 // All metrics expiration (in seconds), default: 604800 (7 days)
 	storage.path               // Storage directory path.
 	detector.port              // Detector tcp port to listen.
-	detector.factor            // Detection weighted moving factor, should be a number between 0 and 1, default: 0.05
+	detector.trendingFactor    // Detection weighted moving factor, should be a number between 0 and 1, default: 0.1
 	detector.filterOffset      // Offset to filter history data, as a percentage to period, default: 0.01
 	detector.leastCount        // Least count to start detection. default: 30
 	detector.blacklist         // Incoming metrics blacklist, each one should be a wildcard pattern, default: []
