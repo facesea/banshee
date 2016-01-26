@@ -28,7 +28,7 @@ const (
 	// Default metric expiration.
 	DefaultExpiration uint32 = 7 * Day
 	// Default weight factor for moving average.
-	DefaultWeightFactor float64 = 0.05
+	DefaultTrendingFactor float64 = 0.05
 	// Default filter offset to query history metrics.
 	DefaultFilterOffset float64 = 0.01
 	// Default cleaner interval.
@@ -73,7 +73,7 @@ type configStorage struct {
 
 type configDetector struct {
 	Port              int                `json:"port"`
-	Factor            float64            `json:"factor"`
+	TrendingFactor    float64            `json:"trendingFactor"`
 	FilterOffset      float64            `json:"filterOffset"`
 	LeastCount        uint32             `json:"leastCount"`
 	BlackList         []string           `json:"blackList"`
@@ -108,7 +108,7 @@ func New() *Config {
 	config.Expiration = DefaultExpiration
 	config.Storage.Path = "storage/"
 	config.Detector.Port = 2015
-	config.Detector.Factor = DefaultWeightFactor
+	config.Detector.TrendingFactor = DefaultTrendingFactor
 	config.Detector.FilterOffset = DefaultFilterOffset
 	config.Detector.LeastCount = DefaultLeastCount
 	config.Detector.BlackList = []string{}
@@ -149,7 +149,7 @@ func (config *Config) Copy() *Config {
 	c.Expiration = config.Expiration
 	c.Storage.Path = config.Storage.Path
 	c.Detector.Port = config.Detector.Port
-	c.Detector.Factor = config.Detector.Factor
+	c.Detector.TrendingFactor = config.Detector.TrendingFactor
 	c.Detector.FilterOffset = config.Detector.FilterOffset
 	c.Detector.LeastCount = config.Detector.LeastCount
 	c.Detector.BlackList = config.Detector.BlackList
@@ -184,8 +184,8 @@ func (config *Config) Validate() error {
 	if config.Detector.Port < 1 || config.Detector.Port > 65535 {
 		return ErrDetectorPort
 	}
-	if config.Detector.Factor <= 0 || config.Detector.Factor >= 1 {
-		return ErrDetectorFactor
+	if config.Detector.TrendingFactor <= 0 || config.Detector.TrendingFactor >= 1 {
+		return ErrDetectorTrendingFactor
 	}
 	if config.Detector.FilterOffset <= 0 || config.Detector.FilterOffset >= 1 {
 		return ErrDetectorFilterOffset

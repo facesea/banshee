@@ -9,7 +9,7 @@ var (
 	ErrPeriod                       = errors.New("period should be an integer greater than interval")
 	ErrExpiration                   = errors.New("expiration should be an integer greater than 5 * period")
 	ErrDetectorPort                 = errors.New("invalid detector.port")
-	ErrDetectorFactor               = errors.New("detector.factor should be a float between 0 and 1")
+	ErrDetectorTrendingFactor       = errors.New("detector.trendingFactor should be a float between 0 and 1")
 	ErrDetectorFilterOffset         = errors.New("detector.filterOffset should be a float between 0 and 1")
 	ErrDetectorDefaultTrustLinesLen = errors.New("detector.defaultTrustLines should have up to 8 items")
 	ErrDetectorDefaultTrustLineZero = errors.New("detector.defaultTrustLines should not contain zeros")
