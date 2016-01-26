@@ -32,7 +32,7 @@
     });
     return context;
   };
-  
+
   /**
    * Remove chart.
    */
@@ -74,7 +74,7 @@
     return horizon
     .extent([-2, 2])
     .mode('mirror')
-    .colors(['#08519C', '#6BAED6', '#6BAED6', '#08519C']);
+    .colors(['#dd1144', '#6BAED6', '#6BAED6', '#dd1144']);
   };
   /**
    * Make metric.
