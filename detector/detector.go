@@ -114,7 +114,7 @@ func (d *Detector) handle(conn net.Conn) {
 // Process the input metric.
 //
 //	1. Match metric with rules.
-//	2. Test with its matched rules and output it.
+//	2. Detect the metric with matched rules.
 //
 func (d *Detector) process(m *models.Metric) {
 	// Time it.
@@ -126,28 +126,20 @@ func (d *Detector) process(m *models.Metric) {
 		return
 	}
 	// Detect
-	err := d.detect(m)
+	err := d.detect(m, rules)
 	if err != nil {
 		log.Error("detect: %v, skipping..", err)
 		return
+	}
+	// Output
+	if len(m.TestedRules) > 0 {
+		// Test ok.
+		d.output(m)
 	}
 	// Time end.
 	elapsed := time.Since(startAt).Nanoseconds() / (1000 * 1000)
 	if elapsed > timeout {
 		log.Warn("detection is slow: %dms", elapsed)
-	}
-	// Test with rules.
-	for _, rule := range rules {
-		if rule.Test(m, d.cfg) {
-			// Add tested ok rules.
-			m.TestedRules = append(m.TestedRules, rule)
-			log.Info("%dms %s test ok", elapsed, m.Name)
-		}
-	}
-	// Output result.
-	if len(m.TestedRules) > 0 {
-		// Out only if tested ok.
-		d.output(m)
 	}
 }
 
@@ -182,15 +174,16 @@ func (d *Detector) match(m *models.Metric) (bool, []*models.Rule) {
 	return true, rules
 }
 
-// Detect input metric with 3-sigma rule.
+// Detect input metric with its matched rules via 3-sigma.
 //
 //	1. Get history values for this metric.
 //	2. Get current index for this metric.
 //	3. Calculate score via 3-sigma.
 //	4. Get score trending via ewma.
 //	5. Save the metric and index to db.
+//	6. Test with its matched rules and output it.
 //
-func (d *Detector) detect(m *models.Metric) error {
+func (d *Detector) detect(m *models.Metric, rules []*models.Rule) error {
 	// Get index.
 	idx, err := d.db.Index.Get(m.Name)
 	if err != nil {
@@ -209,12 +202,32 @@ func (d *Detector) detect(m *models.Metric) error {
 	}
 	// Apply 3-sigma.
 	d.div3Sigma(m, vals)
-	// Get new index.
-	nIdx := d.nextIdx(idx, m)
+	// New index.
+	idx = d.nextIdx(idx, m)
+	// Test with rules.
+	d.test(m, idx, rules)
 	// Save
-	if err := d.db.Index.Put(nIdx); err != nil {
+	return d.save(m, idx)
+}
+
+// Test metric and index with rules.
+// The following function will fill the m.TestedRules.
+func (d *Detector) test(m *models.Metric, idx *models.Index, rules []*models.Rule) {
+	for _, rule := range rules {
+		if rule.Test(m, idx, d.cfg) {
+			// Add tested ok rules.
+			m.TestedRules = append(m.TestedRules, rule)
+		}
+	}
+}
+
+// Save metric and index into db.
+func (d *Detector) save(m *models.Metric, idx *models.Index) error {
+	// Save index.
+	if err := d.db.Index.Put(idx); err != nil {
 		return err
 	}
+	// Save metric.
 	if err := d.db.Metric.Put(m); err != nil {
 		return err
 	}
