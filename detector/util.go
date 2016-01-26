@@ -10,7 +10,7 @@ func average(vals []float64) float64 {
 	for i := 0; i < len(vals); i++ {
 		sum += vals[i]
 	}
-	return sum / len(vals)
+	return sum / float64(len(vals))
 }
 
 // Get the standard deviation of float64 values, with
@@ -21,5 +21,5 @@ func stdDev(vals []float64, avg float64) float64 {
 		dis := vals[i] - avg
 		sum += dis * dis
 	}
-	return math.Sqrt(sum / len * (vals))
+	return math.Sqrt(sum / float64(len(vals)))
 }

@@ -17,7 +17,7 @@ const maxMetricNameLen = 256
 //	2. Metric stamp shouldn't be smaller than `horizon`.
 //
 func validateMetric(m *models.Metric) error {
-	if len(m.Name) > MaxMetricNameLen {
+	if len(m.Name) > maxMetricNameLen {
 		// Name too long.
 		return ErrMetricNameTooLong
 	}

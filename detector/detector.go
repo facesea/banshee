@@ -57,7 +57,7 @@ func (d *Detector) Start() {
 	addr := fmt.Sprintf("0.0.0.0:%d", d.cfg.Detector.Port)
 	ln, err := net.Listen("tcp", addr)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("listen: %v", err)
 	}
 	log.Info("detector is listening on %s..", addr)
 	// Accept
@@ -114,15 +114,38 @@ func (d *Detector) handle(conn net.Conn) {
 // Process the input metric.
 //
 //	1. Match metric with rules.
-//	2. Get history values for this metric.
-//	3. Get current index for this metric.
-//	4. Calculate score via 3-sigma.
-//	5. Get score trending via ewma.
-//	6. Save the metric and index to db.
-//	7. Test with its matched rules and output it.
+//	2. Test with its matched rules and output it.
 //
 func (d *Detector) process(m *models.Metric) {
-
+	// Time it.
+	startAt := time.Now()
+	// Match
+	ok, rules := d.match(m)
+	if !ok {
+		// Not matched.
+		return
+	}
+	// Detect
+	err := d.detect(m)
+	if err != nil {
+		log.Error("detect: %v, skipping..", err)
+		return
+	}
+	// Time end.
+	elapsed := time.Since(startAt)
+	// Test with rules.
+	for _, rule := range rules {
+		if rule.Test(m, d.cfg) {
+			// Add tested ok rules.
+			m.TestedRules = append(m.TestedRules, rule)
+			log.Info("%dμs %s test ok", elapsed.Nanoseconds()/1000, m.Name)
+		}
+	}
+	// Output result.
+	if len(m.TestedRules) > 0 {
+		// Out only if tested ok.
+		d.output(m)
+	}
 }
 
 // Match a metric with rules, and return matched rules.
@@ -154,6 +177,45 @@ func (d *Detector) match(m *models.Metric) (bool, []*models.Rule) {
 	}
 	// Ok
 	return true, rules
+}
+
+// Detect input metric with 3-sigma rule.
+//
+//	1. Get history values for this metric.
+//	2. Get current index for this metric.
+//	3. Calculate score via 3-sigma.
+//	4. Get score trending via ewma.
+//	5. Save the metric and index to db.
+//
+func (d *Detector) detect(m *models.Metric) error {
+	// Get index.
+	idx, err := d.db.Index.Get(m.Name)
+	if err != nil {
+		if err == indexdb.ErrNotFound {
+			idx = nil
+		} else {
+			return err // unexcepted
+		}
+	}
+	// Fill zero?
+	fz := idx != nil && d.shouldFz(m)
+	// History values.
+	vals, err := d.values(m, fz)
+	if err != nil {
+		return err // unexcepted
+	}
+	// Apply 3-sigma.
+	d.div3Sigma(m, vals)
+	// Get new index.
+	nIdx := d.nextIdx(idx, m)
+	// Save
+	if err := d.db.Index.Put(nIdx); err != nil {
+		return err
+	}
+	if err := d.db.Metric.Put(m); err != nil {
+		return err
+	}
+	return nil
 }
 
 // Test whether a metric need to fill blank with zeros to its history
@@ -206,7 +268,7 @@ func (d *Detector) fill0(ms []*models.Metric, start, stop uint32) []float64 {
 // offset.
 func (d *Detector) values(m *models.Metric, fz bool) ([]float64, error) {
 	offset := uint32(d.cfg.Detector.FilterOffset * float64(d.cfg.Period))
-	expration := d.cfg.Expiration
+	expiration := d.cfg.Expiration
 	period := d.cfg.Period
 	vals := make([]float64, 0)
 	// Get values with the same phase.
@@ -309,6 +371,7 @@ func (d *Detector) nextIdx(idx *models.Index, m *models.Metric) *models.Index {
 		n.Average = m.Value
 		return n
 	}
+	// Move next
 	f := d.cfg.Detector.TrendingFactor
 	n.Score = idx.Score*(1-f) + f*m.Score
 	n.Average = m.Average
