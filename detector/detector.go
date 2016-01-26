@@ -20,7 +20,7 @@ import (
 // Timeout in milliseconds.
 const timeout = 100
 
-// Detector
+// Detector is to detect anomalies.
 type Detector struct {
 	cfg  *config.Config
 	db   *storage.DB
@@ -243,7 +243,7 @@ func (d *Detector) shouldFz(m *models.Metric) bool {
 func (d *Detector) fill0(ms []*models.Metric, start, stop uint32) []float64 {
 	i := 0 // record real-metric.
 	step := d.cfg.Interval
-	vals := make([]float64, 0)
+	var vals []float64
 	for start < stop {
 		if i < len(ms) {
 			m := ms[i]
@@ -270,7 +270,7 @@ func (d *Detector) values(m *models.Metric, fz bool) ([]float64, error) {
 	offset := uint32(d.cfg.Detector.FilterOffset * float64(d.cfg.Period))
 	expiration := d.cfg.Expiration
 	period := d.cfg.Period
-	vals := make([]float64, 0)
+	var vals []float64
 	// Get values with the same phase.
 	for stamp := m.Stamp; stamp+expiration > m.Stamp; stamp -= period {
 		start := stamp - offset
