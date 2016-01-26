@@ -132,13 +132,16 @@ func (d *Detector) process(m *models.Metric) {
 		return
 	}
 	// Time end.
-	elapsed := time.Since(startAt)
+	elapsed := time.Since(startAt).Nanoseconds() / (1000 * 1000)
+	if elapsed > timeout {
+		log.Warn("detection is slow: %dms", elapsed)
+	}
 	// Test with rules.
 	for _, rule := range rules {
 		if rule.Test(m, d.cfg) {
 			// Add tested ok rules.
 			m.TestedRules = append(m.TestedRules, rule)
-			log.Info("%dμs %s test ok", elapsed.Nanoseconds()/1000, m.Name)
+			log.Info("%dms %s test ok", elapsed, m.Name)
 		}
 	}
 	// Output result.
