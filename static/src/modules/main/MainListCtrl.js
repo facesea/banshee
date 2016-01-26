@@ -9,7 +9,7 @@ module.exports = function ($scope, $rootScope, $timeout, $stateParams, Metric, C
   $scope.projectId = $stateParams.project;
 
   $scope.limitList = [{
-    label: 'Limit1',
+    label: 'Limit 1',
     val: 1
   }, {
     label: 'Limit 30',
