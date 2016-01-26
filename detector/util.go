@@ -4,21 +4,22 @@ package detector
 
 import "math"
 
-// getMean returns the mean of values.
-func getMean(values []float64) float64 {
-	sum := float64(0)
-	for i := 0; i < len(values); i++ {
-		sum += values[i]
+// Get the average of float64 values.
+func average(vals []float64) float64 {
+	var sum float64
+	for i := 0; i < len(vals); i++ {
+		sum += vals[i]
 	}
-	return sum / float64(len(values))
+	return sum / len(vals)
 }
 
-// getStd returns the stddev of values.
-func getStd(values []float64, mean float64) float64 {
-	sum := float64(0)
-	for i := 0; i < len(values); i++ {
-		dis := values[i] - mean
+// Get the standard deviation of float64 values, with
+// an input average.
+func stdDev(vals []float64, avg float64) float64 {
+	var sum float64
+	for i := 0; i < len(vals); i++ {
+		dis := vals[i] - avg
 		sum += dis * dis
 	}
-	return math.Sqrt(sum / float64(len(values)))
+	return math.Sqrt(sum / len * (vals))
 }

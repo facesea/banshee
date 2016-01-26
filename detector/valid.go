@@ -7,10 +7,15 @@ import (
 	"github.com/eleme/banshee/storage/metricdb"
 )
 
-// Metrics with too long name will be refused.
-const MaxMetricNameLen = 256
+// Metrics with longer names will be refused.
+const maxMetricNameLen = 256
 
-// validateMetric validates input metric.
+// Validate input metrics, the following limitations will
+// be checked:
+//
+//	1. Metric name shouldn't be longer than maxMetricNameLen.
+//	2. Metric stamp shouldn't be smaller than `horizon`.
+//
 func validateMetric(m *models.Metric) error {
 	if len(m.Name) > MaxMetricNameLen {
 		// Name too long.
