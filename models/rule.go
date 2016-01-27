@@ -163,7 +163,7 @@ func (rule *Rule) BuildRepr() {
 	rule.Repr = strings.Join(parts, " || ")
 }
 
-// BuildNumMetrics sets the rule's number of metrics matched.
+// SetNumMetrics sets the rule's number of metrics matched.
 func (rule *Rule) SetNumMetrics(n int) {
 	// Lock if shared.
 	rule.Lock()
