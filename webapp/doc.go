@@ -197,15 +197,11 @@ Baisc auth required.
 	POST /api/project/:id/rule -d
 	{
 		"pattern": "timer.count_ps.*",
-		"onTrendUp": true,
-		"onTrendDown": false,
-		"onValueGt": false,
-		"onValueLt": false,
-		"onTrendUpAndValueGt": false,
-		"onTrendDownAndValueLt": false,
+		"trendUp": true,
+		"trendDown": false,
 		"thresholdMax": 0,
 		"thresholdMin": 0,
-		"trustLine": 30
+		"repr": "trend ↑"
 	}
 
 	200
