@@ -3,87 +3,80 @@
 package models
 
 import (
-	"github.com/eleme/banshee/config"
+	// "github.com/eleme/banshee/config"
 	"github.com/eleme/banshee/util/assert"
 	"testing"
 )
 
 func TestRuleBuildRepr(t *testing.T) {
 	var rule *Rule
-	// WhenTrendUp
-	rule = &Rule{When: WhenTrendUp}
+	// TrendUp
+	rule = &Rule{TrendUp: true}
 	rule.BuildRepr()
 	assert.Ok(t, rule.Repr == "trend ↑")
-	// WhenTrendDown
-	rule = &Rule{When: WhenTrendDown}
+	// TrendDown
+	rule = &Rule{TrendDown: true}
 	rule.BuildRepr()
 	assert.Ok(t, rule.Repr == "trend ↓")
-	// WhenTrendUp | WhenTrendDown
-	rule = &Rule{When: WhenTrendUp | WhenTrendDown}
+	// TrendUp Or TrendDown
+	rule = &Rule{TrendUp: true, TrendDown: true}
 	rule.BuildRepr()
 	assert.Ok(t, rule.Repr == "trend ↑ || trend ↓")
-	// WhenValueGt
-	rule = &Rule{
-		When:         WhenValueGt,
-		ThresholdMax: 3.1478,
-	}
+	// Value >= X
+	rule = &Rule{ThresholdMax: 3.1478}
 	rule.BuildRepr()
 	assert.Ok(t, rule.Repr == "value >= 3.148")
-	// WhenTrendUpAndValueGt
-	rule = &Rule{
-		When:         WhenTrendUpAndValueGt,
-		ThresholdMax: 1.29,
-	}
+	// Value <= X
+	rule = &Rule{ThresholdMin: 3.1478}
+	rule.BuildRepr()
+	assert.Ok(t, rule.Repr == "value <= 3.148")
+	// TrendUp and Value >= X
+	rule = &Rule{TrendUp: true, ThresholdMax: 1.29}
 	rule.BuildRepr()
 	assert.Ok(t, rule.Repr == "(trend ↑ && value >= 1.29)")
-	// WhenTrendDown | WhenTrendUpAndValueGt
-	rule = &Rule{
-		When:         WhenTrendUpAndValueGt | WhenTrendDown,
-		ThresholdMax: 2223.8,
-	}
+	// (TrendUp And Value >= X) Or TrendDown
+	rule = &Rule{TrendDown: true, TrendUp: true, ThresholdMax: 2223.8}
 	rule.BuildRepr()
-	assert.Ok(t, rule.Repr == "trend ↓ || (trend ↑ && value >= 2223.8)")
-	// WhenTrendUpAndValueGt | WhenTrendDownAndValueLt
-	rule = &Rule{
-		When:         WhenTrendUpAndValueGt | WhenTrendDownAndValueLt,
-		ThresholdMax: 18987,
-		ThresholdMin: 781,
-	}
+	assert.Ok(t, rule.Repr == "(trend ↑ && value >= 2223.8) || trend ↓")
+	// (TrendUp And Value >= X) Or (TrendDown And Value <= X)
+	rule = &Rule{TrendUp: true, ThresholdMax: 18987, TrendDown: true, ThresholdMin: 781}
 	rule.BuildRepr()
 	assert.Ok(t, rule.Repr == "(trend ↑ && value >= 18987) || (trend ↓ && value <= 781)")
 }
 
 func TestRuleTest(t *testing.T) {
-	m := &Metric{Name: "foo", Score: 1.2, Value: 3.567}
-	idx := &Index{Name: m.Name, Score: m.Score}
-	// WhenTrendUp
-	r1 := &Rule{When: WhenTrendUp}
-	assert.Ok(t, r1.Test(m, idx, nil))
-	// WhenTrendDown
-	r2 := &Rule{When: WhenTrendDown}
-	assert.Ok(t, !r2.Test(m, idx, nil))
-	// WhenValueGt
-	r3 := &Rule{When: WhenValueGt, ThresholdMax: 1.2}
-	assert.Ok(t, r3.Test(m, idx, nil))
-	// WhenValueLt
-	r4 := &Rule{When: WhenValueLt, ThresholdMin: 1.2}
-	assert.Ok(t, !r4.Test(m, idx, nil))
-	// WhenTrendUpAndValueGt
-	r5 := &Rule{When: WhenTrendUpAndValueGt, ThresholdMax: 1.2}
-	assert.Ok(t, r5.Test(m, idx, nil))
-	r6 := &Rule{When: WhenTrendUpAndValueGt, ThresholdMax: 9.0}
-	assert.Ok(t, !r6.Test(m, idx, nil))
-	// WhenTrendUp | WhenTrendDownAndValueLt
-	r7 := &Rule{When: WhenTrendUp | WhenTrendDownAndValueLt, ThresholdMin: 2.0}
-	assert.Ok(t, r7.Test(m, idx, nil))
-	// TrustLine
-	r8 := &Rule{When: WhenTrendUp, TrustLine: 1.0}
-	assert.Ok(t, r8.Test(m, idx, nil))
-	r9 := &Rule{When: WhenTrendUp, TrustLine: 8.0}
-	assert.Ok(t, !r9.Test(m, idx, nil))
-	// Default TrustLines
-	cfg := config.New()
-	cfg.Detector.DefaultTrustLines["fo*"] = 4.0
-	r10 := &Rule{When: WhenTrendUp}
-	assert.Ok(t, !r10.Test(m, idx, cfg))
+	var rule *Rule
+	// TrendUp
+	rule = &Rule{TrendUp: true}
+	assert.Ok(t, rule.Test(&Metric{}, &Index{Score: 1.2}, nil))
+	assert.Ok(t, !rule.Test(&Metric{}, &Index{Score: 0.8}, nil))
+	// TrendDown
+	rule = &Rule{TrendDown: true}
+	assert.Ok(t, rule.Test(&Metric{}, &Index{Score: -1.2}, nil))
+	assert.Ok(t, !rule.Test(&Metric{}, &Index{Score: 1.2}, nil))
+	// TrendUp And Value >= X
+	rule = &Rule{TrendUp: true, ThresholdMax: 39}
+	assert.Ok(t, rule.Test(&Metric{Value: 50}, &Index{Score: 1.3}, nil))
+	assert.Ok(t, !rule.Test(&Metric{Value: 38}, &Index{Score: 1.5}, nil))
+	assert.Ok(t, !rule.Test(&Metric{Value: 60}, &Index{Score: 0.9}, nil))
+	// TrendDown And Value <= X
+	rule = &Rule{TrendDown: true, ThresholdMin: 40}
+	assert.Ok(t, rule.Test(&Metric{Value: 10}, &Index{Score: -1.2}, nil))
+	assert.Ok(t, !rule.Test(&Metric{Value: 41}, &Index{Score: -1.2}, nil))
+	assert.Ok(t, !rule.Test(&Metric{Value: 12}, &Index{Score: -0.2}, nil))
+	// (TrendUp And Value >= X) Or TrendDown
+	rule = &Rule{TrendUp: true, TrendDown: true, ThresholdMax: 90}
+	assert.Ok(t, rule.Test(&Metric{Value: 100}, &Index{Score: 1.1}, nil))
+	assert.Ok(t, rule.Test(&Metric{}, &Index{Score: -1.1}, nil))
+	assert.Ok(t, !rule.Test(&Metric{}, &Index{Score: -0.1}, nil))
+	assert.Ok(t, !rule.Test(&Metric{Value: 89}, &Index{Score: 1.3}, nil))
+	assert.Ok(t, !rule.Test(&Metric{Value: 189}, &Index{Score: 0.3}, nil))
+	// (TrendUp And Value >= X) Or (TrendDown And Value <= X)
+	rule = &Rule{TrendUp: true, TrendDown: true, ThresholdMax: 90, ThresholdMin: 10}
+	assert.Ok(t, rule.Test(&Metric{Value: 100}, &Index{Score: 1.2}, nil))
+	assert.Ok(t, rule.Test(&Metric{Value: 9}, &Index{Score: -1.2}, nil))
+	assert.Ok(t, !rule.Test(&Metric{Value: 12}, &Index{Score: 1.2}, nil))
+	assert.Ok(t, !rule.Test(&Metric{Value: 102}, &Index{Score: 0.2}, nil))
+	assert.Ok(t, !rule.Test(&Metric{Value: 2}, &Index{Score: 0.9}, nil))
+	// TODO: default thresholds
 }
