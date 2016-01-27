@@ -29,10 +29,10 @@ module.exports = function ($scope, $rootScope, $timeout, $stateParams, Metric, C
   }];
 
   $scope.sortList = [{
-    label: 'Trending Up',
+    label: 'Trend ↑',
     val: 'up'
   }, {
-    label: 'Trending Down',
+    label: 'Trend ↓',
     val: 'down'
   }];
 

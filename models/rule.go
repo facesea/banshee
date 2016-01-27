@@ -10,16 +10,6 @@ import (
 	"strings"
 )
 
-// Conditions
-const (
-	WhenTrendUp             = 0x1  // 0b000001
-	WhenTrendDown           = 0x2  // 0b000010
-	WhenValueGt             = 0x4  // 0b000100
-	WhenValueLt             = 0x8  // 0b001000
-	WhenTrendUpAndValueGt   = 0x10 // 0b010000
-	WhenTrendDownAndValueLt = 0x20 // 0b100000
-)
-
 // Rule is a type to describe alerter rule.
 type Rule struct {
 	// Rule may be cached.
@@ -30,31 +20,17 @@ type Rule struct {
 	ProjectID int `sql:"index;not null" json:"projectID"`
 	// Pattern is a wildcard string
 	Pattern string `sql:"size:400;not null;unique" json:"pattern"`
-	// Alerting condition, described as the logic OR result of basic conditions
-	// above:
-	//   When = condition1 | condition2
-	// example:
-	//   0x3 = WhenTrendUp | WhenTrendDown
-	When int `json:"when"`
+	// Trend
+	TrendUp   bool `json:trendUp`
+	TrendDown bool `json:trendDown`
 	// Optional thresholds data, only used if the rule condition is about
 	// threshold. Although we really don't need any thresholds for trending
-	// analyzation and alertings, but we still offer a way to alert by
+	// analyzation and alertings, but we still provide a way to alert by
 	// thresholds.
 	ThresholdMax float64 `json:"thresholdMax"`
 	ThresholdMin float64 `json:"thresholdMin"`
-	// Never alert for values below this line. The mainly reason to provide
-	// this option is to ignore the volatility of values with a very small
-	// average level.
-	TrustLine float64 `json:"trustLine"`
 	// String representation.
 	Repr string `sql:"-" json:"repr"`
-}
-
-// IsValid returns true if rule.When is valid.
-func (rule *Rule) IsValid() bool {
-	rule.RLock()
-	defer rule.RUnlock()
-	return rule.When >= 0x1 && rule.When <= 0x3F
 }
 
 // Copy the rule.
@@ -73,10 +49,10 @@ func (rule *Rule) CopyTo(r *Rule) {
 	r.ID = rule.ID
 	r.ProjectID = rule.ProjectID
 	r.Pattern = rule.Pattern
-	r.When = rule.When
+	r.TrendUp = rule.TrendUp
+	r.TrendDown = rule.TrendDown
 	r.ThresholdMax = rule.ThresholdMax
 	r.ThresholdMin = rule.ThresholdMin
-	r.TrustLine = rule.TrustLine
 }
 
 // Equal tests rule equality
@@ -88,55 +64,67 @@ func (rule *Rule) Equal(r *Rule) bool {
 	return (r.ID == rule.ID &&
 		r.ProjectID == rule.ProjectID &&
 		r.Pattern == rule.Pattern &&
-		r.When == rule.When &&
+		r.TrendUp == rule.TrendUp &&
+		r.TrendDown == rule.TrendDown &&
 		r.ThresholdMax == rule.ThresholdMax &&
-		r.ThresholdMin == rule.ThresholdMin &&
-		r.TrustLine == rule.TrustLine)
+		r.ThresholdMin == rule.ThresholdMin)
 }
 
-// Test returns true if the metric hits this rule.
+// Test if a metric hits this rule.
 //
-//	1. For trend related conditions, use index.Score.
-//	2. For value related conditions, use metric.Value
+//	1. For trend related conditions, index.Score will be used.
+//	2. For value related conditions, metric.Value will be used.
 //
 func (rule *Rule) Test(m *Metric, idx *Index, cfg *config.Config) bool {
 	// RLock if shared.
 	rule.RLock()
 	defer rule.RUnlock()
-	// Ignore it if its value small enough to be trust
-	trustLine := rule.TrustLine
-	if trustLine == 0 && cfg != nil {
-		// Check default trustlines
-		for pattern, value := range cfg.Detector.DefaultTrustLines {
-			if ok, _ := filepath.Match(pattern, m.Name); ok && value != 0 {
-				trustLine = value
+	// Default thresholds.
+	thresholdMax := rule.ThresholdMax
+	thresholdMin := rule.ThresholdMin
+	if thresholdMax == 0 && cfg != nil {
+		// Check defaults
+		for p, v := range cfg.Detector.DefaultThresholdMaxs {
+			if ok, _ := filepath.Match(p, m.Name); ok && v != 0 {
+				thresholdMax = v
 				break
 			}
 		}
 	}
-	// Use rule's trustline
-	if m.Value < trustLine {
-		return false
+	if thresholdMin == 0 && cfg != nil {
+		// Check defaults
+		for p, v := range cfg.Detector.DefaultThresholdMins {
+			if ok, _ := filepath.Match(p, m.Name); ok && v != 0 {
+				thresholdMin = v
+				break
+			}
+		}
 	}
-	// Match conditions.
+	// Conditions
 	ok := false
-	if !ok && (rule.When&WhenTrendUp != 0) {
+	if !ok && rule.TrendUp && thresholdMax == 0 {
+		// TrendUp
 		ok = idx.Score > 1
 	}
-	if !ok && (rule.When&WhenTrendDown != 0) {
+	if !ok && rule.TrendUp && thresholdMax != 0 {
+		// TrendUp And Value >= X
+		ok = idx.Score > 1 && m.Value >= thresholdMax
+	}
+	if !ok && !rule.TrendUp && thresholdMax != 0 {
+		// Value >= X
+		ok = m.Value >= thresholdMax
+	}
+	if !ok && rule.TrendDown && thresholdMin == 0 {
+		// TrendDown
 		ok = idx.Score < -1
 	}
-	if !ok && (rule.When&WhenValueGt != 0) {
-		ok = m.Value >= rule.ThresholdMax
+	if !ok && rule.TrendDown && thresholdMin != 0 {
+		// TrendDown And Value <= X
+		ok = idx.Score < -1 && m.Value <= thresholdMin
 	}
-	if !ok && (rule.When&WhenValueLt != 0) {
-		ok = m.Value <= rule.ThresholdMin
-	}
-	if !ok && (rule.When&WhenTrendUpAndValueGt != 0) {
-		ok = idx.Score > 1 && m.Value >= rule.ThresholdMax
-	}
-	if !ok && (rule.When&WhenTrendDownAndValueLt != 0) {
-		ok = idx.Score < -1 && m.Value <= rule.ThresholdMin
+	if !ok && !rule.TrendDown && thresholdMin != 0 {
+		// Value <= X
+		ok = m.Value <= thresholdMin
 	}
 	return ok
 }
@@ -144,26 +132,26 @@ func (rule *Rule) Test(m *Metric, idx *Index, cfg *config.Config) bool {
 // BuildRepr initializes the rule's string repr.
 func (rule *Rule) BuildRepr() {
 	var parts []string
-	if rule.When&WhenTrendUp != 0 {
+	if rule.TrendUp && rule.ThresholdMax == 0 {
 		parts = append(parts, "trend ↑")
 	}
-	if rule.When&WhenTrendDown != 0 {
-		parts = append(parts, "trend ↓")
-	}
-	if rule.When&WhenValueGt != 0 {
-		s := fmt.Sprintf("value >= %s", util.ToFixed(rule.ThresholdMax, 3))
-		parts = append(parts, s)
-	}
-	if rule.When&WhenValueLt != 0 {
-		s := fmt.Sprintf("value <= %s", util.ToFixed(rule.ThresholdMin, 3))
-		parts = append(parts, s)
-	}
-	if rule.When&WhenTrendUpAndValueGt != 0 {
+	if rule.TrendUp && rule.ThresholdMax != 0 {
 		s := fmt.Sprintf("(trend ↑ && value >= %s)", util.ToFixed(rule.ThresholdMax, 3))
 		parts = append(parts, s)
 	}
-	if rule.When&WhenTrendDownAndValueLt != 0 {
+	if !rule.TrendUp && rule.ThresholdMax != 0 {
+		s := fmt.Sprintf("value >= %s", util.ToFixed(rule.ThresholdMax, 3))
+		parts = append(parts, s)
+	}
+	if rule.TrendDown && rule.ThresholdMin == 0 {
+		parts = append(parts, "trend ↓")
+	}
+	if rule.TrendDown && rule.ThresholdMin != 0 {
 		s := fmt.Sprintf("(trend ↓ && value <= %s)", util.ToFixed(rule.ThresholdMin, 3))
+		parts = append(parts, s)
+	}
+	if !rule.TrendDown && rule.ThresholdMin != 0 {
+		s := fmt.Sprintf("value <= %s", util.ToFixed(rule.ThresholdMin, 3))
 		parts = append(parts, s)
 	}
 	rule.Repr = strings.Join(parts, " || ")
