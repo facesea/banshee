@@ -93,6 +93,7 @@ func createRule(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	db.Admin.RulesCache.Put(rule)
 	// Response
 	rule.BuildRepr()
+	rule.SetNumMetrics(len(db.Index.Filter(rule.Pattern)))
 	ResponseJSONOK(w, rule)
 }
 

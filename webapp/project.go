@@ -184,6 +184,7 @@ func getProjectRules(w http.ResponseWriter, r *http.Request, ps httprouter.Param
 	}
 	for i := 0; i < len(rules); i++ {
 		rules[i].BuildRepr()
+		rules[i].SetNumMetrics(len(db.Index.Filter(rules[i].Pattern)))
 	}
 	ResponseJSONOK(w, rules)
 }

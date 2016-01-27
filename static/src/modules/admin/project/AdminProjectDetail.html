@@ -4,7 +4,7 @@
     <section class="panel-container">
       <md-toolbar>
         <div class="md-toolbar-tools">
-          <h3 class="md-button md-ink-ripple" ui-sref="banshee.main({project: projectId})" >
+          <h3 class="md-button md-ink-ripple" ui-sref="banshee.main({project: projectId})" ng-style="{'text-transform': 'none'}">
             <a ui-sref="banshee.main({project: projectId})" ng-bind="project.name"></a>
           </h3>
           <span flex></span>
@@ -39,6 +39,7 @@
                       <th> # </th>
                       <th> Pattern </th>
                       <th> Condition </th>
+                      <th> NumMetrics </th>
                       <th class="th50"></th>
                     </tr>
                   <tbody>
@@ -54,6 +55,11 @@
                       </td>
                       <td>
                         <code ng-bind="rule.repr"></code>
+                      </td>
+                      <td>
+                        <a ui-sref="banshee.main({pattern: rule.pattern})">
+                          <kbd ng-bind="rule.numMetrics" ng-style="{'font-weight': 'bold'}"></kbd>
+                        </a>
                       </td>
                       <td class="text-right">
                         <md-button class="md-raised md-warn md-mini" aria-label="delete rule" ng-click="deleteRule($event, rule.id, $index)">

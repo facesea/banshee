@@ -31,6 +31,8 @@ type Rule struct {
 	ThresholdMin float64 `json:"thresholdMin"`
 	// String representation.
 	Repr string `sql:"-" json:"repr"`
+	// Number of metrics matched.
+	NumMetrics int `sql:"-" json:"numMetrics"`
 }
 
 // Copy the rule.
@@ -129,8 +131,12 @@ func (rule *Rule) Test(m *Metric, idx *Index, cfg *config.Config) bool {
 	return ok
 }
 
-// BuildRepr initializes the rule's string repr.
+// BuildRepr sets the rule's string repr.
 func (rule *Rule) BuildRepr() {
+	// Lock if shared.
+	rule.Lock()
+	defer rule.Unlock()
+	// Repr
 	var parts []string
 	if rule.TrendUp && rule.ThresholdMax == 0 {
 		parts = append(parts, "trend ↑")
@@ -155,4 +161,12 @@ func (rule *Rule) BuildRepr() {
 		parts = append(parts, s)
 	}
 	rule.Repr = strings.Join(parts, " || ")
+}
+
+// SetNumMetrics sets the rule's number of metrics matched.
+func (rule *Rule) SetNumMetrics(n int) {
+	// Lock if shared.
+	rule.Lock()
+	defer rule.Unlock()
+	rule.NumMetrics = n
 }
