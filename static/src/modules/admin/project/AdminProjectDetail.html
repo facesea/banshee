@@ -39,7 +39,6 @@
                       <th> # </th>
                       <th> Pattern </th>
                       <th> Condition </th>
-                      <th class="th50"> TrustLine </th>
                       <th class="th50"></th>
                     </tr>
                   <tbody>
@@ -55,10 +54,6 @@
                       </td>
                       <td>
                         <code ng-bind="rule.repr"></code>
-                      </td>
-                      <td>
-                        <code ng-if="!rule.trustLine">-</code>
-                        <code ng-if="rule.trustLine" ng-bind="rule.trustLine"></code>
                       </td>
                       <td class="text-right">
                         <md-button class="md-raised md-warn md-mini" aria-label="delete rule" ng-click="deleteRule($event, rule.id, $index)">

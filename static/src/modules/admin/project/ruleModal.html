@@ -20,28 +20,35 @@
             <div ng-message="required">This field is required.</div>
           </div>
         </md-input-container>
-        <div layout="row">
-          <div flex="15">Alerting</div>
-          <div flex="80">
-            <md-checkbox layout="row" ng-model="rule.onTrendUp"> On trend up </md-checkbox>
-            <md-checkbox layout="row" ng-model="rule.onTrendDown"> On trend Down </md-checkbox>
-            <md-checkbox layout="row" ng-model="rule.onValueGt"> On Value &gt;= thresholdMax </md-checkbox>
-            <md-checkbox layout="row" ng-model="rule.onValueLt"> On Value &lt;= thresholdMin </md-checkbox>
-            <md-checkbox layout="row" ng-model="rule.onTrendUpAndValueGt"> On trend up and Value &gt;= thresholdMax </md-checkbox>
-            <md-checkbox layout="row" ng-model="rule.onTrendDownAndValueLt"> On trend down and Value &lt;= thresholdMin </md-checkbox>
-            <md-input-container class="md-block" flex-gt-sm>
-              <label>thresholdMax</label>
-              <input type="number" name="thresholdMax" ng-model="rule.thresholdMax">
-            </md-input-container>
-            <md-input-container class="md-block" flex-gt-sm>
-              <label>thresholdMin</label>
-              <input type="number" name="thresholdMin" ng-model="rule.thresholdMin">
-            </md-input-container>
-            <md-input-container class="md-block" flex-gt-sm>
-              <label>Don't alert me when value is less than</label>
-              <input type="number" name="trustLine" ng-model="rule.trustLine">
-            </md-input-container>
-          </div>
+        <div layout="row" flex="100">
+          <md-input-container flex="40" class="md-block">
+            <md-checkbox ng-model="rule.trendUp">
+              On trend up
+              <span ng-style="{'color': '#777'}"> (optional) </span>
+            </md-checkbox>
+          </md-input-container>
+          <md-input-container flex="20" class="md-block">
+            <label> and </label>
+          </md-input-container>
+          <md-input-container class="md-block" flex="40">
+            <label> Value &gt;= (optional) </label>
+            <input type="number" name="thresholdMax" ng-model="rule.thresholdMax">
+          </md-input-container>
+        </div>
+        <div layout="row" flex="100">
+          <md-input-container flex="40" class="md-block">
+            <md-checkbox ng-model="rule.trendDown">
+              On trend down
+              <span ng-style="{'color': '#777'}"> (optional) </span>
+            </md-checkbox>
+          </md-input-container>
+          <md-input-container flex="20" class="md-block">
+            <label> and </label>
+          </md-input-container>
+          <md-input-container class="md-block" flex="40">
+            <label> Value &lt;= (optional) </label>
+            <input type="number" name="thresholdMin" ng-model="rule.thresholdMin">
+          </md-input-container>
         </div>
       </md-content>
     </md-dialog-content> <!-- Dialog Content -->
