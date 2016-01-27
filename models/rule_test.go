@@ -3,7 +3,7 @@
 package models
 
 import (
-	// "github.com/eleme/banshee/config"
+	"github.com/eleme/banshee/config"
 	"github.com/eleme/banshee/util/assert"
 	"testing"
 )
@@ -78,5 +78,10 @@ func TestRuleTest(t *testing.T) {
 	assert.Ok(t, !rule.Test(&Metric{Value: 12}, &Index{Score: 1.2}, nil))
 	assert.Ok(t, !rule.Test(&Metric{Value: 102}, &Index{Score: 0.2}, nil))
 	assert.Ok(t, !rule.Test(&Metric{Value: 2}, &Index{Score: 0.9}, nil))
-	// TODO: default thresholds
+	// Default thresholdMaxs
+	cfg := config.New()
+	cfg.Detector.DefaultThresholdMaxs["fo*"] = 300
+	rule = &Rule{TrendUp: true}
+	assert.Ok(t, rule.Test(&Metric{Value: 310, Name: "foo"}, &Index{Score: 1.3}, cfg))
+	assert.Ok(t, !rule.Test(&Metric{Value: 120, Name: "foo"}, &Index{Score: 1.3}, cfg))
 }

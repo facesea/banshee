@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/eleme/banshee/config"
 	"github.com/eleme/banshee/util"
+	"path/filepath"
 	"strings"
 )
 
@@ -78,31 +79,52 @@ func (rule *Rule) Test(m *Metric, idx *Index, cfg *config.Config) bool {
 	// RLock if shared.
 	rule.RLock()
 	defer rule.RUnlock()
+	// Default thresholds.
+	thresholdMax := rule.ThresholdMax
+	thresholdMin := rule.ThresholdMin
+	if thresholdMax == 0 && cfg != nil {
+		// Check defaults
+		for p, v := range cfg.Detector.DefaultThresholdMaxs {
+			if ok, _ := filepath.Match(p, m.Name); ok && v != 0 {
+				thresholdMax = v
+				break
+			}
+		}
+	}
+	if thresholdMin == 0 && cfg != nil {
+		// Check defaults
+		for p, v := range cfg.Detector.DefaultThresholdMins {
+			if ok, _ := filepath.Match(p, m.Name); ok && v != 0 {
+				thresholdMin = v
+				break
+			}
+		}
+	}
 	// Conditions
 	ok := false
-	if !ok && rule.TrendUp && rule.ThresholdMax == 0 {
+	if !ok && rule.TrendUp && thresholdMax == 0 {
 		// TrendUp
 		ok = idx.Score > 1
 	}
-	if !ok && rule.TrendUp && rule.ThresholdMax != 0 {
+	if !ok && rule.TrendUp && thresholdMax != 0 {
 		// TrendUp And Value >= X
-		ok = idx.Score > 1 && m.Value >= rule.ThresholdMax
+		ok = idx.Score > 1 && m.Value >= thresholdMax
 	}
-	if !ok && !rule.TrendUp && rule.ThresholdMax != 0 {
+	if !ok && !rule.TrendUp && thresholdMax != 0 {
 		// Value >= X
-		ok = m.Value >= rule.ThresholdMax
+		ok = m.Value >= thresholdMax
 	}
-	if !ok && rule.TrendDown && rule.ThresholdMin == 0 {
+	if !ok && rule.TrendDown && thresholdMin == 0 {
 		// TrendDown
 		ok = idx.Score < -1
 	}
-	if !ok && rule.TrendDown && rule.ThresholdMin != 0 {
+	if !ok && rule.TrendDown && thresholdMin != 0 {
 		// TrendDown And Value <= X
-		ok = idx.Score < -1 && m.Value <= rule.ThresholdMin
+		ok = idx.Score < -1 && m.Value <= thresholdMin
 	}
-	if !ok && !rule.TrendDown && rule.ThresholdMin != 0 {
+	if !ok && !rule.TrendDown && thresholdMin != 0 {
 		// Value <= X
-		ok = m.Value <= rule.ThresholdMin
+		ok = m.Value <= thresholdMin
 	}
 	return ok
 }
