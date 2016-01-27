@@ -2,13 +2,12 @@
   <form name="header-form" ng-submit="submit()" novalidate>
     <md-toolbar>
       <div class="md-toolbar-tools">
-        <h3>
-          <!-- <a ui-sref="banshee.main" ui-sref-opts="{reload: true}">Banshee</a> -->
-          <a href="javascrit:;" ng-click="goMain()">Banshee</a>
+        <h3 class="md-button md-ink-ripple" ng-click="goMain()">
+          Banshee
         </h3>
         <span flex></span>
         <md-button aria-label="Administration" ui-sref="banshee.admin.project" ng-if="includes('banshee.main')">
-          Administration
+          Admin
         </md-button>
         <md-button aria-label="Main" ui-sref="banshee.main" ng-if="includes('banshee.admin')">
           Index
