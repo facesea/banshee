@@ -13,16 +13,11 @@ import (
 
 // createRule request
 type createRuleRequest struct {
-	Pattern               string  `json:"pattern"`
-	OnTrendUp             bool    `json:"onTrendUp"`
-	OnTrendDown           bool    `json:"onTrendDown"`
-	OnValueGt             bool    `json:"onValueGt"`
-	OnValueLt             bool    `json:"onValueLt"`
-	OnTrendUpAndValueGt   bool    `json:"onTrendUpAndValueGt"`
-	OnTrendDownAndValueLt bool    `json:"onTrendDownAndValueLt"`
-	ThresholdMax          float64 `json:"thresholdMax"`
-	ThresholdMin          float64 `json:"thresholdMin"`
-	TrustLine             float64 `json:"trustLine"`
+	Pattern      string  `json:"pattern"`
+	TrendUp      bool    `json:"trendUp"`
+	TrendDown    bool    `json:"trendDown"`
+	ThresholdMax float64 `json:"thresholdMax"`
+	ThresholdMin float64 `json:"thresholdMin"`
 }
 
 // createRule creates a rule.
@@ -49,38 +44,7 @@ func createRule(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		ResponseError(w, ErrProjectID)
 		return
 	}
-	if (req.OnValueGt || req.OnTrendUpAndValueGt) && req.ThresholdMax == 0 {
-		// ThresholdMax should not be 0.
-		ResponseError(w, ErrRuleThresholdMaxRequired)
-		return
-	}
-	if (req.OnValueLt || req.OnTrendDownAndValueLt) && req.ThresholdMin == 0 {
-		// ThresholdMin should not be 0.
-		ResponseError(w, ErrRuleThresholdMinRequired)
-		return
-	}
-	// When
-	when := 0
-	if req.OnTrendUp {
-		when = when | models.WhenTrendUp
-	}
-	if req.OnTrendDown {
-		when = when | models.WhenTrendDown
-	}
-	if req.OnValueGt {
-		when = when | models.WhenValueGt
-	}
-	if req.OnValueLt {
-		when = when | models.WhenValueLt
-	}
-	if req.OnTrendUpAndValueGt {
-		when = when | models.WhenTrendUpAndValueGt
-	}
-	if req.OnTrendDownAndValueLt {
-		when = when | models.WhenTrendDownAndValueLt
-	}
-	if when == 0 {
-		// No condition
+	if !req.TrendUp && !req.TrendDown && req.ThresholdMax == 0 && req.ThresholdMin == 0 {
 		ResponseError(w, ErrRuleNoCondition)
 		return
 	}
@@ -100,10 +64,10 @@ func createRule(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	rule := &models.Rule{
 		ProjectID:    projectID,
 		Pattern:      req.Pattern,
-		When:         when,
+		TrendUp:      req.TrendUp,
+		TrendDown:    req.TrendDown,
 		ThresholdMax: req.ThresholdMax,
 		ThresholdMin: req.ThresholdMin,
-		TrustLine:    req.TrustLine,
 	}
 	if err := db.Admin.DB().Create(rule).Error; err != nil {
 		// Write errors.

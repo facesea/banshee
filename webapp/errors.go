@@ -51,8 +51,6 @@ var (
 	ErrDuplicateRulePattern     = NewWebError(http.StatusForbidden, "Duplicate rule pattern")
 	ErrRuleNotFound             = NewWebError(http.StatusNotFound, "Rule not found")
 	ErrRuleNoCondition          = NewWebError(http.StatusBadRequest, "No condition specified")
-	ErrRuleThresholdMaxRequired = NewWebError(http.StatusBadRequest, "ThresholdMax is required")
-	ErrRuleThresholdMinRequired = NewWebError(http.StatusBadRequest, "ThresholdMin is required")
 	// Metric
 	ErrMetricNotFound = NewWebError(http.StatusNotFound, "Metric not found")
 )
