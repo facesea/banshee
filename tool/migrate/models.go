@@ -10,6 +10,7 @@ import (
 // bell models (schema)
 // https://github.com/eleme/bell.js/blob/master/lib/models.js
 
+// Project => models.Project.
 type Project struct {
 	ID        int         `gorm:"primary_key;column:id"`
 	Name      string      `gorm:"column:name" sql:"not null;unique"`
@@ -19,6 +20,7 @@ type Project struct {
 	UpdateAt  time.Time   `gorm:"column:updateAt"`
 }
 
+// Rule => models.rule.
 type Rule struct {
 	ID        int       `gorm:"primary_key;column:id"`
 	Pattern   string    `gorm:"column:pattern" sql:"unique"`
@@ -31,6 +33,7 @@ type Rule struct {
 	UpdateAt  time.Time `gorm:"column:updateAt"`
 }
 
+// Receiver => models.User.
 type Receiver struct {
 	ID          int        `gorm:"primary_key;column:id"`
 	Name        string     `gorm:"column:name" sql:"index;not null;unique"`

@@ -59,6 +59,11 @@ func init() {
 	bansheeDB.AutoMigrate(&models.Project{}, &models.Rule{}, &models.User{})
 }
 
+// Main
+//
+//	1. Migrate projects and all their rules.
+//	2. Migrate users and establish relations to their projects.
+//	3. Log failure rows to console.
+//
 func main() {
-	// Fixme
 }
