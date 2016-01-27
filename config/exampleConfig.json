@@ -12,7 +12,8 @@
     "leastCount": 30,
     "blacklist": [],
     "intervalHitLimit": 100,
-    "defaultTrustLines": {},
+    "defaultThresholdMaxs": {},
+    "defaultThresholdMins": {},
     "fillBlankZeros": []
   },
   "webapp": {

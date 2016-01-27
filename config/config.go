@@ -45,8 +45,10 @@ const (
 
 // Limitations
 const (
-	// Max value for the number of DefaultTrustLines.
-	MaxDefaltTrustLinesLen = 8
+	// Max value for the number of DefaultThresholdMaxs.
+	MaxNumDefaultThresholdMaxs = 8
+	// Max value for the number of DefaultThresholdMins.
+	MaxNumDefaultThresholdMins = 8
 	// Max value for the number of FillBlankZeros.
 	MaxFillBlankZerosLen = 8
 	// Min value for the expiration to period.
@@ -72,14 +74,15 @@ type configStorage struct {
 }
 
 type configDetector struct {
-	Port              int                `json:"port"`
-	TrendingFactor    float64            `json:"trendingFactor"`
-	FilterOffset      float64            `json:"filterOffset"`
-	LeastCount        uint32             `json:"leastCount"`
-	BlackList         []string           `json:"blackList"`
-	IntervalHitLimit  int                `json:"intervalHitLimit"`
-	DefaultTrustLines map[string]float64 `json:"defaultTrustLines"`
-	FillBlankZeros    []string           `json:"fillBlankZeros"`
+	Port                 int                `json:"port"`
+	TrendingFactor       float64            `json:"trendingFactor"`
+	FilterOffset         float64            `json:"filterOffset"`
+	LeastCount           uint32             `json:"leastCount"`
+	BlackList            []string           `json:"blackList"`
+	IntervalHitLimit     int                `json:"intervalHitLimit"`
+	DefaultThresholdMaxs map[string]float64 `json:"defaultThresholdMaxs"`
+	DefaultThresholdMins map[string]float64 `json:"DefaultThresholdMins"`
+	FillBlankZeros       []string           `json:"fillBlankZeros"`
 }
 
 type configWebapp struct {
@@ -113,7 +116,8 @@ func New() *Config {
 	config.Detector.LeastCount = DefaultLeastCount
 	config.Detector.BlackList = []string{}
 	config.Detector.IntervalHitLimit = DefaultIntervalHitLimit
-	config.Detector.DefaultTrustLines = make(map[string]float64, 0)
+	config.Detector.DefaultThresholdMaxs = make(map[string]float64, 0)
+	config.Detector.DefaultThresholdMins = make(map[string]float64, 0)
 	config.Detector.FillBlankZeros = []string{}
 	config.Webapp.Port = 2016
 	config.Webapp.Auth = [2]string{"admin", "admin"}
@@ -153,7 +157,8 @@ func (config *Config) Copy() *Config {
 	c.Detector.FilterOffset = config.Detector.FilterOffset
 	c.Detector.LeastCount = config.Detector.LeastCount
 	c.Detector.BlackList = config.Detector.BlackList
-	c.Detector.DefaultTrustLines = config.Detector.DefaultTrustLines
+	c.Detector.DefaultThresholdMaxs = config.Detector.DefaultThresholdMaxs
+	c.Detector.DefaultThresholdMins = config.Detector.DefaultThresholdMins
 	c.Detector.FillBlankZeros = config.Detector.FillBlankZeros
 	c.Detector.IntervalHitLimit = config.Detector.IntervalHitLimit
 	c.Webapp.Port = config.Webapp.Port
@@ -190,12 +195,20 @@ func (config *Config) Validate() error {
 	if config.Detector.FilterOffset <= 0 || config.Detector.FilterOffset >= 1 {
 		return ErrDetectorFilterOffset
 	}
-	if len(config.Detector.DefaultTrustLines) > MaxDefaltTrustLinesLen {
-		return ErrDetectorDefaultTrustLinesLen
+	if len(config.Detector.DefaultThresholdMaxs) > MaxNumDefaultThresholdMaxs {
+		return ErrDetectorDefaultThresholdMaxsLen
 	}
-	for _, value := range config.Detector.DefaultTrustLines {
+	if len(config.Detector.DefaultThresholdMins) > MaxNumDefaultThresholdMins {
+		return ErrDetectorDefaultThresholdMinsLen
+	}
+	for _, value := range config.Detector.DefaultThresholdMaxs {
 		if value == 0 {
-			return ErrDetectorDefaultTrustLineZero
+			return ErrDetectorDefaultThresholdMaxZero
+		}
+	}
+	for _, value := range config.Detector.DefaultThresholdMins {
+		if value == 0 {
+			return ErrDetectorDefaultThresholdMinZero
 		}
 	}
 	if len(config.Detector.FillBlankZeros) > MaxFillBlankZerosLen {
