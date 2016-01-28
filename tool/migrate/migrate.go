@@ -9,7 +9,7 @@
 //
 // Command Line Usage
 //
-//	./migrate -from bell.db -to banshee.db
+//	./migrate -from bell.db -to banshee.db -with-users
 //	mv banshee.db path/to/storage/admin
 //
 // Warning: Must backup your db files before the migration.
@@ -28,6 +28,7 @@ var (
 	// Arguments
 	bellDBFileName    = flag.String("from", "bell.db", "bell db file name")
 	bansheeDBFileName = flag.String("to", "banshee.db", "banshee db file name")
+	withUsers         = flag.Bool("with-users", false, "if migrate users")
 	// DB Handles
 	bellDB    *gorm.DB
 	bansheeDB *gorm.DB
@@ -67,7 +68,9 @@ func init() {
 //
 func main() {
 	migrateProjects()
-	migrateUsers()
+	if *withUsers {
+		migrateUsers()
+	}
 }
 
 // Migrate projects.

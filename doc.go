@@ -88,7 +88,7 @@ Migrate from bell
 
 Require bell.js v2.0+ and banshee v0.0.7+:
 
-	./migrate -from bell.db -to banshee.db
+	./migrate -from bell.db -to banshee.db -with-users
 	mv banshee.db path/to/storage/admin
 
 Compontents
