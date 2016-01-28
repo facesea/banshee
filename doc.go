@@ -84,6 +84,13 @@ npm module statsd-banshee to statsd's banckends:
 	, bansheePort: 2015
 	}
 
+Migrate from bell
+
+Require bell.js v2.0+ and banshee v0.0.7+:
+
+	./migrate -from bell.db -to banshee.db
+	mv banshee.db path/to/storage/admin
+
 Compontents
 
 Banshee have 4 compontents and they are running in the same process:

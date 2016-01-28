@@ -5,7 +5,7 @@
 // Requirements
 //
 //	bell.js v2.0+ https://github.com/eleme/bell.js
-//	banshee v0.07+ https://github.com/eleme/banshee
+//	banshee v0.0.7+ https://github.com/eleme/banshee
 //
 // Command Line Usage
 //
@@ -17,7 +17,6 @@
 package main
 
 import (
-	// "errors"
 	"flag"
 	"github.com/eleme/banshee/models"
 	"github.com/eleme/banshee/util/log"
@@ -106,7 +105,7 @@ func migrateProjects() {
 		for _, rule := range rules {
 			// Create banshee rule.
 			if err := models.ValidateRulePattern(rule.Pattern); err != nil {
-				log.Warn("rule %s: %v, skippig..", rule.Pattern, err)
+				log.Warn("rule %s: %v, belongs to %s, skippig..", rule.Pattern, err, proj.Name)
 				continue
 			}
 			r := &models.Rule{
