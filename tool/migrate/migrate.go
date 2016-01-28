@@ -29,6 +29,7 @@ var (
 	bellDBFileName    = flag.String("from", "bell.db", "bell db file name")
 	bansheeDBFileName = flag.String("to", "banshee.db", "banshee db file name")
 	withUsers         = flag.Bool("with-users", false, "if migrate users")
+	withProjs         = flag.Bool("with-projs", false, "if migrate projects")
 	// DB Handles
 	bellDB    *gorm.DB
 	bansheeDB *gorm.DB
@@ -67,7 +68,9 @@ func init() {
 //	2. Migrate users and their user-project relationships.
 //
 func main() {
-	migrateProjects()
+	if *withProjs {
+		migrateProjects()
+	}
 	if *withUsers {
 		migrateUsers()
 	}
