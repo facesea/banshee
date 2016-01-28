@@ -17,12 +17,12 @@
 package main
 
 import (
+	// "errors"
 	"flag"
-	"fmt"
 	"github.com/eleme/banshee/models"
 	"github.com/eleme/banshee/util/log"
 	"github.com/jinzhu/gorm"
-	_ "github.com/mattn/go-sqlite3"
+	"github.com/mattn/go-sqlite3"
 )
 
 var (
@@ -56,7 +56,9 @@ func init() {
 	} else {
 		bansheeDB = &db
 	}
-	bansheeDB.AutoMigrate(&models.Project{}, &models.Rule{}, &models.User{})
+	if err := bansheeDB.AutoMigrate(&models.Project{}, &models.Rule{}, &models.User{}).Error; err != nil {
+		log.Fatal("failed to migrate schema for %s: %v", *bansheeDBFileName, err)
+	}
 }
 
 // Main
@@ -66,4 +68,57 @@ func init() {
 //	3. Log failure rows to console.
 //
 func main() {
+	migrateProjs()
+}
+
+// Migrate projects.
+//
+//	1. Fetch all projects from belldb.
+//	2. Create the project into bansheedb.
+//	3. Create the rules for each project.
+//
+func migrateProjs() {
+	// Fetch all projects from belldb.
+	var projs []Project
+	if err := bellDB.Find(&projs).Error; err != nil {
+		log.Fatal("failed to fetch all projects from %s: %v", *bellDBFileName, err)
+	}
+	for _, proj := range projs {
+		// Create banshee project.
+		p := &models.Project{Name: proj.Name}
+		if err := bansheeDB.Create(p).Error; err != nil {
+			sqliteErr, ok := err.(sqlite3.Error)
+			if ok && sqliteErr.ExtendedCode == sqlite3.ErrConstraintUnique {
+				log.Warn("project %s already in %s", p.Name, *bansheeDBFileName)
+			} else {
+				log.Fatal("cannot create project %s: %v", p.Name, err)
+			}
+		}
+		// Fetch its rules from belldb.
+		var rules []Rule
+		if err := bellDB.Model(proj).Related(&rules).Error; err != nil {
+			log.Fatal("cannot fetch rules for %s: %v", p.Name, err)
+		}
+		for _, rule := range rules {
+			// FIXME: Validate rule pattern.
+			// Create banshee rule.
+			r := &models.Rule{
+				Pattern:   rule.Pattern,
+				ProjectID: p.ID,
+				TrendUp:   rule.Up,
+				TrendDown: rule.Down,
+				// Important: reverse min/max here -_#
+				ThresholdMax: rule.Min,
+				ThresholdMin: rule.Max,
+			}
+			if err := bansheeDB.Create(r).Error; err != nil {
+				sqliteErr, ok := err.(sqlite3.Error)
+				if ok && sqliteErr.ExtendedCode == sqlite3.ErrConstraintUnique {
+					log.Warn("rule %s already in %s", r.Pattern, *bansheeDBFileName)
+				} else {
+					log.Fatal("cannot create rule %s: %v", r.Pattern, err)
+				}
+			}
+		}
+	}
 }
