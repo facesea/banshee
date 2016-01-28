@@ -67,16 +67,16 @@ func createUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		return
 	}
 	// Validation
-	if err := validateUserName(req.Name); err != nil {
-		ResponseError(w, err)
+	if err := models.ValidateUserName(req.Name); err != nil {
+		ResponseError(w, NewValidationWebError(err))
 		return
 	}
-	if err := validateUserEmail(req.Email); err != nil {
-		ResponseError(w, err)
+	if err := models.ValidateUserEmail(req.Email); err != nil {
+		ResponseError(w, NewValidationWebError(err))
 		return
 	}
-	if err := validateUserPhone(req.Phone); err != nil {
-		ResponseError(w, err)
+	if err := models.ValidateUserPhone(req.Phone); err != nil {
+		ResponseError(w, NewValidationWebError(err))
 		return
 	}
 	// Save
@@ -157,16 +157,16 @@ func updateUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		return
 	}
 	// Validation
-	if err := validateUserName(req.Name); err != nil {
-		ResponseError(w, err)
+	if err := models.ValidateUserName(req.Name); err != nil {
+		ResponseError(w, NewValidationWebError(err))
 		return
 	}
-	if err := validateUserEmail(req.Email); err != nil {
-		ResponseError(w, err)
+	if err := models.ValidateUserEmail(req.Email); err != nil {
+		ResponseError(w, NewValidationWebError(err))
 		return
 	}
-	if err := validateUserPhone(req.Phone); err != nil {
-		ResponseError(w, err)
+	if err := models.ValidateUserPhone(req.Phone); err != nil {
+		ResponseError(w, NewValidationWebError(err))
 		return
 	}
 	// Find
