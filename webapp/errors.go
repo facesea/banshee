@@ -25,32 +25,19 @@ var (
 	ErrNotFound   = NewWebError(http.StatusNotFound, "Not found")
 	// Project
 	ErrProjectID            = NewWebError(http.StatusBadRequest, "Bad project id")
-	ErrProjectNameEmpty     = NewWebError(http.StatusBadRequest, "Empty project name")
-	ErrProjectNameTooLong   = NewWebError(http.StatusBadRequest, "Project name too long")
 	ErrProjectNotFound      = NewWebError(http.StatusNotFound, "Project not found")
 	ErrDuplicateProjectName = NewWebError(http.StatusForbidden, "Duplicate project name")
 	ErrDuplicateProjectUser = NewWebError(http.StatusForbidden, "Duplicate user to project")
 	ErrProjectUniversalUser = NewWebError(http.StatusForbidden, "Cannot add universal user to project")
 	// User
 	ErrUserID            = NewWebError(http.StatusBadRequest, "Bad user id")
-	ErrUserNameEmpty     = NewWebError(http.StatusBadRequest, "Empty user name")
-	ErrUserNameTooLong   = NewWebError(http.StatusBadRequest, "User name too long")
-	ErrUserEmail         = NewWebError(http.StatusBadRequest, "Bad user email")
-	ErrUserEmailEmpty    = NewWebError(http.StatusBadRequest, "Empty user email")
-	ErrUserPhone         = NewWebError(http.StatusBadRequest, "Bad user phone format")
-	ErrUserPhoneLen      = NewWebError(http.StatusBadRequest, "Bad user phone length")
 	ErrUserNotFound      = NewWebError(http.StatusNotFound, "User not found")
 	ErrDuplicateUserName = NewWebError(http.StatusForbidden, "Duplicate user name")
 	// Rule
-	ErrRuleID                   = NewWebError(http.StatusBadRequest, "Bad rule id")
-	ErrRulePattern              = NewWebError(http.StatusBadRequest, "Bad rule pattern")
-	ErrRulePatternEmpty         = NewWebError(http.StatusBadRequest, "Empty rule pattern")
-	ErrRulePatternTooLong       = NewWebError(http.StatusBadRequest, "Rule pattern too long")
-	ErrRulePatternContainsSpace = NewWebError(http.StatusBadRequest, "Space found in rule pattern")
-	ErrRuleWhen                 = NewWebError(http.StatusBadRequest, "Bad rule condition")
-	ErrDuplicateRulePattern     = NewWebError(http.StatusForbidden, "Duplicate rule pattern")
-	ErrRuleNotFound             = NewWebError(http.StatusNotFound, "Rule not found")
-	ErrRuleNoCondition          = NewWebError(http.StatusBadRequest, "No condition specified")
+	ErrRuleID               = NewWebError(http.StatusBadRequest, "Bad rule id")
+	ErrDuplicateRulePattern = NewWebError(http.StatusForbidden, "Duplicate rule pattern")
+	ErrRuleNotFound         = NewWebError(http.StatusNotFound, "Rule not found")
+	ErrRuleNoCondition      = NewWebError(http.StatusBadRequest, "No condition specified")
 	// Metric
 	ErrMetricNotFound = NewWebError(http.StatusNotFound, "Metric not found")
 )
@@ -68,4 +55,9 @@ func (err *WebError) Error() string {
 // NewUnexceptedWebError returns an unexcepted WebError.
 func NewUnexceptedWebError(err error) *WebError {
 	return NewWebError(http.StatusInternalServerError, err.Error())
+}
+
+// NewValidationWebError creates a validation WebError from error.
+func NewValidationWebError(err error) *WebError {
+	return NewWebError(http.StatusBadRequest, err.Error())
 }

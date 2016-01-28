@@ -35,8 +35,8 @@ func createRule(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		return
 	}
 	// Validate
-	if err := validateRulePattern(req.Pattern); err != nil {
-		ResponseError(w, err)
+	if err := models.ValidateRulePattern(req.Pattern); err != nil {
+		ResponseError(w, NewValidationWebError(err))
 		return
 	}
 	if projectID <= 0 {
