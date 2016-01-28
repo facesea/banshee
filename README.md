@@ -29,6 +29,11 @@ Statsd Backend
 
 https://www.npmjs.com/package/statsd-banshee
 
+Migrate from bell
+-----------------
+
+https://godoc.org/github.com/eleme/banshee#hdr-Migrate_from_bell
+
 Authors
 -------
 
