@@ -1,3 +1,15 @@
+0.0.7
+-----
+
+* Misc: Use new banshee logo. #337
+* Models: Test with index.Score for trend related conditions. #336
+* Models: Refactor struct rule and remove trusline. #345
+* Models: Add field numMetric to Rule. #347
+* Static: Prevent duplicate toastr error messages. #340
+* Static: Fix sort tab values. #341
+* Tools: Add tool to migrate admin data from bell to banshee. #348 #351 #352
+* Webapp: Move models validation to models. #348
+
 0.0.6
 -----
 
