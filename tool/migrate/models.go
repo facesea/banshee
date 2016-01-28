@@ -3,7 +3,6 @@
 package main
 
 import (
-	"github.com/jinzhu/gorm"
 	"time"
 )
 
@@ -12,12 +11,11 @@ import (
 
 // Project => models.Project.
 type Project struct {
-	ID        int         `gorm:"primary_key;column:id"`
-	Name      string      `gorm:"column:name" sql:"not null;unique"`
-	Rules     []*Rule     `gorm:"foreignkey:ProjectId"`
-	Receivers []*Receiver `gorm:"many2many:ReceiverProjects"`
-	CreateAt  time.Time   `gorm:"column:createAt"`
-	UpdateAt  time.Time   `gorm:"column:updateAt"`
+	ID       int       `gorm:"primary_key;column:id"`
+	Name     string    `gorm:"column:name" sql:"not null;unique"`
+	Rules    []*Rule   `gorm:"foreignkey:ProjectId"`
+	CreateAt time.Time `gorm:"column:createAt"`
+	UpdateAt time.Time `gorm:"column:updateAt"`
 }
 
 // Rule => models.rule.
@@ -35,25 +33,31 @@ type Rule struct {
 
 // Receiver => models.User.
 type Receiver struct {
-	ID          int        `gorm:"primary_key;column:id"`
-	Name        string     `gorm:"column:name" sql:"index;not null;unique"`
-	Email       string     `gorm:"column:email"`
-	EnableEmail bool       `gorm:"column:enableEmail"`
-	Phone       string     `gorm:"column:phone"`
-	EnablePhone bool       `gorm:"column:enablePhone"`
-	Universal   bool       `gorm:"column:universal`
-	Projects    []*Project `gorm:"many2many:ReceiverProjects"`
-	CreateAt    time.Time  `gorm:"column:createAt"`
-	UpdateAt    time.Time  `gorm:"column:updateAt"`
+	ID          int       `gorm:"primary_key;column:id"`
+	Name        string    `gorm:"column:name" sql:"index;not null;unique"`
+	Email       string    `gorm:"column:email"`
+	EnableEmail bool      `gorm:"column:enableEmail"`
+	Phone       string    `gorm:"column:phone"`
+	EnablePhone bool      `gorm:"column:enablePhone"`
+	Universal   bool      `gorm:"column:universal`
+	CreateAt    time.Time `gorm:"column:createAt"`
+	UpdateAt    time.Time `gorm:"column:updateAt"`
 }
 
-// Patch gorm to change the join table column names for `ReceiverProjects`.
+// ReceiverProject is the join table.
+//
+// I have tried the struct tags, and patch myself, but all just not work. T_T
 // Related issue: https://github.com/jinzhu/gorm/issues/707
-func patchReceiverProjectsFieldNames(db *gorm.DB) {
-	for _, field := range db.NewScope(&Receiver{}).GetStructFields() {
-		if field.Name == "Projects" {
-			field.Relationship.ForeignDBNames = []string{"ReceiverId"}
-			field.Relationship.AssociationForeignDBNames = []string{"ProjectId"}
-		}
-	}
+// Related stackoverflow:
+// http://stackoverflow.com/questions/33437453/using-different-join-table-columns-than-defaults-with-gorm-many2many-join
+//
+type ReceiverProject struct {
+	ReceiverID int       `gorm:"primary_key;column:ReceiverId"`
+	ProjectID  int       `gorm:"primary_key;column:ProjectId"`
+	CreateAt   time.Time `gorm:"column:createAt"`
+	UpdateAt   time.Time `gorm:"column:updateAt"`
+}
+
+func (rp *ReceiverProject) TableName() string {
+	return "ReceiverProjects"
 }
