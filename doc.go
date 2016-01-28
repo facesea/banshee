@@ -86,7 +86,7 @@ npm module statsd-banshee to statsd's banckends:
 
 Migrate from bell
 
-Require bell.js2.0+ and banshee0.0.6+:
+Require bell.js v2.0+ and banshee v0.0.7+:
 
 	./migrate -from bell.db -to banshee.db
 	mv banshee.db path/to/storage/admin
