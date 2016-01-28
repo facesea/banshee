@@ -34,7 +34,7 @@ var (
 	ErrRulePatternFormat        = errors.New("rule pattern format is invalid")
 )
 
-// Validate project name
+// ValidateProjectName validates project name
 func ValidateProjectName(name string) error {
 	if len(name) == 0 {
 		// Empty
@@ -47,7 +47,7 @@ func ValidateProjectName(name string) error {
 	return nil
 }
 
-// Validate user name.
+// ValidateUserName validates user name.
 func ValidateUserName(name string) error {
 	if len(name) == 0 {
 		// Empty
@@ -60,7 +60,7 @@ func ValidateUserName(name string) error {
 	return nil
 }
 
-// Validate user email.
+// ValidateUserEmail validates user email.
 func ValidateUserEmail(email string) error {
 	if len(email) == 0 {
 		// Empty
@@ -73,7 +73,7 @@ func ValidateUserEmail(email string) error {
 	return nil
 }
 
-// Validate user phone.
+// ValidateUserPhone validates user phone.
 func ValidateUserPhone(phone string) error {
 	if len(phone) != 10 && len(phone) != 11 {
 		// Invalid length.
@@ -86,7 +86,7 @@ func ValidateUserPhone(phone string) error {
 	return nil
 }
 
-// Validate rule pattern.
+// ValidateRulePattern validates rule pattern.
 func ValidateRulePattern(pattern string) error {
 	if len(pattern) == 0 {
 		// Empty

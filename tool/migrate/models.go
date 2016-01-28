@@ -58,6 +58,7 @@ type ReceiverProject struct {
 	UpdateAt   time.Time `gorm:"column:updateAt"`
 }
 
+// TableName for ReceiverProject.
 func (rp *ReceiverProject) TableName() string {
 	return "ReceiverProjects"
 }
