@@ -13,5 +13,8 @@ Package health implements the health statistic aggregation.
 	numMetricIncomed              // Number of metrics incomed in last interval.
 	numMetricDetected             // Number of metrics detected in last interval.
 	numAlertingEvents             // Number of alerting events in last interval.
+
+You can visit /api/info for health info.
+
 */
 package health

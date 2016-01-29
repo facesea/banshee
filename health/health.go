@@ -1,6 +1,5 @@
 // Copyright 2016 Eleme Inc. All rights reserved.
 
-// Package health implements the health stats.
 package health
 
 import (
