@@ -103,6 +103,11 @@ func IncrNumMetricDetected(n int64) {
 	atomic.AddInt64(&h.numMetricDetected, n)
 }
 
+// IncrNumAlertingEvents increments NumAlertingsEvents by n.
+func IncrNumAlertingEvents(n int64) {
+	atomic.AddInt64(&h.numAlertingEvents, n)
+}
+
 // Refresh NumIndexTotal.
 func refreshNumIndexTotal() {
 	h.info.lock.Lock()
