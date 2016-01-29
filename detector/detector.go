@@ -285,6 +285,14 @@ func (d *Detector) fill0(ms []*models.Metric, start, stop uint32) []float64 {
 	return vals
 }
 
+// Result struct help to receive multiple return values.
+type metricGetResult struct {
+	err   error
+	ms    []*models.Metric
+	start uint32
+	stop  uint32
+}
+
 // Get history values for the input metric, will only fetch the history
 // values with the same phase around this timestamp, within an filter
 // offset.
@@ -292,24 +300,46 @@ func (d *Detector) values(m *models.Metric, fz bool) ([]float64, error) {
 	offset := uint32(d.cfg.Detector.FilterOffset * float64(d.cfg.Period))
 	expiration := d.cfg.Expiration
 	period := d.cfg.Period
-	var vals []float64
 	// Get values with the same phase.
+	n := 0
+	ch := make(chan metricGetResult)
 	for stamp := m.Stamp; stamp+expiration > m.Stamp; stamp -= period {
 		start := stamp - offset
 		stop := stamp + offset
-		ms, err := d.db.Metric.Get(m.Name, start, stop)
-		if err != nil {
-			// Unexcepted db error.
-			return vals, err
+		n += 1
+		go func() {
+			ms, err := d.db.Metric.Get(m.Name, start, stop)
+			ch <- metricGetResult{err, ms, start, stop}
+		}()
+	}
+	// Concat chunks.
+	var vals []float64
+	var err error
+	for i := 0; i < n; i++ {
+		r := <-ch
+		if r.err != nil {
+			// Record error but DONOT return directly.
+			// Must receive n times from ch, otherwise the goroutine will
+			// be hanged and the ch won't be gc, yet memory leaks.
+			err = r.err
+			continue
 		}
+		if err != nil {
+			continue
+		}
+		// Append to values.
 		if !fz {
-			for i := 0; i < len(ms); i++ {
-				vals = append(vals, ms[i].Value)
+			for j := 0; j < len(r.ms); j++ {
+				vals = append(vals, r.ms[j].Value)
 			}
 		} else {
 			// Fill blank with zeros.
-			vals = append(vals, d.fill0(ms, start, stop)...)
+			vals = append(vals, d.fill0(r.ms, r.start, r.stop)...)
 		}
+	}
+	if err != nil {
+		// Unexcepted error
+		return vals, err
 	}
 	// Append m
 	vals = append(vals, m.Value)
