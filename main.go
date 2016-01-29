@@ -14,6 +14,7 @@ import (
 	"github.com/eleme/banshee/config"
 	"github.com/eleme/banshee/detector"
 	"github.com/eleme/banshee/filter"
+	"github.com/eleme/banshee/health"
 	"github.com/eleme/banshee/storage"
 	"github.com/eleme/banshee/util/log"
 	"github.com/eleme/banshee/version"
@@ -111,6 +112,9 @@ func main() {
 	initFilter()
 
 	// Service
+	health.Init(db)
+	go health.Start()
+
 	cleaner := cleaner.New(cfg, db)
 	go cleaner.Start()
 
