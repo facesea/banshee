@@ -6,6 +6,8 @@ metrics.
 
 [![Build Status](https://travis-ci.org/eleme/banshee.svg?branch=master)](https://travis-ci.org/eleme/banshee)
 
+![snap](snap.png)
+
 Requirements
 ------------
 
