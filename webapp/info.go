@@ -3,17 +3,11 @@
 package webapp
 
 import (
+	"github.com/eleme/banshee/health"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
 )
 
-type info struct {
-	NumMetric int `json:"numMetric"`
-}
-
 func getInfo(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	inf := &info{
-		NumMetric: db.Index.Len(),
-	}
-	ResponseJSONOK(w, inf)
+	ResponseJSONOK(w, health.Get())
 }

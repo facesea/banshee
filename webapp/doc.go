@@ -241,13 +241,19 @@ Baisc auth required.
 		...
 	]
 
-22. Get info.
+22. Get health info.
 
 	GET /api/info
 
 	200
 	{
-		"numMetric": 1000
+		"aggregationInterval": 300,
+		"numIndexTotal": 2739,
+		"numClients": 64,
+		"detectionCost.5min": 20,
+		"numMetricIncome.5min": 10240,
+		"numMetricDetected.5min": 82000,
+		"numAlertingEvents.5min": 4
 	}
 
 */
