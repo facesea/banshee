@@ -21,6 +21,22 @@ Build
 2. Build binary via `make`.
 3. Build static files via `make static`.
 
+Philosophy
+----------
+
+3-sigma:
+
+```python
+>>> import numpy as np
+>>> x = np.array([40, 52, 63, 44, 54, 43, 67, 54, 49, 45, 48, 54, 57, 43, 58])
+>>> mean = np.mean(x)
+>>> std = np.std(x)
+>>> (80 - mean) / (3 * std)
+1.2608052883472445 # anomaly, too big
+>>> (20 - mean) / (3 * std)
+-1.3842407711224991 # anomaly, too small
+```
+
 Documentation
 --------------
 
