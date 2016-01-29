@@ -10,5 +10,9 @@ module.exports = [
 	{
 		name: 'Config',
 		state: 'banshee.admin.config'
-	}
+	},
+  {
+    name: 'Info',
+    state: 'banshee.admin.info'
+  }
 ];
