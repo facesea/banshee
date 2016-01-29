@@ -11,6 +11,7 @@ import (
 
 	"github.com/eleme/banshee/config"
 	"github.com/eleme/banshee/filter"
+	"github.com/eleme/banshee/health"
 	"github.com/eleme/banshee/models"
 	"github.com/eleme/banshee/storage"
 	"github.com/eleme/banshee/storage/indexdb"
@@ -80,6 +81,7 @@ func (d *Detector) Start() {
 func (d *Detector) handle(conn net.Conn) {
 	// New conn established.
 	addr := conn.RemoteAddr()
+	health.IncrNumClients(1)
 	log.Info("conn %s established", addr)
 	// Read
 	scanner := bufio.NewScanner(conn)
@@ -109,6 +111,7 @@ func (d *Detector) handle(conn net.Conn) {
 	// Close conn.
 	conn.Close()
 	log.Info("conn %s disconnected", addr)
+	health.DecrNumClients(1)
 }
 
 // Process the input metric.
@@ -117,6 +120,7 @@ func (d *Detector) handle(conn net.Conn) {
 //	2. Detect the metric with matched rules.
 //
 func (d *Detector) process(m *models.Metric) {
+	health.IncrNumMetricIncomed(1)
 	// Time it.
 	startAt := time.Now()
 	// Match
@@ -131,16 +135,18 @@ func (d *Detector) process(m *models.Metric) {
 		log.Error("detect: %v, skipping..", err)
 		return
 	}
+	health.IncrNumMetricDetected(1)
 	// Output
 	if len(m.TestedRules) > 0 {
 		// Test ok.
 		d.output(m)
 	}
 	// Time end.
-	elapsed := time.Since(startAt).Nanoseconds() / (1000 * 1000)
+	elapsed := float64(time.Since(startAt).Nanoseconds()) / float64(1000*1000)
 	if elapsed > timeout {
-		log.Warn("detection is slow: %dms", elapsed)
+		log.Warn("detection is slow: %.2fms", elapsed)
 	}
+	health.AddDetectionCost(elapsed)
 }
 
 // Match a metric with rules, and return matched rules.

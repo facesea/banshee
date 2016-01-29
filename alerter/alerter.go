@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/eleme/banshee/config"
+	"github.com/eleme/banshee/health"
 	"github.com/eleme/banshee/models"
 	"github.com/eleme/banshee/storage"
 	"github.com/eleme/banshee/util/log"
@@ -137,6 +138,7 @@ func (al *Alerter) work() {
 			}
 			if len(users) != 0 {
 				al.m.Set(metric.Name, metric.Stamp)
+				health.IncrNumAlertingEvents(1)
 			}
 		}
 	}
