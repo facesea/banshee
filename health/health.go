@@ -69,6 +69,11 @@ func Init(db *storage.DB) {
 	h.db = db
 }
 
+// Get info.
+func Get() *Info {
+	return h.info.copy()
+}
+
 // IncrNumClients increments NumClients by n.
 func IncrNumClients(n int64) {
 	atomic.AddInt64(&h.numClients, n)
