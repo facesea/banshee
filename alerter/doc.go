@@ -75,6 +75,7 @@ hipchat, take the slack as an example:
 		http.POST("https://hooks.slack.com/services/<hook-for-the-channel>", data=requestData)
 	endif
 
-*/
+Slack incoming webhooks: https://api.slack.com/incoming-webhooks
 
+*/
 package alerter
