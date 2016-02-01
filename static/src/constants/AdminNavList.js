@@ -12,7 +12,7 @@ module.exports = [
     state: 'banshee.admin.config'
   },
   {
-    name: 'Info',
+    name: 'Health',
     state: 'banshee.admin.info'
   }
 ];

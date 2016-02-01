@@ -23,10 +23,10 @@ type Info struct {
 	NumIndexTotal       int   `json:"numIndexTotal"`
 	NumClients          int64 `json:"numClients"`
 	// Aggregation
-	DetectionCost     float64 `json:"detectionCost.5min"` // ms
-	NumMetricIncomed  int64   `json:"numMetricIncome.5min"`
-	NumMetricDetected int64   `json:"numMetricDetected.5min"`
-	NumAlertingEvents int64   `json:"numAlertingEvents.5min"`
+	DetectionCost     float64 `json:"detectionCost"` // ms
+	NumMetricIncomed  int64   `json:"numMetricIncomed"`
+	NumMetricDetected int64   `json:"numMetricDetected"`
+	NumAlertingEvents int64   `json:"numAlertingEvents"`
 }
 
 // Copy info.
