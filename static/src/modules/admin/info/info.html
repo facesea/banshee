@@ -4,13 +4,52 @@
     <div class="panel-container">
       <md-toolbar>
         <div class="md-toolbar-tools">
-          <h3>Info</h3>
+          <h3>Health</h3>
         </div>
       </md-toolbar>
       <!-- Panel Content -->
       <div class="panel-content" layout-padding>
-        <pre ng-bind="infoText">
-        </pre>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Description</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-if="!info">
+              <td colspan="3">not found any result</td>
+            <tr>
+            <tr>
+              <td>Aggregation interval (in second)</td>
+              <td ng-bind="info.aggregationInterval"></td>
+            </tr>
+            <tr>
+              <td>Number of metric indexes total</td>
+              <td ng-bind="info.numIndexTotal"></td>
+            </tr>
+            <tr>
+              <td>Number of detector clients</td>
+              <td ng-bind="info.numClients"></td>
+            </tr>
+            <tr>
+              <td>Detection cost average (in milliseconds) in last aggregation interval</td>
+              <td ng-bind="info.detectionCost"></td>
+            </tr>
+            <tr>
+              <td>Number of incomed datapoints in last aggregation interval</td>
+              <td ng-bind="info.numMetricIncomed"></td>
+            </tr>
+            <tr>
+              <td>Number of detected datapoints in last aggregation interval</td>
+              <td ng-bind="info.numMetricDetected"></td>
+            </tr>
+            <tr>
+              <td>Number of Alerting events in last aggregation interval</td>
+              <td ng-bind="info.numAlertingEvents"></td>
+            </tr>
+          </tbody>
+        </table>
       </div> <!-- ./Panel Content -->
     </div> <!-- ./Panel -->
   </div>
