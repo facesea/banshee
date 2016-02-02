@@ -38,6 +38,7 @@
                     <tr>
                       <th> # </th>
                       <th> Pattern </th>
+                      <th> Comment </th>
                       <th> Condition </th>
                       <th> NumMetrics </th>
                       <th class="th50"></th>
@@ -52,6 +53,9 @@
                         <a ui-sref="banshee.main({pattern: rule.pattern})">
                           <kbd ng-bind="rule.pattern" ng-style="{'font-weight': 'bold'}"></kbd>
                         </a>
+                      </td>
+                      <td>
+                        <span ng-bind="rule.comment"></span>
                       </td>
                       <td>
                         <code ng-bind="rule.repr"></code>

@@ -20,6 +20,13 @@
             <div ng-message="required">This field is required.</div>
           </div>
         </md-input-container>
+        <md-input-container class="md-block" flex-gt-sm>
+        <label>Comment</label>
+          <input type="text" name="comment" ng-model="rule.comment" required>
+          <div ng-messages="form.comment.$error" ng-if="form.comment.$dirty">
+            <div ng-message="required">This field is required.</div>
+          </div>
+        </md-input-container>
         <div layout="row" flex="100">
           <md-input-container flex="40" class="md-block">
             <md-checkbox ng-init='rule.trendUp=true' ng-model="rule.trendUp">

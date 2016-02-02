@@ -4,10 +4,11 @@ package models
 
 import (
 	"fmt"
-	"github.com/eleme/banshee/config"
-	"github.com/eleme/banshee/util"
 	"path/filepath"
 	"strings"
+
+	"github.com/eleme/banshee/config"
+	"github.com/eleme/banshee/util"
 )
 
 // Rule is a type to describe alerter rule.
@@ -33,6 +34,8 @@ type Rule struct {
 	Repr string `sql:"-" json:"repr"`
 	// Number of metrics matched.
 	NumMetrics int `sql:"-" json:"numMetrics"`
+	// Comment
+	Comment string `sql:"type:varchar(256)" json:"comment"`
 }
 
 // Copy the rule.

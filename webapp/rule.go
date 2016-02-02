@@ -3,12 +3,13 @@
 package webapp
 
 import (
+	"net/http"
+	"strconv"
+
 	"github.com/eleme/banshee/models"
 	"github.com/jinzhu/gorm"
 	"github.com/julienschmidt/httprouter"
 	"github.com/mattn/go-sqlite3"
-	"net/http"
-	"strconv"
 )
 
 // createRule request
@@ -18,6 +19,7 @@ type createRuleRequest struct {
 	TrendDown    bool    `json:"trendDown"`
 	ThresholdMax float64 `json:"thresholdMax"`
 	ThresholdMin float64 `json:"thresholdMin"`
+	Comment      string  `json:"comment"`
 }
 
 // createRule creates a rule.
@@ -68,6 +70,7 @@ func createRule(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		TrendDown:    req.TrendDown,
 		ThresholdMax: req.ThresholdMax,
 		ThresholdMin: req.ThresholdMin,
+		Comment:      req.Comment,
 	}
 	if err := db.Admin.DB().Create(rule).Error; err != nil {
 		// Write errors.
