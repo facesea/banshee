@@ -22,8 +22,8 @@ type Rule struct {
 	// Pattern is a wildcard string
 	Pattern string `sql:"size:400;not null;unique" json:"pattern"`
 	// Trend
-	TrendUp   bool `json:trendUp`
-	TrendDown bool `json:trendDown`
+	TrendUp   bool `json:"trendUp"`
+	TrendDown bool `json:"trendDown"`
 	// Optional thresholds data, only used if the rule condition is about
 	// threshold. Although we really don't need any thresholds for trending
 	// analyzation and alertings, but we still provide a way to alert by
