@@ -39,7 +39,7 @@ module.exports = function ($scope, $mdDialog, $state, $stateParams, toastr, Proj
   $scope.deleteRule = function (event, ruleId, index) {
     var confirm = $mdDialog.confirm()
       .title('Delete Rule')
-      .textContent('Would you like to delete this rule?')
+      .textContent('Would you like to delete this rule? Id: ' + ruleId)
       .ariaLabel('Delete Rule')
       .targetEvent(event)
       .ok('Yes')
@@ -102,6 +102,21 @@ module.exports = function ($scope, $mdDialog, $state, $stateParams, toastr, Proj
     });
 
   };
+
+  $scope.editRule = function (event, rule){
+    $mdDialog.show({
+        controller: 'RuleModalCtrl',
+        templateUrl: 'modules/admin/project/ruleModal.html',
+        parent: angular.element(document.body),
+        targetEvent: event,
+        clickOutsideToClose: true,
+        fullscreen: true,
+        bindToController: true,
+        locals: {
+          rule: rule,
+        }
+      });
+  }
 
   $scope.openModal = function (event, opt, project) {
     var ctrl, template, users;

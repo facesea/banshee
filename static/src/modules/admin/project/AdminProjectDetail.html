@@ -41,7 +41,7 @@
                       <th> Comment </th>
                       <th> Condition </th>
                       <th> NumMetrics </th>
-                      <th class="th50"></th>
+                      <th class="th100"></th>
                     </tr>
                   <tbody>
                     <tr ng-if="!rules || !rules.length">
@@ -66,6 +66,9 @@
                         </a>
                       </td>
                       <td class="text-right">
+                        <md-button class="md-raised md-mini" aria-label="Edit Rule" ng-click="editRule($event, rule)">
+                          <i class="fa fa-pencil-square-o"></i>
+                        </md-button>
                         <md-button class="md-raised md-warn md-mini" aria-label="delete rule" ng-click="deleteRule($event, rule.id, $index)">
                           <i class="fa fa-trash-o"></i>
                         </md-button>
