@@ -117,6 +117,7 @@ func (al *Alerter) work() {
 					Project: proj,
 					Metric:  metric,
 					User:    &user,
+					Rule:    rule,
 				}
 				// Exec
 				if len(al.cfg.Alerter.Command) == 0 {
