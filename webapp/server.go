@@ -4,11 +4,12 @@ package webapp
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/eleme/banshee/config"
 	"github.com/eleme/banshee/storage"
 	"github.com/eleme/banshee/util/log"
 	"github.com/julienschmidt/httprouter"
-	"net/http"
 )
 
 // Globals
@@ -54,6 +55,7 @@ func Start(c *config.Config, d *storage.DB) {
 	router.GET("/api/user/:id/projects", auth.handler(getUserProjects))
 	router.POST("/api/project/:id/rule", auth.handler(createRule))
 	router.DELETE("/api/rule/:id", auth.handler(deleteRule))
+	router.POST("/api/rule/:id", auth.handler(editRule))
 	router.GET("/api/metric/indexes", getMetricIndexes)
 	router.GET("/api/metric/data", getMetrics)
 	router.GET("/api/info", getInfo)

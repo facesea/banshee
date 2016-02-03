@@ -39,6 +39,7 @@ type msg struct {
 	Project *models.Project `json:"project"`
 	Metric  *models.Metric  `json:"metric"`
 	User    *models.User    `json:"user"`
+	Rule    *models.Rule    `json:"rule"`
 }
 
 // New creates a alerter.
@@ -117,6 +118,7 @@ func (al *Alerter) work() {
 					Project: proj,
 					Metric:  metric,
 					User:    &user,
+					Rule:    rule,
 				}
 				// Exec
 				if len(al.cfg.Alerter.Command) == 0 {

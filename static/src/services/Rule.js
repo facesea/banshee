@@ -7,6 +7,10 @@ module.exports = function ($resource) {
     save: {
       method: 'POST',
       url: '/api/project/:projectId/rule'
-    }
+    },
+	update: {
+      method: 'POST',
+      url: '/api/rule/:id'
+	}
   });
 };

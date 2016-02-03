@@ -22,7 +22,7 @@
         </md-input-container>
         <md-input-container class="md-block" flex-gt-sm>
         <label>Comment</label>
-          <input type="text" name="comment" ng-model="rule.comment" required>
+          <input type="text" name="comment" ng-model="rule.comment">
           <div ng-messages="form.comment.$error" ng-if="form.comment.$dirty">
             <div ng-message="required">This field is required.</div>
           </div>
