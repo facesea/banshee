@@ -116,7 +116,7 @@ module.exports = function ($scope, $mdDialog, $state, $stateParams, toastr, Proj
           rule: rule,
         }
       });
-  }
+  };
 
   $scope.openModal = function (event, opt, project) {
     var ctrl, template, users;
