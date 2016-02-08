@@ -29,7 +29,11 @@
         </md-input-container>
         <div layout="row" flex="100">
           <md-input-container flex="40" class="md-block">
-            <md-checkbox ng-init='rule.trendUp=true' ng-model="rule.trendUp">
+            <md-checkbox ng-if="!isEdit" ng-init='rule.trendUp=true' ng-model="rule.trendUp">
+              On trend up
+              <span ng-style="{'color': '#777'}"> (optional) </span>
+            </md-checkbox>
+            <md-checkbox ng-if="isEdit" ng-model="rule.trendUp">
               On trend up
               <span ng-style="{'color': '#777'}"> (optional) </span>
             </md-checkbox>
@@ -44,11 +48,15 @@
         </div>
         <div layout="row" flex="100">
           <md-input-container flex="40" class="md-block">
-          <md-checkbox ng-model="rule.trendDown" ng-if='rule.pattern.indexOf("timer.count_ps")==0' ng-init='rule.trendDown=true'>
+          <md-checkbox ng-model="rule.trendDown" ng-if='!isEdit && rule.pattern.indexOf("timer.count_ps")==0' ng-init='rule.trendDown=true'>
               On trend down
               <span ng-style="{'color': '#777'}"> (optional) </span>
           </md-checkbox>
-          <md-checkbox ng-model="rule.trendDown" ng-if='rule.pattern.indexOf("timer.count_ps")!=0' ng-init='rule.trendDown=false'>
+          <md-checkbox ng-model="rule.trendDown" ng-if='!isEdit && rule.pattern.indexOf("timer.count_ps")!=0' ng-init='rule.trendDown=false'>
+              On trend down
+              <span ng-style="{'color': '#777'}"> (optional) </span>
+          </md-checkbox>
+          <md-checkbox ng-model="rule.trendDown" ng-if='isEdit'>
               On trend down
               <span ng-style="{'color': '#777'}"> (optional) </span>
           </md-checkbox>
