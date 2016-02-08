@@ -1,9 +1,11 @@
 /*@ngInject*/
 module.exports = function ($scope, $mdDialog, $stateParams, toastr, Rule) {
-  var isEdit=false;
+  $scope.isEdit=false;
+
   if(this.rule){
-    isEdit = true;
+    $scope.isEdit = true;
   }
+
   $scope.rule = this.rule || {};
 
   $scope.cancel = function() {
@@ -12,7 +14,7 @@ module.exports = function ($scope, $mdDialog, $stateParams, toastr, Rule) {
 
   $scope.submit = function() {
     var params = angular.copy($scope.rule);
-    if (isEdit) {
+    if ($scope.isEdit) {
       Rule.update(params).$promise
         .then(function(res) {
           $mdDialog.hide(res);
