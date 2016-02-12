@@ -1,3 +1,13 @@
+0.0.9
+-----
+
+* Alerter: Enable email and phone both disabled. #370
+* Models: Add new field comment to rule. #373
+* Static: Fix default values on editRule modal. #378
+* Static: Show health data in table format. #369
+* Static: Fix md-input-container margin-top. #368
+* Webapp: Add rule editor. #374
+
 0.0.8
 -----
 
