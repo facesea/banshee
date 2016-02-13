@@ -97,7 +97,7 @@ func initFilter() {
 	flt.SetHitLimit(cfg)
 }
 
-func main() {
+func init() {
 	// Arguments
 	flag.Usage = usage
 	flag.Parse()
@@ -110,8 +110,9 @@ func main() {
 	initConfig()
 	initDB()
 	initFilter()
+}
 
-	// Service
+func main() {
 	health.Init(db)
 	go health.Start()
 
