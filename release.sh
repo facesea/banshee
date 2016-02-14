@@ -1,6 +1,4 @@
 #!/bin/bash
-echo "====== pull latest upstream/master ========"
-git pull upstream master
 git rev-parse upstream/master > commit
 echo "====== install static deps ========="
 cd static && npm install -q && cd ..
