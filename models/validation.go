@@ -22,6 +22,9 @@ const (
 var (
 	ErrProjectNameEmpty         = errors.New("project name is empty")
 	ErrProjectNameTooLong       = errors.New("project name is too long")
+	ErrProjectSilentTimeStart   = errors.New("project silent time start is invalid")
+	ErrProjectSilentTimeEnd     = errors.New("project silent time end is invalid")
+	ErrProjectSilentTimeRange   = errors.New("project silent time start should be smaller than end")
 	ErrUserNameEmpty            = errors.New("user name is empty")
 	ErrUserNameTooLong          = errors.New("user name is too long")
 	ErrUserEmailEmpty           = errors.New("user email is empty")
@@ -43,6 +46,23 @@ func ValidateProjectName(name string) error {
 	if len(name) > MaxProjectNameLen {
 		// Too long
 		return ErrProjectNameTooLong
+	}
+	return nil
+}
+
+// ValidateProjectSilentRange validates project silent time start and end.
+func ValidateProjectSilentRange(start, end int) error {
+	if start < 0 || start > 23 {
+		// Invalid number.
+		return ErrProjectSilentTimeStart
+	}
+	if end < 0 || end > 23 {
+		// Invalid number.
+		return ErrProjectSilentTimeEnd
+	}
+	if start >= end {
+		// Start is larger than end.
+		return ErrProjectSilentTimeRange
 	}
 	return nil
 }

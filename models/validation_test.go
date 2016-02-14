@@ -23,6 +23,13 @@ func TestValidateProjectName(t *testing.T) {
 	assert.Ok(t, ValidateProjectName("project") == nil)
 }
 
+func TestValidateProjectSilentTimeRange(t *testing.T) {
+	assert.Ok(t, ValidateProjectSilentRange(39, 6) == ErrProjectSilentTimeStart)
+	assert.Ok(t, ValidateProjectSilentRange(0, 29) == ErrProjectSilentTimeEnd)
+	assert.Ok(t, ValidateProjectSilentRange(7, 4) == ErrProjectSilentTimeRange)
+	assert.Ok(t, ValidateProjectSilentRange(1, 9) == nil)
+}
+
 func TestValidateUserName(t *testing.T) {
 	assert.Ok(t, ValidateUserName("") == ErrUserNameEmpty)
 	assert.Ok(t, ValidateUserName(genLongString(MaxUserNameLen+1)) == ErrUserNameTooLong)
