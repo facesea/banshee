@@ -109,6 +109,21 @@ Alerting Sender
 
 See package alerter and alerter/exampleCommand.
 
+Deployment
+
+Just use the shell release.sh, it will build the binary, static files and pack them together:
+
+	./release.sh
+
+Upgrade
+
+Just pull the latest code:
+
+	git remote add origin git@github.com:eleme/banshee.git
+	git pull upstream master
+
+Note that the admin storage sqlite3 schema will be auto-migrated.
+
 Implementation Details
 
 1. Detection algorithms, see package detector.

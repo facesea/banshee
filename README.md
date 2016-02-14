@@ -23,6 +23,16 @@ Build
 2. Build binary via `make`.
 3. Build static files via `make static`.
 
+Deployment
+----------
+
+https://godoc.org/github.com/eleme/banshee#hdr-Deployment
+
+Upgrade
+-------
+
+https://godoc.org/github.com/eleme/banshee#hdr-Upgrade
+
 Philosophy
 ----------
 
