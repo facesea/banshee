@@ -7,20 +7,11 @@
           <h3 class="md-button md-ink-ripple" ui-sref="banshee.main({project: projectId})" ng-style="{'text-transform': 'none'}">
             <a ui-sref="banshee.main({project: projectId})" ng-bind="project.name"></a>
           </h3>
-          <span flex></span>
-          <md-button class="md-icon-button" aria-label="Edit" ng-click="openModal($event, 'editProject', project)">
-            <md-tooltip md-autohide>Edit name</md-tooltip>
-            <md-icon class="fa fa-pencil" ng-style="{'font-size': '20px'}"></md-icon>
-          </md-button>
-          <md-button class="md-icon-button btnDelete" aria-label="Delete" ng-click="deleteProject()">
-            <md-tooltip md-autohide>Delete Project</md-tooltip>
-            <md-icon class="fa fa-trash-o" ng-style="{'font-size': '20px'}"></md-icon>
-          </md-button>
         </div>
       </md-toolbar>
       <!-- Panel content -->
       <section class="panel-content">
-        <!-- tabs --->
+        <!-- tabs -->
         <md-tabs md-dynamic-height md-border-bottom>
           <!-- Rules -->
           <md-tab label="Rules">
@@ -80,6 +71,7 @@
               <!-- ./Table -->
             </md-content>
           </md-tab> <!-- ./Rules -->
+          <!-- Users -->
           <md-tab label="Receivers">
             <md-content class="md-padding">
               <div ng-style="{'text-align': 'right'}" layout-padding>
@@ -113,6 +105,44 @@
               </div> <!-- ./Table -->
             </md-content>
           </md-tab> <!-- ./Users -->
+          <!-- Edit -->
+          <md-tab label="Edit">
+            <md-content class="md-padding">
+              <!-- Form -->
+              <form name="form" ng-submit="edit()" onvalidate>
+                <md-content layout-padding>
+                  <md-input-container class="md-block" flex-gt-sm>
+                    <label>Name</label>
+                    <input type="text" name="projectName" ng-model="project.name" required>
+                    <div ng-messages="form.projectName.$error" ng-if="form.projectName.$dirty">
+                      <div ng-message="required">This field is required.</div>
+                    </div>
+                  </md-input-container>
+                  <md-input-container class="md-block" flex-gt-sm>
+                    <label> Silent time start (number 0 ~ 24) </label>
+                    <input type="number" name="silentTimeStart" ng-model="project.silentTimeStart">
+                    <div ng-messages="form.silentTimeStart.$error" ng-if="form.silentTimeStart.$dirty">
+                    </div>
+                  </md-input-container>
+                  <md-input-container class="md-block" flex-gt-sm>
+                    <label> Silent time end (number 0 ~ 24) </label>
+                    <input type="number" name="silentTimeEnd" ng-model="project.silentTimeEnd">
+                  </md-input-container>
+                  <md-input-container class="md-block" flex-gt-sm>
+                    <md-checkbox ng-model="project.enableSilent" aria-label="checked checkbox"> Enable silent </md-checkbox>
+                  </md-input-container>
+                  <md-input-container>
+                    <md-button class="md-raised" aria-label="Save Project" type="submit" ng-disabled="form.$invalid">
+                      Save
+                    </md-button>
+                    <md-button class="md-raised md-warn" aria-label="Delete Project" type="button" ng-click="deleteProject()">
+                      Delete
+                    </md-button>
+                  </md-input-container>
+                </md-content>
+              </form> <!-- ./Form -->
+            </md-content> <!-- ./Edit md-content-->
+          </md-tab> <!-- ./Edit -->
       </section> <!-- ./Panel content -->
     </section> <!-- Main panel -->
   </div>

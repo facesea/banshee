@@ -36,6 +36,16 @@ module.exports = function ($scope, $mdDialog, $state, $stateParams, toastr, Proj
       });
   };
 
+  $scope.edit = function() {
+    Project.edit($scope.project).$promise
+      .then(function() {
+        toastr.success('Save Success');
+      })
+      .catch(function(err) {
+        toastr.error(err.msg);
+      });
+  };
+
   $scope.deleteRule = function (event, ruleId, index) {
     var confirm = $mdDialog.confirm()
       .title('Delete Rule')
@@ -156,11 +166,6 @@ module.exports = function ($scope, $mdDialog, $state, $stateParams, toastr, Proj
         if (opt === 'addRule') {
           $scope.rules.push(res);
         }
-
-        if (opt === 'editProject') {
-          $scope.project = res;
-        }
-
         if (opt === 'addUserToProject') {
           $scope.users.push(res);
         }

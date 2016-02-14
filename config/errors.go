@@ -19,6 +19,7 @@ var (
 	ErrWebappPort                      = errors.New("invalid webapp.port")
 	ErrAlerterInterval                 = errors.New("alerter.interval should be greater than 0")
 	ErrAlerterOneDayLimit              = errors.New("alerter.oneDayLimit should be greater than 0")
+	ErrAlerterDefaultSilentTimeRange   = errors.New("alerter.defaultTimeRange should be 2 numbers between 0~24 and start should be smaller than end")
 	ErrCleanerThreshold                = errors.New("cleaner.threshold should be an integer greater than 2 * period")
 	// Warn
 	ErrAlerterCommandEmpty = errors.New("alerter.command is empty")

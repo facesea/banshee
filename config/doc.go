@@ -35,7 +35,8 @@ Configuration is in JSON file, for example:
 	    "command": "",
 	    "workers": 4,
 	    "interval": 1200,
-	    "oneDayLimit": 5
+	    "oneDayLimit": 5,
+		"defaultSilentTimeRange": [0, 6]
 	  },
 	  "cleaner": {
 	    "interval": 10800,
@@ -71,6 +72,7 @@ The documents for each configuration item with default values:
 	alerter.workers                // Number of workers to consume command execution jobs. default: 4
 	alerter.interval               // Minimal interval (in seconds) between two alerting message for one metric. default: 1200
 	alerter.oneDayLimit            // Limitation for number of alerting times for one metric in a day. default: 5
+	alerter.defaultSilentTimeRange // Default silent time range if the project silent is disabled. default: [0, 6] (00:00~06:00)
 	cleaner.interval               // Time interval to check outdated data to clean. default: 10800 (4 hours)
 	cleaner.threshold              // One metric will be cleaned if the age it incoming exceeds this threshold (in seconds). default: 259200 (3 days)
 

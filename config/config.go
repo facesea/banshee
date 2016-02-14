@@ -41,6 +41,9 @@ const (
 	DefaultAlerterOneDayLimit uint32 = 5
 	// Default value of least count.
 	DefaultLeastCount uint32 = 5 * Minute / DefaultInterval
+	// Default alerting silent time range.
+	DefaultSilentTimeStart int = 0
+	DefaultSilentTimeEnd   int = 6
 )
 
 // Limitations
@@ -92,10 +95,11 @@ type configWebapp struct {
 }
 
 type configAlerter struct {
-	Command     string `json:"command"`
-	Workers     int    `json:"workers"`
-	Interval    uint32 `json:"inteval"`
-	OneDayLimit uint32 `json:"oneDayLimit"`
+	Command                string `json:"command"`
+	Workers                int    `json:"workers"`
+	Interval               uint32 `json:"inteval"`
+	OneDayLimit            uint32 `json:"oneDayLimit"`
+	DefaultSilentTimeRange [2]int `json:"DefaultSilentTimeRange"`
 }
 
 type configCleaner struct {
@@ -126,6 +130,7 @@ func New() *Config {
 	config.Alerter.Workers = 4
 	config.Alerter.Interval = DefaultAlerterInterval
 	config.Alerter.OneDayLimit = DefaultAlerterOneDayLimit
+	config.Alerter.DefaultSilentTimeRange = [2]int{DefaultSilentTimeStart, DefaultSilentTimeEnd}
 	config.Cleaner.Interval = DefaultCleanerInterval
 	config.Cleaner.Threshold = DefaultCleanerThreshold
 	return config
@@ -168,6 +173,7 @@ func (config *Config) Copy() *Config {
 	c.Alerter.Workers = config.Alerter.Workers
 	c.Alerter.Interval = config.Alerter.Interval
 	c.Alerter.OneDayLimit = config.Alerter.OneDayLimit
+	c.Alerter.DefaultSilentTimeRange = config.Alerter.DefaultSilentTimeRange
 	c.Cleaner.Interval = config.Cleaner.Interval
 	c.Cleaner.Threshold = config.Cleaner.Threshold
 	return c
@@ -227,6 +233,15 @@ func (config *Config) Validate() error {
 	}
 	if config.Alerter.OneDayLimit <= 0 {
 		return ErrAlerterOneDayLimit
+	}
+	if config.Alerter.DefaultSilentTimeRange[0] < 0 || config.Alerter.DefaultSilentTimeRange[0] > 23 {
+		return ErrAlerterDefaultSilentTimeRange
+	}
+	if config.Alerter.DefaultSilentTimeRange[1] < 0 || config.Alerter.DefaultSilentTimeRange[1] > 23 {
+		return ErrAlerterDefaultSilentTimeRange
+	}
+	if config.Alerter.DefaultSilentTimeRange[0] >= config.Alerter.DefaultSilentTimeRange[1] {
+		return ErrAlerterDefaultSilentTimeRange
 	}
 	// Cleaner
 	if config.Cleaner.Threshold < config.Period*MinCleanerThresholdNumToPeriod {

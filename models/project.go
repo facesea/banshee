@@ -12,4 +12,8 @@ type Project struct {
 	Rules []*Rule `json:"-"`
 	// Project may have many users, they shouldn't be shared.
 	Users []*User `gorm:"many2many:project_users" json:"-"`
+	// Silent time range in one day.
+	EnableSilent    bool `json:"enableSilent"`
+	SilentTimeStart int  `json:"silentTimeStart"`
+	SilentTimeEnd   int  `json:"silentTimeEnd"`
 }
