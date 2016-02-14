@@ -114,6 +114,9 @@ Deployment
 Just use the shell release.sh, it will build the binary, static files and pack them together:
 
 	./release.sh
+	scp bansheeA.B.C.linux-amd64.tar.gz remote-host-name:/target/path
+
+You may need a linux host to build the binary, cause: https://github.com/mattn/go-sqlite3/issues/106
 
 Upgrade
 
