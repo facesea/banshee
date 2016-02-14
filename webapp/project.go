@@ -112,9 +112,12 @@ func updateProject(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
 		ResponseError(w, NewValidationWebError(err))
 		return
 	}
-	if err := models.ValidateProjectSilentRange(req.SilentTimeStart, req.SilentTimeEnd); err != nil {
-		ResponseError(w, NewValidationWebError(err))
-		return
+	if !req.EnableSilent && (req.SilentTimeStart != 0 || req.SilentTimeEnd != 0) {
+		// Validate if silent is disabled and start and end both are zero.
+		if err := models.ValidateProjectSilentRange(req.SilentTimeStart, req.SilentTimeEnd); err != nil {
+			ResponseError(w, NewValidationWebError(err))
+			return
+		}
 	}
 	// Find
 	proj := &models.Project{}
