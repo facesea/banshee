@@ -69,6 +69,25 @@ func (al *Alerter) Start() {
 	}()
 }
 
+// Test if alerter should silent now for a project.
+func (al *Alerter) shouldSilent(proj *models.Project) bool {
+	var start, end int
+	if proj.EnableSilent {
+		// Use project defined.
+		start = proj.SilentTimeStart
+		end = proj.SilentTimeEnd
+	} else {
+		// Default
+		start = al.cfg.Alerter.DefaultSilentTimeRange[0]
+		end = al.cfg.Alerter.DefaultSilentTimeRange[1]
+	}
+	now := time.Now().Hour()
+	if start <= now && now < end {
+		return true
+	}
+	return false
+}
+
 // work waits for detected metrics, then check each metric with all the
 // rules, the configured shell command will be executed once a rule is hit.
 func (al *Alerter) work() {
@@ -103,6 +122,10 @@ func (al *Alerter) work() {
 			proj := &models.Project{}
 			if err := al.db.Admin.DB().Model(rule).Related(proj).Error; err != nil {
 				log.Error("project, %v, skiping..", err)
+				continue
+			}
+			// Silent
+			if al.shouldSilent(proj) {
 				continue
 			}
 			// Users
