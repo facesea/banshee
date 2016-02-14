@@ -21,32 +21,32 @@
               <td colspan="3">not found any result</td>
             <tr>
             <tr>
-              <td>Aggregation interval (in second)</td>
-              <td ng-bind="info.aggregationInterval"></td>
+              <td>Aggregation interval</td>
+              <td><kbd>{{ info.aggregationInterval }}</kbd> s</td>
             </tr>
             <tr>
               <td>Number of metric indexes total</td>
-              <td ng-bind="info.numIndexTotal"></td>
+              <td><kbd>{{ info.numIndexTotal }}</kbd></td>
             </tr>
             <tr>
               <td>Number of detector clients</td>
-              <td ng-bind="info.numClients"></td>
+              <td><kbd>{{ info.numClients }}</kbd></td>
             </tr>
             <tr>
-              <td>Detection cost average (in milliseconds) in last aggregation interval</td>
-              <td ng-bind="info.detectionCost"></td>
+              <td>Detection cost average in last {{ info.aggregationInterval }}s</td>
+              <td><kbd>{{ info.detectionCost }}</kbd> ms</td>
             </tr>
             <tr>
-              <td>Number of incomed datapoints in last aggregation interval</td>
-              <td ng-bind="info.numMetricIncomed"></td>
+              <td>Number of incomed datapoints in last {{ info.aggregationInterval }}s</td>
+              <td><kbd>{{ info.numMetricIncomed }}</kbd></td>
             </tr>
             <tr>
-              <td>Number of detected datapoints in last aggregation interval</td>
-              <td ng-bind="info.numMetricDetected"></td>
+              <td>Number of detected datapoints in last {{ info.aggregationInterval }}s</td>
+              <td><kbd>{{ info.numMetricDetected }}</kbd></td>
             </tr>
             <tr>
-              <td>Number of Alerting events in last aggregation interval</td>
-              <td ng-bind="info.numAlertingEvents"></td>
+              <td>Number of Alerting events in last {{ info.aggregationInterval }}s</td>
+              <td><kbd>{{ info.numAlertingEvents }}</kbd></td>
             </tr>
           </tbody>
         </table>
