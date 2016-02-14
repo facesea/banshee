@@ -87,7 +87,10 @@ func createProject(w http.ResponseWriter, r *http.Request, _ httprouter.Params) 
 
 // updateProject request
 type updateProjectRequest struct {
-	Name string `json:"name"`
+	Name            string `json:"name"`
+	EnableSilent    bool   `json:"enableSilent"`
+	SilentTimeStart int    `json:"silentTimeStart"`
+	SilentTimeEnd   int    `json:"silentTimeEnd"`
 }
 
 // updateProject updates a project.
@@ -109,6 +112,10 @@ func updateProject(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
 		ResponseError(w, NewValidationWebError(err))
 		return
 	}
+	if err := models.ValidateProjectSilentRange(req.SilentTimeStart, req.SilentTimeEnd); err != nil {
+		ResponseError(w, NewValidationWebError(err))
+		return
+	}
 	// Find
 	proj := &models.Project{}
 	if err := db.Admin.DB().First(proj, id).Error; err != nil {
@@ -123,6 +130,9 @@ func updateProject(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
 	}
 	// Patch.
 	proj.Name = req.Name
+	proj.EnableSilent = req.EnableSilent
+	proj.SilentTimeStart = req.SilentTimeStart
+	proj.SilentTimeEnd = req.SilentTimeEnd
 	if err := db.Admin.DB().Save(proj).Error; err != nil {
 		if err == gorm.RecordNotFound {
 			// Not found.
