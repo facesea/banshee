@@ -1,3 +1,13 @@
+0.1.0
+-----
+
+* Alerter: Implement silence for project. #382
+* Config: Add new item alerter.DefaultSilentTimeRange. #382
+* Static: Move project edit and delete to section page. #382
+* Static: Show version info in footer. #388
+* Webapp: Add silent time range to updateProject. #382
+* Webapp: Add api to get version. #388
+
 0.0.9
 -----
 
