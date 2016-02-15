@@ -111,12 +111,11 @@ See package alerter and alerter/exampleCommand.
 
 Deployment
 
-Just use the shell release.sh, it will build the binary, static files and pack them together:
+Via fabric(http://www.fabfile.org/):
 
-	./release.sh
-	scp bansheeA.B.C.linux-amd64.tar.gz remote-host-name:/target/path
+	python deploy.py -H d100-app-08 --remote-path "/home/hit9/banshee"
 
-You may need a linux host to build the binary, cause: https://github.com/mattn/go-sqlite3/issues/106
+See deploy.py docs for more.
 
 Upgrade
 

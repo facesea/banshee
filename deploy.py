@@ -21,7 +21,8 @@ This script will do the following jobs:
 Note:
 
     1. If the remote host is linux, this script should be also called
-    on linux to build the right binary.
+    on linux to build the right binary, cause:
+        https://github.com/mattn/go-sqlite3/issues/106
     2. The banshee service should be maintained in supervisor. You need
     to create a new service named banshee in supervisor.
 """
