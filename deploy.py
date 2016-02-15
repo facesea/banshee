@@ -47,7 +47,7 @@ from fabric.contrib.project import rsync_project
 ###
 
 LOCAL_DIR = "deploy-local-tmp"
-LOCAL_STATIC_DIR = os.path.join(LOCAL_DIR, "static")
+LOCAL_STATIC_DIR = os.path.join(LOCAL_DIR, "static", "dist")
 BINARY_NAME = "banshee"
 STATIC_DIR = os.path.join("static", "dist")
 SERVICE_NAME = "banshee"
@@ -95,7 +95,7 @@ def make_local_dir():
                     |- js/
                     ...
     """
-    local("mkdir -p {}".format(LOCAL_DIR))
+    local("mkdir -p {}".format(LOCAL_STATIC_DIR))
     local("cp {0} {1}".format(BINARY_NAME, LOCAL_DIR))
     local("cp -r {0} {1}".format(STATIC_DIR, LOCAL_STATIC_DIR))
     local("mv commit {}".format(LOCAL_DIR))
