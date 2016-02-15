@@ -139,12 +139,11 @@ def deploy():
         build_static_files()
         build_binary()
         make_local_dir()
-        # upload()
-        # if env.refresh:
-        #     refresh()
+        upload()
+        if env.refresh:
+            refresh()
     finally:
-        pass
-        # remove_local_dir()
+        remove_local_dir()
 
 
 def main(host=None, user=None):
