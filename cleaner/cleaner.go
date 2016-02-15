@@ -39,7 +39,7 @@ func (c *Cleaner) clean() {
 			// Clean outdated metrics.
 			n, _ := c.db.Metric.DeleteTo(idx.Name, now-c.cfg.Expiration)
 			if n > 0 {
-				log.Info("%s %d outdated metrics cleaned", idx.Name, n)
+				log.Debug("%s %d outdated metrics cleaned", idx.Name, n)
 			}
 		}
 	}
