@@ -26,13 +26,15 @@ var app = angular.module('banshee.layout', [])
           controller: 'NavigationCtrl'
         },
         'footer@banshee': {
-          templateUrl: 'modules/layout/footer.html'
+          templateUrl: 'modules/layout/footer.html',
+          controller: 'FooterCtrl'
         }
       }
     });
   })
   .controller('MainCtrl', require('./MainCtrl'))
   .controller('HeaderCtrl', require('./HeaderCtrl'))
+  .controller('FooterCtrl', require('./FooterCtrl'))
   .controller('NavigationCtrl', require('./NavigationCtrl'));
 
 module.exports = app.name;

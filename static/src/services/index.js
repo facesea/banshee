@@ -15,6 +15,7 @@ app
   .factory('Rule', require('./Rule'))
   .factory('Config', require('./Config'))
   .factory('Metric', require('./Metric'))
-  .factory('Info', require('./Info'));
+  .factory('Info', require('./Info'))
+  .factory('Version', require('./Version'));
 
 module.exports = app.name;
