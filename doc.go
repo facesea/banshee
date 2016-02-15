@@ -122,7 +122,7 @@ Upgrade
 
 Just pull the latest code:
 
-	git remote add upstream git@github.com:eleme/banshee.git
+	git remote add upstream https://github.com/eleme/banshee.git
 	git pull upstream master
 
 Note that the admin storage sqlite3 schema will be auto-migrated.
