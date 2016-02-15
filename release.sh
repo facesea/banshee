@@ -1,5 +1,5 @@
 #!/bin/bash
-git rev-parse upstream/master > commit
+git rev-parse HEAD > commit
 echo "====== install static deps ========="
 cd static && npm install -q && cd ..
 cd static/public && npm install -q && cd ../..
