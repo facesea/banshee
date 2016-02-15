@@ -97,7 +97,7 @@ def make_local_dir():
     """
     local("mkdir -p {}".format(LOCAL_STATIC_DIR))
     local("cp {0} {1}".format(BINARY_NAME, LOCAL_DIR))
-    local("cp -r {0} {1}".format(STATIC_DIR, LOCAL_STATIC_DIR))
+    local("cp -r {0}/* {1}".format(STATIC_DIR, LOCAL_STATIC_DIR))
     local("mv commit {}".format(LOCAL_DIR))
 
 
@@ -139,11 +139,12 @@ def deploy():
         build_static_files()
         build_binary()
         make_local_dir()
-        upload()
-        if env.refresh:
-            refresh()
+        # upload()
+        # if env.refresh:
+        #     refresh()
     finally:
-        remove_local_dir()
+        pass
+        # remove_local_dir()
 
 
 def main(host=None, user=None):
