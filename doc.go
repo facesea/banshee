@@ -113,7 +113,7 @@ Deployment
 
 Via fabric(http://www.fabfile.org/):
 
-	python deploy.py -H d100-app-08 --remote-path "/home/hit9/banshee"
+	python deploy.py -u hit9 -H remote-host:22 --remote-path "/service/banshee"
 
 See deploy.py docs for more.
 
