@@ -1,12 +1,12 @@
 Banshee
 =======
 
-[![Join the chat at https://gitter.im/eleme/banshee](https://badges.gitter.im/eleme/banshee.svg)](https://gitter.im/eleme/banshee?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
 Banshee is a real-time anomalies(outliers) detection system for periodic
 metrics.
 
 [![Build Status](https://travis-ci.org/eleme/banshee.svg?branch=master)](https://travis-ci.org/eleme/banshee)
+[![GoDoc](https://godoc.org/github.com/eleme/banshee?status.svg)](https://godoc.org/github.com/eleme/banshee)
+[![Join the chat at https://gitter.im/eleme/banshee](https://badges.gitter.im/eleme/banshee.svg)](https://gitter.im/eleme/banshee?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ![snap](snap.png)
 
