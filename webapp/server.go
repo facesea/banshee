@@ -59,6 +59,7 @@ func Start(c *config.Config, d *storage.DB) {
 	router.GET("/api/metric/indexes", getMetricIndexes)
 	router.GET("/api/metric/data", getMetrics)
 	router.GET("/api/info", getInfo)
+	router.GET("/api/version", getVersion)
 	// Static
 	router.NotFound = newStaticHandler(http.Dir(cfg.Webapp.Static), auth)
 	// Serve
