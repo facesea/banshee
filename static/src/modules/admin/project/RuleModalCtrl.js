@@ -1,6 +1,6 @@
 /*@ngInject*/
 module.exports = function ($scope, $mdDialog, $stateParams, toastr, Rule) {
-  $scope.isEdit=false;
+  $scope.isEdit = false;
 
   if(this.rule){
     $scope.isEdit = true;
