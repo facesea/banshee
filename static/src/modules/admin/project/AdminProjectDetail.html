@@ -49,7 +49,7 @@
                         <span ng-bind="rule.comment"></span>
                       </td>
                       <td>
-                        <code ng-bind="rule.repr"></code>
+                        <code ng-bind="buildRepr(rule)"></code>
                       </td>
                       <td>
                         <a ui-sref="banshee.main({pattern: rule.pattern})">

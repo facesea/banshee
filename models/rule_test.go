@@ -8,42 +8,6 @@ import (
 	"testing"
 )
 
-func TestRuleBuildRepr(t *testing.T) {
-	var rule *Rule
-	// TrendUp
-	rule = &Rule{TrendUp: true}
-	rule.BuildRepr()
-	assert.Ok(t, rule.Repr == "trend ↑")
-	// TrendDown
-	rule = &Rule{TrendDown: true}
-	rule.BuildRepr()
-	assert.Ok(t, rule.Repr == "trend ↓")
-	// TrendUp Or TrendDown
-	rule = &Rule{TrendUp: true, TrendDown: true}
-	rule.BuildRepr()
-	assert.Ok(t, rule.Repr == "trend ↑ || trend ↓")
-	// Value >= X
-	rule = &Rule{ThresholdMax: 3.1478}
-	rule.BuildRepr()
-	assert.Ok(t, rule.Repr == "value >= 3.148")
-	// Value <= X
-	rule = &Rule{ThresholdMin: 3.1478}
-	rule.BuildRepr()
-	assert.Ok(t, rule.Repr == "value <= 3.148")
-	// TrendUp and Value >= X
-	rule = &Rule{TrendUp: true, ThresholdMax: 1.29}
-	rule.BuildRepr()
-	assert.Ok(t, rule.Repr == "(trend ↑ && value >= 1.29)")
-	// (TrendUp And Value >= X) Or TrendDown
-	rule = &Rule{TrendDown: true, TrendUp: true, ThresholdMax: 2223.8}
-	rule.BuildRepr()
-	assert.Ok(t, rule.Repr == "(trend ↑ && value >= 2223.8) || trend ↓")
-	// (TrendUp And Value >= X) Or (TrendDown And Value <= X)
-	rule = &Rule{TrendUp: true, ThresholdMax: 18987, TrendDown: true, ThresholdMin: 781}
-	rule.BuildRepr()
-	assert.Ok(t, rule.Repr == "(trend ↑ && value >= 18987) || (trend ↓ && value <= 781)")
-}
-
 func TestRuleTest(t *testing.T) {
 	var rule *Rule
 	// TrendUp
