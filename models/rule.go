@@ -3,12 +3,8 @@
 package models
 
 import (
-	"fmt"
-	"path/filepath"
-	"strings"
-
 	"github.com/eleme/banshee/config"
-	"github.com/eleme/banshee/util"
+	"path/filepath"
 )
 
 // Rule is a type to describe alerter rule.
@@ -30,8 +26,6 @@ type Rule struct {
 	// thresholds.
 	ThresholdMax float64 `json:"thresholdMax"`
 	ThresholdMin float64 `json:"thresholdMin"`
-	// String representation.
-	Repr string `sql:"-" json:"repr"`
 	// Number of metrics matched.
 	NumMetrics int `sql:"-" json:"numMetrics"`
 	// Comment
@@ -132,38 +126,6 @@ func (rule *Rule) Test(m *Metric, idx *Index, cfg *config.Config) bool {
 		ok = m.Value <= thresholdMin
 	}
 	return ok
-}
-
-// BuildRepr sets the rule's string repr.
-func (rule *Rule) BuildRepr() {
-	// Lock if shared.
-	rule.Lock()
-	defer rule.Unlock()
-	// Repr
-	var parts []string
-	if rule.TrendUp && rule.ThresholdMax == 0 {
-		parts = append(parts, "trend ↑")
-	}
-	if rule.TrendUp && rule.ThresholdMax != 0 {
-		s := fmt.Sprintf("(trend ↑ && value >= %s)", util.ToFixed(rule.ThresholdMax, 3))
-		parts = append(parts, s)
-	}
-	if !rule.TrendUp && rule.ThresholdMax != 0 {
-		s := fmt.Sprintf("value >= %s", util.ToFixed(rule.ThresholdMax, 3))
-		parts = append(parts, s)
-	}
-	if rule.TrendDown && rule.ThresholdMin == 0 {
-		parts = append(parts, "trend ↓")
-	}
-	if rule.TrendDown && rule.ThresholdMin != 0 {
-		s := fmt.Sprintf("(trend ↓ && value <= %s)", util.ToFixed(rule.ThresholdMin, 3))
-		parts = append(parts, s)
-	}
-	if !rule.TrendDown && rule.ThresholdMin != 0 {
-		s := fmt.Sprintf("value <= %s", util.ToFixed(rule.ThresholdMin, 3))
-		parts = append(parts, s)
-	}
-	rule.Repr = strings.Join(parts, " || ")
 }
 
 // SetNumMetrics sets the rule's number of metrics matched.
