@@ -1,5 +1,5 @@
 /*@ngInject*/
-module.exports = function ($scope, $modal, $mdDialog, $state, Project) {
+module.exports = function ($scope, $modal, $mdDialog, $state, $timeout, Project) {
   $scope.autoComplete = {
     searchText: ''
   };
@@ -12,7 +12,15 @@ module.exports = function ($scope, $modal, $mdDialog, $state, Project) {
   };
 
   $scope.searchProject = function (item) {
+<<<<<<< HEAD
+    $timeout(function() {
+      $state.go('banshee.main', {
+        project: item.id
+      });
+    }, 200);
+=======
     $state.go('banshee.admin.project.detail', {id: item.id});
+>>>>>>> 2cb644fae4da01a2ea8bb52ec6dad6e3795369b3
   };
 
   $scope.openModal = function (event) {
