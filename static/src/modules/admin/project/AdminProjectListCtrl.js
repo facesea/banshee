@@ -12,7 +12,7 @@ module.exports = function ($scope, $modal, $mdDialog, $state, Project) {
   };
 
   $scope.searchProject = function (item) {
-    $state.go('banshee.main', {project: item.id});
+    $state.go('banshee.admin.project.detail', {id: item.id});
   };
 
   $scope.openModal = function (event) {
