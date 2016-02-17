@@ -6,6 +6,7 @@
         <div class="md-toolbar-tools">
           <h3>Project</h3>
           <span flex></span>
+
           <md-button
             class="md-icon-button"
             aria-label="Create Project"
@@ -17,6 +18,25 @@
       </md-toolbar>
       <div class="panel-content">
         <!-- START table-responsive-->
+        <div class="table-title">
+          <md-autocomplete
+            class="search-project"
+            md-selected-item="autoComplete.selectedItem"
+            md-search-text="autoComplete.searchText"
+            md-selected-item-change="searchProject(project)"
+            md-items="project in projects | filter: {name: autoComplete.searchText}"
+            md-item-text="project.name"
+            md-min-length="0"
+            md-floating-label="Search Project"
+            flex="45">
+            <md-item-template>
+              <span md-highlight-text="autoComplete.searchText" md-highlight-flags="^i">{{project.name}}</span>
+            </md-item-template>
+            <md-not-found>
+              No items matching "{{autoComplete.searchText}}" were found.
+            </md-not-found>
+          </md-autocomplete>
+        </div>
         <div class="table-responsive">
           <table class="table">
             <thead>
