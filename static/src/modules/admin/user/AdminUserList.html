@@ -17,6 +17,25 @@
       </md-toolbar>
       <div class="panel-content">
         <!-- START table-responsive-->
+        <div class="table-title">
+          <md-autocomplete
+            class="search-user"
+            md-selected-item="autoComplete.selectedItem"
+            md-search-text="autoComplete.searchText"
+            md-selected-item-change="searchUser(user)"
+            md-items="user in users | filter: {name: autoComplete.searchText}"
+            md-item-text="user.name"
+            md-min-length="0"
+            md-floating-label="Search User"
+            flex="45">
+            <md-item-template>
+              <span md-highlight-text="autoComplete.searchText" md-highlight-flags="^i">{{user.name}}</span>
+            </md-item-template>
+            <md-not-found>
+              No items matching "{{autoComplete.searchText}}" were found.
+            </md-not-found>
+          </md-autocomplete>
+        </div>
         <div class="table-responsive">
           <table class="table">
             <thead>

@@ -13,8 +13,8 @@ module.exports = function ($scope, $modal, $mdDialog, $state, Project) {
 
   $scope.searchProject = function (item) {
     $state.go('banshee.main', {project: item.id});
-  }
-  
+  };
+
   $scope.openModal = function (event) {
     $mdDialog.show({
         controller: 'ProjectModalCtrl',
