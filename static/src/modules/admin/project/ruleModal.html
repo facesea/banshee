@@ -22,12 +22,17 @@
           </div>
         </md-input-container>
         <md-input-container class="md-block" flex-gt-sm>
-        <label>Comment</label>
+          <label>Comment</label>
           <input type="text" name="comment" ng-model="rule.comment">
-          <div ng-messages="form.comment.$error" ng-if="form.comment.$dirty">
-            <div ng-message="required">This field is required.</div>
-          </div>
         </md-input-container>
+        <div layout="row" flex="100">
+          <md-input-container flex="20" class="md-block">
+            <label>Preview</label>
+          </md-input-container>
+          <md-input-container flex="80" class="md-block">
+            <code ng-bind="buildRepr(rule)"></code>
+          </md-input-container>
+        </div>
         <div layout="row" flex="100">
           <md-input-container flex="40" class="md-block">
             <md-checkbox ng-if="!isEdit" ng-init='rule.trendUp=true' ng-model="rule.trendUp">

@@ -1,5 +1,5 @@
 /*@ngInject*/
-module.exports = function ($scope, $mdDialog, $state, $stateParams, toastr, Project, Rule, User, Config) {
+module.exports = function ($scope, $mdDialog, $state, $stateParams, toastr, Project, Rule, User, Config, Util) {
   var projectId = $scope.projectId = $stateParams.id;
   var allUsers = [];
 
@@ -199,33 +199,6 @@ module.exports = function ($scope, $mdDialog, $state, $stateParams, toastr, Proj
     return $scope.users.map(function(el) {return el.id;});
   }
 
-  $scope.buildRepr = function (rule) {
-    var parts = [];
+  $scope.buildRepr = Util.buildRepr;
 
-    if (rule.trendUp && rule.thresholdMax === 0) {
-      parts.push('trend ↑');
-    }
-
-    if (rule.trendUp && rule.thresholdMax !== 0) {
-      parts.push('(trend ↑ && value >= ' + parseFloat(rule.thresholdMax.toFixed(3)) + ')');
-    }
-
-    if (!rule.trendUp && rule.thresholdMax !== 0) {
-      parts.push('value >= ' + parseFloat(rule.thresholdMax.toFixed(3)));
-    }
-
-    if (rule.trendDown && rule.thresholdMin === 0) {
-      parts.push('trend ↓');
-    }
-
-    if (rule.trendDown && rule.thresholdMin !== 0) {
-      parts.push('(trend ↓ && value <= ' + parseFloat(rule.thresholdMin.toFixed(3)) + ')');
-    }
-
-    if (!rule.trendDown && rule.thresholdMin !== 0) {
-      parts.push('value <= ' + parseFloat(rule.thresholdMin.toFixed(3)));
-    }
-
-    return parts.join(' || ');
-  };
 };
