@@ -84,7 +84,7 @@ type configDetector struct {
 	BlackList            []string           `json:"blackList"`
 	IntervalHitLimit     int                `json:"intervalHitLimit"`
 	DefaultThresholdMaxs map[string]float64 `json:"defaultThresholdMaxs"`
-	DefaultThresholdMins map[string]float64 `json:"DefaultThresholdMins"`
+	DefaultThresholdMins map[string]float64 `json:"defaultThresholdMins"`
 	FillBlankZeros       []string           `json:"fillBlankZeros"`
 }
 
@@ -99,7 +99,7 @@ type configAlerter struct {
 	Workers                int    `json:"workers"`
 	Interval               uint32 `json:"inteval"`
 	OneDayLimit            uint32 `json:"oneDayLimit"`
-	DefaultSilentTimeRange [2]int `json:"DefaultSilentTimeRange"`
+	DefaultSilentTimeRange [2]int `json:"defaultSilentTimeRange"`
 }
 
 type configCleaner struct {
