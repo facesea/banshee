@@ -1,3 +1,18 @@
+0.1.1
+-----
+
+* Cleaner: Log Debug instead of Info on cleaning oudated metrics. #391
+* Deploy: Add a fabric script to help to deploy. #392
+* Deploy: Add deploy.py new option `--only-static`. #409
+* Models: Remove rule.BuildRepr. #398
+* Static: Move build rule repr to static end. #398
+* Static: Fix rule edit modal title. #400
+* Static: Add autocomplete input for projects and receivers page. #401
+* Static: Fix click not working after search goto. #403
+* Static: Display default silent time range values in project config. #405
+* Static: Add rule condition repr preview in rule add/edit form. #406
+* Webapp: Fix indexes sorting in api getIndexes. #407
+
 0.1.0
 -----
 
