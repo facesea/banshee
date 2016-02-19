@@ -22,8 +22,8 @@ Configuration is in JSON file, for example:
 	    "leastCount": 30,
 	    "blacklist": ["statsd.*"],
 	    "intervalHitLimit": 100,
-		"defaultThresholdMaxs": {},
-		"defaultThresholdMins": {"timer.mean_90": 300},
+	    "defaultThresholdMaxs": {"timer.mean_90": 300},
+	    "defaultThresholdMins": {},
 	    "fillBlankZeros": ["counter.*.exc"]
 	  },
 	  "webapp": {
@@ -36,7 +36,7 @@ Configuration is in JSON file, for example:
 	    "workers": 4,
 	    "interval": 1200,
 	    "oneDayLimit": 5,
-		"defaultSilentTimeRange": [0, 6]
+	    "defaultSilentTimeRange": [0, 6]
 	  },
 	  "cleaner": {
 	    "interval": 10800,
