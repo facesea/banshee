@@ -1,5 +1,5 @@
 /*@ngInject*/
-module.exports = function ($scope, $mdDialog, $stateParams, toastr, Rule) {
+module.exports = function ($scope, $mdDialog, $stateParams, toastr, Rule, Util) {
   $scope.isEdit = false;
 
   if(this.rule){
@@ -22,7 +22,7 @@ module.exports = function ($scope, $mdDialog, $stateParams, toastr, Rule) {
         .catch(function(err) {
           toastr.error(err.msg);
         });
-    }else{
+    } else {
       params.projectId = $stateParams.id;
       Rule.save(params).$promise
         .then(function(res) {
@@ -33,4 +33,6 @@ module.exports = function ($scope, $mdDialog, $stateParams, toastr, Rule) {
         });
     }
   };
+
+  $scope.buildRepr = Util.buildRepr;
 };

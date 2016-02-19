@@ -32,6 +32,13 @@ Options
  bansheeTimerFields  timer data fields to forward. [default: ['mean_90', 'count_ps']]
 ```
 
+Support Metric Types
+---------------------
+
+* counter `counter.*`
+* timer `timer.mean_90.*`, `timer.upper_90.*`, `timer.count_ps.*`
+* gauge `gauge.*`
+
 License
 -------
 

@@ -8,9 +8,9 @@ module.exports = function ($resource) {
       method: 'POST',
       url: '/api/project/:projectId/rule'
     },
-	update: {
+    update: {
       method: 'POST',
       url: '/api/rule/:id'
-	}
+    }
   });
 };
