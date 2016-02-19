@@ -22,7 +22,7 @@ module.exports = function ($scope, $mdDialog, $stateParams, toastr, Rule) {
         .catch(function(err) {
           toastr.error(err.msg);
         });
-    }else{
+    } else {
       params.projectId = $stateParams.id;
       Rule.save(params).$promise
         .then(function(res) {
