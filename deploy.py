@@ -137,10 +137,11 @@ def deploy():
         record_commit()
         install_static_deps()
         build_static_files()
-        build_binary()
+        if not env.only_static:
+            build_binary()
         make_local_dir()
         upload()
-        if env.refresh:
+        if env.refresh and not env.only_static:
             refresh()
     finally:
         remove_local_dir()
@@ -156,6 +157,8 @@ def main(host=None, user=None):
                         required=True)
     parser.add_argument("--remote-user", help="remote service user",
                         default="root:root")
+    parser.add_argument("--only-static", help="deploy only static files",
+                        action='store_true', default=False)
     args = parser.parse_args()
 
     if not args.user:
@@ -170,6 +173,7 @@ def main(host=None, user=None):
         env.remote_user = args.remote_user
 
     env.remote_path = args.remote_path
+    env.only_static = args.only_static
     env.refresh = args.refresh
     env.use_ssh_config = True
     execute(deploy, hosts=[args.host])
