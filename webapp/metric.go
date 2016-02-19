@@ -63,7 +63,7 @@ func getMetricIndexes(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 	}
 	// Sort
 	sort.Sort(indexByScore(idxs))
-	if order == "down" {
+	if order == "up" {
 		// Reverse
 		for i := 0; 2*i < len(idxs); i++ {
 			idxs[len(idxs)-1-i], idxs[i] = idxs[i], idxs[len(idxs)-1-i]
