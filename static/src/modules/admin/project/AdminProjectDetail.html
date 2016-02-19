@@ -129,7 +129,14 @@
                     <input type="number" name="silentTimeEnd" ng-model="project.silentTimeEnd">
                   </md-input-container>
                   <md-input-container class="md-block" flex-gt-sm>
-                    <md-checkbox ng-model="project.enableSilent" aria-label="checked checkbox"> Enable silent </md-checkbox>
+                    <md-checkbox ng-model="project.enableSilent" aria-label="checked checkbox" class="md-align-top-left"> Enable silent
+                    <br/>
+                    <span ng-style="{'color': 'saddlebrown'}" ng-if="!project.enableSilent">
+                      Default silent range is:
+                      {{ config.alerter.defaultSilentTimeRange[0] }} ~
+                      {{ config.alerter.defaultSilentTimeRange[1] }}
+                    </span>
+                    </md-checkbox>
                   </md-input-container>
                   <md-input-container>
                     <md-button class="md-raised" aria-label="Save Project" type="submit" ng-disabled="form.$invalid">

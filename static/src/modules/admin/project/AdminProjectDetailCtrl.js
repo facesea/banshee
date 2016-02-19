@@ -1,5 +1,5 @@
 /*@ngInject*/
-module.exports = function ($scope, $mdDialog, $state, $stateParams, toastr, Project, Rule, User) {
+module.exports = function ($scope, $mdDialog, $state, $stateParams, toastr, Project, Rule, User, Config) {
   var projectId = $scope.projectId = $stateParams.id;
   var allUsers = [];
 
@@ -33,6 +33,12 @@ module.exports = function ($scope, $mdDialog, $state, $stateParams, toastr, Proj
     User.getAllUsers().$promise
       .then(function (res) {
         allUsers = res;
+      });
+
+    // get config
+    Config.get().$promise
+      .then(function (res) {
+        $scope.config = res;
       });
   };
 
