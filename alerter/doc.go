@@ -41,6 +41,10 @@ alert, for example:
 			"score": 1.2,
 			"stamp": 1452494901,
 			"value": 2000
+		},
+		"rule": {
+			"pattern": "timer.mean_90.note.*",
+			"comment": "service note get api"
 		}
 	}
 

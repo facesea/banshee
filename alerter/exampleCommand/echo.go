@@ -28,6 +28,10 @@
 //       "score": 1.02,
 //       "stamp": 1452494901,
 //       "value": 139.1
+//     },
+//     "rule": {
+//       "pattern": "timer.mean_90.note.*",
+//       "comment": "service note get api"
 //     }
 //   }
 //
