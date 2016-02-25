@@ -111,3 +111,17 @@ func getMetrics(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	}
 	ResponseJSONOK(w, metrics)
 }
+
+// getMetricRules returns the rules matching the given metric.
+func getMetricRules(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	// Params
+	name := ps.ByName("name")
+	if name == "" {
+		ResponseError(w, ErrBadRequest)
+		return
+	}
+	// Find matched rules
+	m := &models.Metric{Name: name}
+	rules := flt.MatchedRules(m)
+	ResponseJSONOK(w, rules)
+}

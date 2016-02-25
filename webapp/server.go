@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/eleme/banshee/config"
+	"github.com/eleme/banshee/filter"
 	"github.com/eleme/banshee/storage"
 	"github.com/eleme/banshee/util/log"
 	"github.com/julienschmidt/httprouter"
@@ -18,6 +19,8 @@ var (
 	cfg *config.Config
 	// Storage
 	db *storage.DB
+	// Filter
+	flt *filter.Filter
 )
 
 // Init globals.
@@ -27,10 +30,11 @@ func Init(c *config.Config, d *storage.DB) {
 }
 
 // Start http server.
-func Start(c *config.Config, d *storage.DB) {
+func Start(c *config.Config, d *storage.DB, f *filter.Filter) {
 	// Init globals.
 	cfg = c
 	db = d
+	flt = f
 	// Auth
 	auth := newAuthHandler(cfg.Webapp.Auth[0], cfg.Webapp.Auth[1])
 	// Routes
@@ -56,6 +60,7 @@ func Start(c *config.Config, d *storage.DB) {
 	router.POST("/api/project/:id/rule", auth.handler(createRule))
 	router.DELETE("/api/rule/:id", auth.handler(deleteRule))
 	router.POST("/api/rule/:id", auth.handler(editRule))
+	router.GET("/api/metric/rules/:name", getMetricRules)
 	router.GET("/api/metric/indexes", getMetricIndexes)
 	router.GET("/api/metric/data", getMetrics)
 	router.GET("/api/info", getInfo)

@@ -241,19 +241,38 @@ Baisc auth required.
 		...
 	]
 
-22. Get health info.
+22. Get metric matched rules.
+
+	GET /api/metric/rules/<name>
+
+	200
+	[
+		{"id": 1, "projectID": 1, ..},
+		...
+	]
+
+23. Get health info.
 
 	GET /api/info
 
 	200
 	{
 		"aggregationInterval": 300,
-		"numIndexTotal": 2739,
-		"numClients": 64,
-		"detectionCost.5min": 20,
-		"numMetricIncome.5min": 10240,
-		"numMetricDetected.5min": 82000,
-		"numAlertingEvents.5min": 4
+		"numIndexTotal": 3115,
+		"numClients": 40,
+		"detectionCost": 5.480208245735771,
+		"numMetricIncomed": 1148119,
+		"numMetricDetected": 35880,
+		"numAlertingEvents": 2
+	}
+
+24. Get banshee version.
+
+	GET /api/version
+
+	200
+	{
+		"version": "0.1.1"
 	}
 
 */
