@@ -16,6 +16,8 @@ type Index struct {
 	Score float64 `json:"score"`
 	// Latest average for the metric.
 	Average float64 `json:"average"`
+	// Matched rules.
+	MatchedRules []*Rule `json:"matchedRules"`
 }
 
 // WriteMetric writes metric to index.

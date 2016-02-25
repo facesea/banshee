@@ -75,10 +75,14 @@ func getMetricIndexes(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 	}
 	// Limit
 	if limit < len(idxs) {
-		ResponseJSONOK(w, idxs[:limit])
-	} else {
-		ResponseJSONOK(w, idxs)
+		idxs = idxs[:limit]
 	}
+	// Matched rules
+	for _, idx := range idxs {
+		m := &models.Metric{Name: idx.Name}
+		idx.MatchedRules = flt.MatchedRules(m)
+	}
+	ResponseJSONOK(w, idxs)
 }
 
 // getMetrics returns metric values.
