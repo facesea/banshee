@@ -4,10 +4,10 @@ module.exports = function () {
     buildRepr: function (rule) {
       var parts = [];
 
-      trendUp = rule.trendUp || false;
-      trendDown = rule.trendDown || false;
-      thresholdMax = rule.thresholdMax || 0;
-      thresholdMin = rule.thresholdMin || 0;
+      var trendUp = rule.trendUp || false;
+      var trendDown = rule.trendDown || false;
+      var thresholdMax = rule.thresholdMax || 0;
+      var thresholdMin = rule.thresholdMin || 0;
 
       if (trendUp && thresholdMax === 0) {
         parts.push('trend ↑');
