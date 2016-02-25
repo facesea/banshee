@@ -122,7 +122,7 @@ func main() {
 	alerter := alerter.New(cfg, db)
 	alerter.Start()
 
-	go webapp.Start(cfg, db)
+	go webapp.Start(cfg, db, flt)
 
 	detector := detector.New(cfg, db, flt)
 	detector.Out(alerter.In)
