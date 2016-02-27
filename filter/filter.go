@@ -27,6 +27,7 @@ type Filter struct {
 	hitCounters *safemap.SafeMap
 	// Limit for a rule hits in an interval time
 	intervalHitLimit int
+	enableHitLimit   bool
 }
 
 // childFilter is a suffix tree.
@@ -47,7 +48,18 @@ func New() *Filter {
 		children:         safemap.New(),
 		hitCounters:      safemap.New(),
 		intervalHitLimit: 100,
+		enableHitLimit:   true,
 	}
+}
+
+// DisableHitLimit disable hit limit.
+func (f *Filter) DisableHitLimit() {
+	f.enableHitLimit = false
+}
+
+// EnableHitLimit enable hit limit.
+func (f *Filter) EnableHitLimit() {
+	f.enableHitLimit = true
 }
 
 // Init from db.
@@ -94,7 +106,7 @@ func (f *Filter) matchedRs(c *childFilter, prefix string, l []string) []*models.
 		if exist {
 			//use atomic
 			atomic.AddInt32(v.(*int32), 1)
-			if atomic.LoadInt32(v.(*int32)) > int32(f.intervalHitLimit) {
+			if f.enableHitLimit && atomic.LoadInt32(v.(*int32)) > int32(f.intervalHitLimit) {
 				log.Warn("hits over intervalHitLimit, metric: %s", prefix)
 				return []*models.Rule{}
 			}
