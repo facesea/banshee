@@ -48,4 +48,10 @@ func TestRuleTest(t *testing.T) {
 	rule = &Rule{TrendUp: true}
 	assert.Ok(t, rule.Test(&Metric{Value: 310, Name: "foo"}, &Index{Score: 1.3}, cfg))
 	assert.Ok(t, !rule.Test(&Metric{Value: 120, Name: "foo"}, &Index{Score: 1.3}, cfg))
+	// Default thresholdMins
+	cfg = config.New()
+	cfg.Detector.DefaultThresholdMins["fo*"] = 10
+	rule = &Rule{TrendDown: true}
+	assert.Ok(t, !rule.Test(&Metric{Value: 19, Name: "foo"}, &Index{Score: -1.2}, cfg))
+	assert.Ok(t, rule.Test(&Metric{Value: 8, Name: "foo"}, &Index{Score: -1.2}, cfg))
 }
