@@ -48,4 +48,59 @@ func TestRuleTest(t *testing.T) {
 	rule = &Rule{TrendUp: true}
 	assert.Ok(t, rule.Test(&Metric{Value: 310, Name: "foo"}, &Index{Score: 1.3}, cfg))
 	assert.Ok(t, !rule.Test(&Metric{Value: 120, Name: "foo"}, &Index{Score: 1.3}, cfg))
+	// Default thresholdMins
+	cfg = config.New()
+	cfg.Detector.DefaultThresholdMins["fo*"] = 10
+	rule = &Rule{TrendDown: true}
+	assert.Ok(t, !rule.Test(&Metric{Value: 19, Name: "foo"}, &Index{Score: -1.2}, cfg))
+	assert.Ok(t, rule.Test(&Metric{Value: 8, Name: "foo"}, &Index{Score: -1.2}, cfg))
+}
+
+func BenchmarkRuleTest(b *testing.B) {
+	cfg := config.New()
+	m := &Metric{Value: 102}
+	idx := &Index{Score: 1.2}
+	rule := &Rule{TrendUp: true, ThresholdMax: 100}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		rule.Test(m, idx, cfg)
+	}
+}
+
+func BenchmarkRuleTestWithDefaultThresholdMaxsNum4(b *testing.B) {
+	cfg := config.New()
+	cfg.Detector.DefaultThresholdMaxs = map[string]float64{
+		"timer.count_ps.*": 30,
+		"timer.upper_90.*": 500,
+		"counter.*":        10,
+		"timer.mean_90.*":  300,
+	}
+	m := &Metric{Name: "timer.mean_90.foo", Value: 1700}
+	idx := &Index{Name: m.Name, Score: 1.2}
+	rule := Rule{TrendUp: true}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		rule.Test(m, idx, cfg)
+	}
+}
+
+func BenchmarkRuleTestWithDefaultThresholdMaxsNum8(b *testing.B) {
+	cfg := config.New()
+	cfg.Detector.DefaultThresholdMaxs = map[string]float64{
+		"timer.count_ps.y.*": 30,
+		"timer.upper_90.y.*": 500,
+		"counter.y.*":        10,
+		"timer.mean_90.y.*":  300,
+		"timer.count_ps.x.*": 100,
+		"timer.upper_90.x.*": 1500,
+		"counter.x.*":        15,
+		"timer.mean_90.x.*":  1000,
+	}
+	m := &Metric{Name: "timer.mean_90.x.foo", Value: 1700}
+	idx := &Index{Name: m.Name, Score: 1.2}
+	rule := Rule{TrendUp: true}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		rule.Test(m, idx, cfg)
+	}
 }
