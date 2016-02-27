@@ -29,6 +29,7 @@ var (
 	level             = INFO
 	w       io.Writer = os.Stderr
 	colored           = true
+	enabled           = true
 )
 
 // colors to ansi code map
@@ -71,6 +72,16 @@ func SetWriter(writer io.Writer) {
 	w = writer
 }
 
+// Disable the logging.
+func Disable() {
+	enabled = false
+}
+
+// Enable the logging.
+func Enable() {
+	enabled = true
+}
+
 // Debug logs message with level DEBUG.
 func Debug(format string, a ...interface{}) {
 	log(DEBUG, format, a...)
@@ -104,7 +115,7 @@ func Colored(color string, text string) string {
 
 // log dose logging.
 func log(l int, format string, a ...interface{}) {
-	if l >= level {
+	if enabled && l >= level {
 		// Caller pkg.
 		_, fileName, _, _ := runtime.Caller(2)
 		pkgName := path.Base(path.Dir(fileName))

@@ -6,6 +6,7 @@ import (
 	"github.com/eleme/banshee/config"
 	"github.com/eleme/banshee/models"
 	"github.com/eleme/banshee/util/assert"
+	"github.com/eleme/banshee/util/log"
 	"path/filepath"
 	"testing"
 	"time"
@@ -35,6 +36,9 @@ func TestSimple(t *testing.T) {
 }
 
 func TestHitLimit(t *testing.T) {
+	// Currently disable logging
+	log.Disable()
+	defer log.Enable()
 	//New and add rules.
 	config := config.New()
 	config.Interval = 1
@@ -76,6 +80,8 @@ func BenchmarkRules1kBest(b *testing.B) {
 	for i := 0; i < 1024; i++ {
 		filter.addRule(&models.Rule{Pattern: "a.*.c." + string(i)})
 	}
+	filter.DisableHitLimit()
+	defer filter.EnableHitLimit()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		filter.MatchedRules(&models.Metric{Name: "x.b.c." + string(i&1024)})
@@ -87,6 +93,8 @@ func BenchmarkRules1kWorst(b *testing.B) {
 	for i := 0; i < 1024; i++ {
 		filter.addRule(&models.Rule{Pattern: "a.*.c." + string(i)})
 	}
+	filter.DisableHitLimit()
+	defer filter.EnableHitLimit()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		filter.MatchedRules(&models.Metric{Name: "a.b.c." + string(i&1024)})
@@ -98,6 +106,8 @@ func BenchmarkRules2kWorst(b *testing.B) {
 	for i := 0; i < 1024*2; i++ {
 		filter.addRule(&models.Rule{Pattern: "a.*.c." + string(i)})
 	}
+	filter.DisableHitLimit()
+	defer filter.EnableHitLimit()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		filter.MatchedRules(&models.Metric{Name: "a.b.c." + string(i&65535)})
