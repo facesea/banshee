@@ -69,6 +69,19 @@ func (al *Alerter) Start() {
 	}()
 }
 
+// Test if an hour is in [start, end)
+func hourInRange(hour, start, end int) bool {
+	switch {
+	case start < end:
+		return start <= hour && hour < end
+	case start > end:
+		return start <= hour || hour < end
+	case start == end:
+		return start == hour
+	}
+	return false
+}
+
 // Test if alerter should silent now for a project.
 func (al *Alerter) shouldSilent(proj *models.Project) bool {
 	var start, end int
@@ -82,10 +95,7 @@ func (al *Alerter) shouldSilent(proj *models.Project) bool {
 		end = al.cfg.Alerter.DefaultSilentTimeRange[1]
 	}
 	now := time.Now().Hour()
-	if start <= now && now < end {
-		return true
-	}
-	return false
+	return hourInRange(now, start, end)
 }
 
 // work waits for detected metrics, then check each metric with all the
