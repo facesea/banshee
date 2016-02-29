@@ -16,6 +16,10 @@ const (
 	MaxUserNameLen = 32
 	// Max value of the rule pattern length.
 	MaxRulePatternLen = 256
+	// Max value of the metric name length.
+	MaxMetricNameLen = 256
+	// Min value of the metric stamp.
+	MinMetricStamp uint32 = 1450322633
 )
 
 // Errors
@@ -35,6 +39,9 @@ var (
 	ErrRulePatternTooLong       = errors.New("rule pattern is too long")
 	ErrRulePatternContainsSpace = errors.New("rule pattern contains spaces")
 	ErrRulePatternFormat        = errors.New("rule pattern format is invalid")
+	ErrMetricNameEmpty          = errors.New("metric name is empty")
+	ErrMetricNameTooLong        = errors.New("metric name is too long")
+	ErrMetricStampTooSmall      = errors.New("metric stamp is too small")
 )
 
 // ValidateProjectName validates project name
@@ -131,6 +138,28 @@ func ValidateRulePattern(pattern string) error {
 				return ErrRulePatternFormat
 			}
 		}
+	}
+	return nil
+}
+
+// ValidateMetricName validates metric name.
+func ValidateMetricName(name string) error {
+	if len(name) == 0 {
+		// Empty
+		return ErrMetricNameEmpty
+	}
+	if len(name) > MaxMetricNameLen {
+		// Too long.
+		return ErrMetricNameTooLong
+	}
+	return nil
+}
+
+// ValidateMetricStamp validates metric stamp.
+func ValidateMetricStamp(stamp uint32) error {
+	if stamp < MinMetricStamp {
+		// Too small.
+		return ErrMetricStampTooSmall
 	}
 	return nil
 }
