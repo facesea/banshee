@@ -29,8 +29,8 @@
 		},
 		{
 			"ImportPath": "github.com/mattn/go-sqlite3",
-			"Comment": "v1.1.0-27-g5651a9d",
-			"Rev": "5651a9d9d49ec25811d08220ee972080378d52ea"
+			"Comment": "v1.1.0-40-g09d5c45",
+			"Rev": "09d5c451710ef887470709463f4f04ff83e1e039"
 		},
 		{
 			"ImportPath": "github.com/syndtr/goleveldb/leveldb",
