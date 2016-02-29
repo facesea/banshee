@@ -39,7 +39,7 @@ type Receiver struct {
 	EnableEmail bool      `gorm:"column:enableEmail"`
 	Phone       string    `gorm:"column:phone"`
 	EnablePhone bool      `gorm:"column:enablePhone"`
-	Universal   bool      `gorm:"column:universal`
+	Universal   bool      `gorm:"column:universal"`
 	CreateAt    time.Time `gorm:"column:createAt"`
 	UpdateAt    time.Time `gorm:"column:updateAt"`
 }

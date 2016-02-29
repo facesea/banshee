@@ -101,7 +101,11 @@ func (d *Detector) handle(conn net.Conn) {
 			continue
 		}
 		// Validate metric.
-		if err := validateMetric(m); err != nil {
+		if err := models.ValidateMetricName(m.Name); err != nil {
+			log.Error("invalid metric: %v, skipping..", err)
+			continue
+		}
+		if err := models.ValidateMetricStamp(m.Stamp); err != nil {
 			log.Error("invalid metric: %v, skipping..", err)
 			continue
 		}

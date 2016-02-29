@@ -56,3 +56,12 @@ func TestValidateRulePattern(t *testing.T) {
 	assert.Ok(t, ValidateRulePattern("abc.*.*") == nil)
 	assert.Ok(t, ValidateRulePattern("*.abc.*") == nil)
 }
+
+func TestValidateMetricName(t *testing.T) {
+	assert.Ok(t, ValidateMetricName("") == ErrMetricNameEmpty)
+	assert.Ok(t, ValidateMetricName(genLongString(MaxMetricNameLen+1)) == ErrMetricNameTooLong)
+}
+
+func TestValidateMetricStamp(t *testing.T) {
+	assert.Ok(t, ValidateMetricStamp(123) == ErrMetricStampTooSmall)
+}
