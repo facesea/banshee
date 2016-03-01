@@ -3,7 +3,10 @@
 package alerter
 
 import (
+	"crypto/sha1"
+	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"os/exec"
 	"sync/atomic"
 	"time"
@@ -36,6 +39,7 @@ type Alerter struct {
 
 // Alerting message.
 type msg struct {
+	ID      string          `json:"id"`
 	Project *models.Project `json:"project"`
 	Metric  *models.Metric  `json:"metric"`
 	User    *models.User    `json:"user"`
@@ -98,6 +102,17 @@ func (al *Alerter) shouldSilent(proj *models.Project) bool {
 	return hourInRange(now, start, end)
 }
 
+// make event id by metric:
+//
+//	sha1(metricName:metricStamp)
+//
+func makeEventID(m *models.Metric) string {
+	slug := fmt.Sprintf("%s:%s", m.Name, m.Stamp)
+	hash := sha1.New()
+	hash.Write([]byte(slug))
+	return hex.EncodeToString(hash.Sum(nil))
+}
+
 // work waits for detected metrics, then check each metric with all the
 // rules, the configured shell command will be executed once a rule is hit.
 func (al *Alerter) work() {
@@ -121,6 +136,8 @@ func (al *Alerter) work() {
 		} else {
 			atomic.AddUint32(v.(*uint32), 1)
 		}
+		// Event id.
+		eventID := makeEventID(metric)
 		// Universals
 		var univs []models.User
 		if err := al.db.Admin.DB().Where("universal = ?", true).Find(&univs).Error; err != nil {
@@ -148,6 +165,7 @@ func (al *Alerter) work() {
 			// Send
 			for _, user := range users {
 				d := &msg{
+					ID:      eventID,
 					Project: proj,
 					Metric:  metric,
 					User:    &user,
