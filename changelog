@@ -1,3 +1,20 @@
+0.1.2
+-----
+
+* Alerter: Fix alerter `shouldSilent`. #424
+* Alerter: Add `eventID` to alerting event message. #429 #430
+* Config: Add config `Webapp.Notice`. #427
+* Filter: Add method `EnableHitLimit` and `DisableHitLimit`. #419
+* Godeps: Move deps to vendor from _workspace. (support go 1.5+) #425
+* Deploy: Build binary via `make` instead of `godep`. #426
+* Logging: Add method `Enable` and `Disable`. #419
+* Models: Add `MatchedRules` to models.Index. #416
+* Models: Add benchmark for `rule.Test`. #420
+* Models: Move metric validation to models from detector. #421
+* Webapp: Add `MatchedRules` to api getIndexes.  #416
+* Webapp: Add web api to get matched rules by metric name. #415
+* Webapp: Able to add notice name to urls on webpage. #427
+
 0.1.1
 -----
 
