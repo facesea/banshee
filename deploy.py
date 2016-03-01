@@ -78,9 +78,9 @@ def build_static_files():
 
 
 def build_binary():
-    """Build banshee binary via godep.
+    """Build banshee binary via makefile.
     """
-    local("godep go build")
+    local("make")
 
 
 def make_local_dir():
