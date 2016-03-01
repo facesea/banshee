@@ -19,7 +19,8 @@
   "webapp": {
     "port": 2016,
     "auth": ["admin", "admin"],
-    "static": "static/dist"
+    "static": "static/dist",
+    "notice": {}
   },
   "alerter": {
     "command": "",

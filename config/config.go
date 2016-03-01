@@ -89,9 +89,10 @@ type configDetector struct {
 }
 
 type configWebapp struct {
-	Port   int       `json:"port"`
-	Auth   [2]string `json:"auth"`
-	Static string    `json:"static"`
+	Port   int               `json:"port"`
+	Auth   [2]string         `json:"auth"`
+	Static string            `json:"static"`
+	Notice map[string]string `json:"notice"`
 }
 
 type configAlerter struct {
@@ -126,6 +127,7 @@ func New() *Config {
 	config.Webapp.Port = 2016
 	config.Webapp.Auth = [2]string{"admin", "admin"}
 	config.Webapp.Static = "static/dist"
+	config.Webapp.Notice = make(map[string]string, 0)
 	config.Alerter.Command = ""
 	config.Alerter.Workers = 4
 	config.Alerter.Interval = DefaultAlerterInterval
@@ -169,6 +171,7 @@ func (config *Config) Copy() *Config {
 	c.Webapp.Port = config.Webapp.Port
 	c.Webapp.Auth = config.Webapp.Auth
 	c.Webapp.Static = config.Webapp.Static
+	c.Webapp.Notice = config.Webapp.Notice
 	c.Alerter.Command = config.Alerter.Command
 	c.Alerter.Workers = config.Alerter.Workers
 	c.Alerter.Interval = config.Alerter.Interval
