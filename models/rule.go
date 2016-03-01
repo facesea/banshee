@@ -52,6 +52,7 @@ func (rule *Rule) CopyTo(r *Rule) {
 	r.TrendDown = rule.TrendDown
 	r.ThresholdMax = rule.ThresholdMax
 	r.ThresholdMin = rule.ThresholdMin
+	r.Comment = rule.Comment
 }
 
 // Equal tests rule equality
@@ -66,7 +67,8 @@ func (rule *Rule) Equal(r *Rule) bool {
 		r.TrendUp == rule.TrendUp &&
 		r.TrendDown == rule.TrendDown &&
 		r.ThresholdMax == rule.ThresholdMax &&
-		r.ThresholdMin == rule.ThresholdMin)
+		r.ThresholdMin == rule.ThresholdMin &&
+		r.Comment == rule.Comment)
 }
 
 // Test if a metric hits this rule.
