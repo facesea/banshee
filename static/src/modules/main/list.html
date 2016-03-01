@@ -30,10 +30,10 @@
               </md-not-found>
             </md-autocomplete>
           </div>
-          <div ng-style="{'color': 'saddlebrown'}" ng-if="!(config.webapp.notice | isEmpty)">
+          <div ng-style="{'color': 'saddlebrown'}" ng-if="!(notice | isEmpty)">
             <ul>
               Notice:
-              <li ng-repeat="(name, url) in config.webapp.notice" ng-style="{'display': 'inline', 'margin': '10px'}">
+              <li ng-repeat="(name, url) in notice" ng-style="{'display': 'inline', 'margin': '10px'}">
                 <a href="{{ url }}">{{ name }}</a>
               </li>
             </ul>

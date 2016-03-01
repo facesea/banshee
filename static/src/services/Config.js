@@ -4,6 +4,10 @@ module.exports = function ($resource) {
     getInterval: {
       method: 'GET',
       url: '/api/interval'
+    },
+    getNotice: {
+      method: 'GET',
+      url: '/api/notice'
     }
   });
 };

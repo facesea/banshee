@@ -7,7 +7,7 @@ module.exports = function ($scope, $rootScope, $timeout, $stateParams, Metric, C
   $rootScope.currentMain = true;
   $scope.dateTimes = DateTimes;
   $scope.projectId = $stateParams.project;
-  $scope.config = null;
+  $scope.notice = null;
 
   $scope.limitList = [{
     label: 'Limit 1',
@@ -136,9 +136,9 @@ module.exports = function ($scope, $rootScope, $timeout, $stateParams, Metric, C
         watchAll();
       });
 
-    Config.get().$promise
+    Config.getNotice().$promise
     .then(function (res) {
-      $scope.config = res;
+      $scope.notice = res;
     });
   }
   /**
