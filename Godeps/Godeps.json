@@ -1,9 +1,6 @@
 {
 	"ImportPath": "github.com/eleme/banshee",
-	"GoVersion": "go1.5.2",
-	"Packages": [
-		"./webapp"
-	],
+	"GoVersion": "go1.6",
 	"Deps": [
 		{
 			"ImportPath": "github.com/golang/snappy",
@@ -29,11 +26,55 @@
 		},
 		{
 			"ImportPath": "github.com/mattn/go-sqlite3",
-			"Comment": "v1.1.0-27-g5651a9d",
-			"Rev": "5651a9d9d49ec25811d08220ee972080378d52ea"
+			"Comment": "v1.1.0-40-g09d5c45",
+			"Rev": "09d5c451710ef887470709463f4f04ff83e1e039"
 		},
 		{
 			"ImportPath": "github.com/syndtr/goleveldb/leveldb",
+			"Rev": "5acacf6e72d3aeaf26dd3d3f163c635d3ef1e6e6"
+		},
+		{
+			"ImportPath": "github.com/syndtr/goleveldb/leveldb/cache",
+			"Rev": "5acacf6e72d3aeaf26dd3d3f163c635d3ef1e6e6"
+		},
+		{
+			"ImportPath": "github.com/syndtr/goleveldb/leveldb/comparer",
+			"Rev": "5acacf6e72d3aeaf26dd3d3f163c635d3ef1e6e6"
+		},
+		{
+			"ImportPath": "github.com/syndtr/goleveldb/leveldb/errors",
+			"Rev": "5acacf6e72d3aeaf26dd3d3f163c635d3ef1e6e6"
+		},
+		{
+			"ImportPath": "github.com/syndtr/goleveldb/leveldb/filter",
+			"Rev": "5acacf6e72d3aeaf26dd3d3f163c635d3ef1e6e6"
+		},
+		{
+			"ImportPath": "github.com/syndtr/goleveldb/leveldb/iterator",
+			"Rev": "5acacf6e72d3aeaf26dd3d3f163c635d3ef1e6e6"
+		},
+		{
+			"ImportPath": "github.com/syndtr/goleveldb/leveldb/journal",
+			"Rev": "5acacf6e72d3aeaf26dd3d3f163c635d3ef1e6e6"
+		},
+		{
+			"ImportPath": "github.com/syndtr/goleveldb/leveldb/memdb",
+			"Rev": "5acacf6e72d3aeaf26dd3d3f163c635d3ef1e6e6"
+		},
+		{
+			"ImportPath": "github.com/syndtr/goleveldb/leveldb/opt",
+			"Rev": "5acacf6e72d3aeaf26dd3d3f163c635d3ef1e6e6"
+		},
+		{
+			"ImportPath": "github.com/syndtr/goleveldb/leveldb/storage",
+			"Rev": "5acacf6e72d3aeaf26dd3d3f163c635d3ef1e6e6"
+		},
+		{
+			"ImportPath": "github.com/syndtr/goleveldb/leveldb/table",
+			"Rev": "5acacf6e72d3aeaf26dd3d3f163c635d3ef1e6e6"
+		},
+		{
+			"ImportPath": "github.com/syndtr/goleveldb/leveldb/util",
 			"Rev": "5acacf6e72d3aeaf26dd3d3f163c635d3ef1e6e6"
 		}
 	]

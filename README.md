@@ -13,7 +13,7 @@ metrics.
 Requirements
 ------------
 
-1. Go >= 1.4 and godep.
+1. Go >= 1.5.
 2. Node and gulp.
 
 Build

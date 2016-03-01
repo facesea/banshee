@@ -1,13 +1,13 @@
 default: build
 
 lint:
-	golint ./...
+	(go list ./... | grep -v '/vendor/' )| while read -r line; do fgt golint "$$line" || exit 1; done
 
 test: lint
-	godep go test ./...
+	GO15VENDOREXPERIMENT=1 go test $$(go list ./... | grep -v '/vendor/')
 
 build:
-	godep go build
+	GO15VENDOREXPERIMENT=1 go build
 
 changelog:
 	git log --first-parent --pretty="format:* %b" v`./banshee -v`..
