@@ -23,3 +23,8 @@ type intervalResponse struct {
 func getInterval(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	ResponseJSONOK(w, &intervalResponse{cfg.Interval})
 }
+
+// getNoice returns config.webapp.notice.
+func getNotice(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	ResponseJSONOK(w, cfg.Webapp.Notice)
+}
