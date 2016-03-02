@@ -6,48 +6,52 @@
       <section class="panel-content">
         <!-- tabs --->
         <md-tabs md-dynamic-height md-border-bottom>
-          <!-- Rules -->
-          <md-tab label="Receiver">
+          <!-- User -->
+          <md-tab label="{{ 'ADMIN_USER_EDIT_TITLE' | translate }}" >
             <md-content class="md-padding">
               <!-- Form -->
               <form name="form" ng-submit="edit()" novalidate>
                 <md-content layout-padding>
                   <md-input-container class="md-block" flex-gt-sm>
-                    <label>Name</label>
+                    <label translate="ADMIN_USER_NAME"></label>
                     <input type="text" name="userName" ng-model="user.name" required>
                     <div ng-messages="form.userName.$error" ng-if="form.userName.$dirty">
-                      <div ng-message="required">This field is required.</div>
+                      <div ng-message="required" translate="FIELD_IS_REQUIRED"></div>
                     </div>
                   </md-input-container>
                   <md-input-container class="md-block" flex-gt-sm>
-                    <label>Email</label>
+                    <label translate="ADMIN_USER_EMAIL"></label>
                     <input type="text" name="email" ng-model="user.email" required>
                     <div ng-messages="form.email.$error" ng-if="form.email.$dirty">
-                      <div ng-message="required">This field is required.</div>
+                      <div ng-message="required" translate="FIELD_IS_REQUIRED"></div>
                     </div>
                   </md-input-container>
                   <md-input-container class="md-block" flex-gt-sm>
-                    <label>Phone</label>
+                    <label translate="ADMIN_USER_PHONE"></label>
                     <input type="text" name="phone" ng-model="user.phone" required>
                     <div ng-messages="form.phone.$error" ng-if="form.phone.$dirty">
-                      <div ng-message="required">This field is required.</div>
+                      <div ng-message="required" translate="FIELD_IS_REQUIRED"></div>
                     </div>
                   </md-input-container>
                   <md-input-container class="md-block" flex-gt-sm>
-                    <md-checkbox ng-model="user.enableEmail" aria-label="checked checkbox"> Enable email</md-checkbox>
+                    <md-checkbox ng-model="user.enableEmail" aria-label="checked checkbox">
+                      {{ 'ADMIN_USER_ENABLE_EMAIL' | translate }}
+                    </md-checkbox>
                   </md-input-container>
                   <md-input-container class="md-block" flex-gt-sm>
-                    <md-checkbox ng-model="user.enablePhone" aria-label="checked checkbox"> Enable phone</md-checkbox>
+                    <md-checkbox ng-model="user.enablePhone" aria-label="checked checkbox">
+                      {{ 'ADMIN_USER_ENABLE_PHONE' | translate }}
+                    </md-checkbox>
                   </md-input-container>
                   <md-input-container class="md-block" flex-gt-sm>
-                    <md-checkbox ng-model="user.universal"> universal</md-checkbox>
+                  <md-checkbox ng-model="user.universal"> {{ 'ADMIN_USER_UNIVERSAL' | translate }} </md-checkbox>
                   </md-input-container>
                   <md-input-container>
                     <md-button class="md-raised" aria-label="Save User" type="submit" ng-disabled="form.$invalid">
-                      Save
+                      {{ 'SAVE' | translate }}
                     </md-button>
                     <md-button class="md-raised md-warn" aria-label="Delete User" type="button" ng-click="deleteUser($event)">
-                      Delete
+                      {{ 'DELETE' | translate }}
                     </md-button>
                   </md-input-container>
                 </md-content>
@@ -56,14 +60,14 @@
             </md-content>
           </md-tab>
           <!-- ./Rules -->
-          <md-tab label="Project">
+          <md-tab label="{{ 'ADMIN_USER_PROJECTS_TITLE' | translate }}">
             <md-content class="md-padding">
               <!-- Table -->
               <div class="table-responsive">
                 <table class="table">
                   <tbody>
                     <tr ng-if="!projects || !projects.length">
-                      <td colspan="3">not found any result</td>
+                      <td colspan="3"> {{ 'NOT_FOUND_ANT_RESULT' | translate }} </td>
                     </tr>
                     <tr ng-repeat="project in projects">
                       <td ng-bind="$index+1" class="td50"></td>

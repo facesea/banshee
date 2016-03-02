@@ -12,21 +12,21 @@
     <md-dialog-content>
       <md-content layout-padding>
         <md-input-container class="md-block" flex-gt-sm>
-          <label translate="ADMIN_USER_CREATE_MODAL_LABEL_NAME"></label>
+          <label translate="ADMIN_USER_NAME"></label>
           <input type="text" name="userName" ng-model="user.name" required>
           <div ng-messages="form.userName.$error" ng-if="form.userName.$dirty">
             <div ng-message="required" translate="FIELD_IS_REQUIRED"></div>
           </div>
         </md-input-container>
         <md-input-container class="md-block" flex-gt-sm>
-          <label translate="ADMIN_USER_CREATE_MODAL_LABEL_EMAIL"></label>
+          <label translate="ADMIN_USER_EMAIL"></label>
           <input type="text" name="email" ng-model="user.email" required>
           <div ng-messages="form.email.$error" ng-if="form.email.$dirty">
             <div ng-message="required" translate="FIELD_IS_REQUIRED"></div>
           </div>
         </md-input-container>
         <md-input-container class="md-block" flex-gt-sm>
-          <label translate="ADMIN_USER_CREATE_MODAL_LABEL_PHONE"></label>
+          <label translate="ADMIN_USER_PHONE"></label>
           <input type="text" name="phone" ng-model="user.phone" required>
           <div ng-messages="form.phone.$error" ng-if="form.phone.$dirty">
             <div ng-message="required" translate="FIELD_IS_REQUIRED"></div>
@@ -34,17 +34,17 @@
         </md-input-container>
         <md-input-container class="md-block" flex-gt-sm>
           <md-checkbox ng-model="user.enableEmail" ng-init="user.enableEmail=true" aria-label="checked checkbox">
-            {{ 'ADMIN_USER_CREATE_MODAL_LABEL_ENABLE_EMAIL' | translate }}
+            {{ 'ADMIN_USER_ENABLE_EMAIL' | translate }}
           </md-checkbox>
         </md-input-container>
         <md-input-container class="md-block" flex-gt-sm>
           <md-checkbox ng-model="user.enablePhone" ng-init="user.enablePhone=true" aria-label="checked checkbox">
-            {{ 'ADMIN_USER_CREATE_MODAL_LABEL_ENABLE_PHONE' | translate }}
+            {{ 'ADMIN_USER_ENABLE_PHONE' | translate }}
           </md-checkbox>
         </md-input-container>
         <md-input-container class="md-block" flex-gt-sm>
           <md-checkbox ng-model="user.universal">
-            {{ 'ADMIN_USER_CREATE_MODAL_LABEL_UNIVERSAL' | translate }}
+            {{ 'ADMIN_USER_UNIVERSAL' | translate }}
           </md-checkbox>
         </md-input-container>
       </md-content>
