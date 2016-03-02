@@ -8,7 +8,7 @@ var app = angular.module('banshee.filters', [
 app.filter('isEmpty', [function() {
   return function(object) {
     return angular.equals({}, object);
-  }
+  };
 }]);
 
 module.exports = app.name;
