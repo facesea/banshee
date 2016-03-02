@@ -103,6 +103,9 @@ gulp.task('file', function () {
 
   gulp.src(['./public/images/**/*', './src/theme/*.png', './src/theme/square/*.png', './src/static/*.png', './src/static/*.ico'])
     .pipe(gulp.dest('./' + path + '/images'));
+
+  gulp.src(['./src/static/languages/locale-*.json'])
+    .pipe(gulp.dest('./' + path + '/languages'));
 });
 
 // Minify
@@ -147,4 +150,5 @@ gulp.task('dev', ['lint', 'tpl', 'file', 'less', 'js'], function () {
   gulp.watch('src/**/**.html', ['tpl']);
   gulp.watch('src/**/*.js', ['js']);
   gulp.watch('src/**/*.less', ['less']);
+  gulp.watch('src/static/languages/*.json', ['file']);
 });
