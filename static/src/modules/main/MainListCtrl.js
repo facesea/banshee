@@ -1,5 +1,5 @@
 /*@ngInject*/
-module.exports = function ($scope, $rootScope, $timeout, $stateParams, Metric, Config, Project, DateTimes) {
+module.exports = function($scope, $rootScope, $timeout, $stateParams, Metric, Config, Project, DateTimes) {
   var chart = require('./chart');
   var cubism;
   var initOpt;
@@ -61,7 +61,7 @@ module.exports = function ($scope, $rootScope, $timeout, $stateParams, Metric, C
 
   $scope.filter = angular.copy(initOpt);
 
-  $scope.toggleCubism = function () {
+  $scope.toggleCubism = function() {
     $scope.filter.status = !$scope.filter.status;
     if (!$scope.filter.status) {
       buildCubism();
@@ -70,7 +70,7 @@ module.exports = function ($scope, $rootScope, $timeout, $stateParams, Metric, C
     }
   };
 
-  $scope.restart = function () {
+  $scope.restart = function() {
     $scope.filter = angular.copy(initOpt);
 
     if ($scope.initProject) {
@@ -89,13 +89,13 @@ module.exports = function ($scope, $rootScope, $timeout, $stateParams, Metric, C
     buildCubism();
   };
 
-  $scope.searchPattern = function () {
+  $scope.searchPattern = function() {
     $scope.filter.project = '';
     $scope.autoComplete.searchText = '';
     buildCubism();
   };
 
-  $scope.searchProject = function (project) {
+  $scope.searchProject = function(project) {
     $scope.filter.project = project.id;
     $scope.filter.pattern = '';
     $scope.project = project;
@@ -105,18 +105,28 @@ module.exports = function ($scope, $rootScope, $timeout, $stateParams, Metric, C
   };
 
 
-  $scope.$on('$destroy', function () {
+  $scope.$on('$destroy', function() {
     $rootScope.currentMain = false;
   });
 
+  /**
+   * watch filter.
+   */
+  function watchAll() {
+    $scope.$watchGroup(['filter.datetime', 'filter.limit', 'filter.sort', 'filter.type'], function() {
+      buildCubism();
+    });
+  }
+
+
   function loadData() {
     Project.getAllProjects().$promise
-      .then(function (res) {
+      .then(function(res) {
         var projectId = parseInt($stateParams.project);
         $scope.projects = res;
 
         if (projectId) {
-          $scope.projects.forEach(function (el) {
+          $scope.projects.forEach(function(el) {
             if (el.id === projectId) {
               $scope.autoComplete.searchText = el.name;
               $scope.initProject = el;
@@ -128,7 +138,7 @@ module.exports = function ($scope, $rootScope, $timeout, $stateParams, Metric, C
       });
 
     Config.getInterval().$promise
-      .then(function (res) {
+      .then(function(res) {
         $scope.filter.interval = res.interval;
 
         setIntervalAndRunNow(buildCubism, 10 * 60 * 1000);
@@ -139,14 +149,6 @@ module.exports = function ($scope, $rootScope, $timeout, $stateParams, Metric, C
     Config.getNotice().$promise
     .then(function (res) {
       $scope.notice = res;
-    });
-  }
-  /**
-   * watch filter.
-   */
-  function watchAll() {
-    $scope.$watchGroup(['filter.datetime', 'filter.limit', 'filter.sort', 'filter.type'], function () {
-      buildCubism();
     });
   }
 
@@ -176,7 +178,7 @@ module.exports = function ($scope, $rootScope, $timeout, $stateParams, Metric, C
     });
 
     Metric.getMetricIndexes(params).$promise
-      .then(function (res) {
+      .then(function(res) {
         plot(res);
       });
   }
@@ -216,16 +218,27 @@ module.exports = function ($scope, $rootScope, $timeout, $stateParams, Metric, C
     if (isInit) {
       return;
     }
-    _titles.forEach(function (el, index) {
+    _titles.forEach(function(el, index) {
       var _el = _titles[index];
       var currentEl = data[index];
       var className = getClassNameByTrend(currentEl.score);
-      var str = [
-        '<a href="#/main?pattern=' + currentEl.name + '" class="' + className + '">',
-        getTextByTrend(currentEl.score),
-        currentEl.name,
-        '</a>'
+      var str;
+      var _box = ['<div class="box"><span>rules <span class="icon-tr"></span></span><ul>'];
+      
+      for (var i = 0; i < currentEl.matchedRules.length; i++) {
+        var rule = currentEl.matchedRules[i];
+        _box.push('<li><a href="#/admin/project/' + rule.projectID + '">' + rule.pattern + '</a></li>');
+      }
+      _box.push('</ul></div>');
+
+      str = [
+          '<a href="#/main?pattern=' + currentEl.name + '" class="' + className + '">',
+          getTextByTrend(currentEl.score),
+          currentEl.name,
+          '</a>',
+          _box.join('')
       ].join('');
+
       _el.innerHTML = str;
       isInit = true;
     });
@@ -247,10 +260,10 @@ module.exports = function ($scope, $rootScope, $timeout, $stateParams, Metric, C
    * Scrollbars
    */
   function initScrollbars() {
-    $('.chart-box-top').scroll(function () {
+    $('.chart-box-top').scroll(function() {
       $('.chart-box').scrollLeft($('.chart-box-top').scrollLeft());
     });
-    $('.chart-box').scroll(function () {
+    $('.chart-box').scroll(function() {
       $('.chart-box-top').scrollLeft($('.chart-box').scrollLeft());
     });
   }
@@ -262,7 +275,7 @@ module.exports = function ($scope, $rootScope, $timeout, $stateParams, Metric, C
    * @return {Metric}
    */
   function feed(name, data, cb) {
-    return chart.metric(function (start, stop, step, callback) {
+    return chart.metric(function(start, stop, step, callback) {
       var values = [],
         i = 0;
       // cast to timestamp from date
@@ -277,7 +290,7 @@ module.exports = function ($scope, $rootScope, $timeout, $stateParams, Metric, C
       };
       // request data and call `callback` with values
       // data schema: {name: {String}, times: {Array}, vals: {Array}}
-      Metric.getMetricValues(params, function (data) {
+      Metric.getMetricValues(params, function(data) {
         // the timestamps from statsd DONT have exactly steps `10`
         var len = data.length;
         while (start < stop && i < len) {
