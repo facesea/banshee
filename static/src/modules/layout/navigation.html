@@ -2,13 +2,22 @@
   <section class="panel-container">
     <md-toolbar class="demo-toolbar md-primary">
       <div class="md-toolbar-tools">
-        <h3>Navigation</h3>
+        <h3 translate="ADMIN_NAV_TITLE"></h3>
       </div>
     </md-toolbar>
     <div class="panel-content">
       <md-list ng-cloak>
-        <md-list-item ng-repeat="item in navList" ui-sref="{{item.state}}" ng-class="{active: includes(item.state)}" aria-label="nav item">
-          <p ng-bind="item.name"> </p>
+        <md-list-item  ui-sref="banshee.admin.project" ng-class="{active: includes('banshee.admin.project')}" aria-label="nav item">
+          <p translate="ADMIN_NAV_ITEM_PROJECT"></p>
+        </md-list-item>
+        <md-list-item  ui-sref="banshee.admin.user" ng-class="{active: includes('banshee.admin.user')}" aria-label="nav item">
+          <p translate="ADMIN_NAV_ITEM_USER"></p>
+        </md-list-item>
+        <md-list-item  ui-sref="banshee.admin.config" ng-class="{active: includes('banshee.admin.config')}" aria-label="nav item">
+          <p translate="ADMIN_NAV_ITEM_CONFIG"></p>
+        </md-list-item>
+        <md-list-item  ui-sref="banshee.admin.info" ng-class="{active: includes('banshee.admin.info')}" aria-label="nav item">
+          <p translate="ADMIN_NAV_ITEM_HEALTH"></p>
         </md-list-item>
       </md-list>
     </div>

@@ -4,13 +4,13 @@
     <div class="panel-container">
       <md-toolbar>
         <div class="md-toolbar-tools">
-          <h3>Receiver</h3>
+          <h3 translate="ADMIN_USER_PANEL_TITLE"></h3>
           <span flex></span>
           <md-button
             class="md-icon-button"
             aria-label="Create User"
             ng-click="openModal($event)">
-              <md-tooltip md-autohide>Create User</md-tooltip>
+            <md-tooltip md-autohide><span translate="ADMIN_USER_CREATE_TOOLTIP"></span></md-tooltip>
               <md-icon class="fa fa-plus-circle" ng-style="{'font-size': '20px'}"></md-icon>
           </md-button>
         </div>
@@ -26,13 +26,13 @@
             md-items="user in users | filter: {name: autoComplete.searchText}"
             md-item-text="user.name"
             md-min-length="0"
-            md-floating-label="Search User"
+            md-floating-label="{{ 'ADMIN_USER_SEARCH_LABEL' | translate }}"
             flex="45">
             <md-item-template>
               <span md-highlight-text="autoComplete.searchText" md-highlight-flags="^i">{{user.name}}</span>
             </md-item-template>
             <md-not-found>
-              No items matching "{{autoComplete.searchText}}" were found.
+              {{ 'NOT_FOUND_ANT_RESULT' | translate }}
             </md-not-found>
           </md-autocomplete>
         </div>
@@ -41,15 +41,17 @@
             <thead>
               <tr>
                 <th>#</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Universal</th>
+                <th translate="ADMIN_USER_TABLE_HEAD_NAME"></th>
+                <th translate="ADMIN_USER_TABLE_HEAD_EMAIL"></th>
+                <th translate="ADMIN_USER_TABLE_HEAD_PHONE"></th>
+                <th translate="ADMIN_USER_TABLE_HEAD_UNIVERSAL"></th>
               </tr>
             </thead>
             <tbody>
               <tr ng-if="!users || !users.length">
-                <td colspan="3">not found any result</td>
+                <td colspan="3">
+                  {{ 'NOT_FOUND_ANT_RESULT' | translate }}
+                </td>
               <tr>
               <tr ng-repeat="user in users">
                 <td ng-bind="user.id"></td>
@@ -63,8 +65,8 @@
                   <span ng-class="{del: !user.enablePhone}" ng-bind="user.phone"></span>
                 </td>
                 <td>
-                  <span ng-if="user.universal">Yes</span>
-                  <span ng-if="!user.universal">No</span>
+                  <span ng-if="user.universal">{{ 'YES' | translate }}</span>
+                  <span ng-if="!user.universal">{{ 'NO' | translate }}</span>
                 </td>
                 <td style="text-align: right;">
                   <md-button class="md-raised md-primary md-mini"  ui-sref='banshee.admin.user.detail({id: user.id})' aria-label="edit user">

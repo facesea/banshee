@@ -121,7 +121,6 @@ module.exports = function ($scope, $rootScope, $timeout, $stateParams, Metric, C
               $scope.autoComplete.searchText = el.name;
               $scope.initProject = el;
               $scope.project = el;
-              setTitle();
             }
           });
         }
@@ -163,8 +162,6 @@ module.exports = function ($scope, $rootScope, $timeout, $stateParams, Metric, C
 
     chart.remove();
 
-    setTitle();
-
     isInit = false;
 
     cubism = chart.init({
@@ -179,23 +176,6 @@ module.exports = function ($scope, $rootScope, $timeout, $stateParams, Metric, C
       .then(function (res) {
         plot(res);
       });
-  }
-
-  function setTitle() {
-    if ($scope.filter.project && $scope.project) {
-      $scope.title = 'Project: ' + $scope.project.name;
-      $scope.showLink = true;
-      return;
-    }
-
-    $scope.showLink = false;
-
-    if ($scope.filter.pattern) {
-      $scope.title = 'Pattern: ' + $scope.filter.pattern;
-      return;
-    }
-
-    $scope.title = 'Pattern: *';
   }
 
   /**

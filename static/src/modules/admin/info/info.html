@@ -4,7 +4,7 @@
     <div class="panel-container">
       <md-toolbar>
         <div class="md-toolbar-tools">
-          <h3>Health</h3>
+          <h3 translate="ADMIN_HEALTH_PANEL_TITLE"></h3>
         </div>
       </md-toolbar>
       <!-- Panel Content -->
@@ -12,40 +12,40 @@
         <table class="table">
           <thead>
             <tr>
-              <th>Description</th>
-              <th>Value</th>
+              <th translate="ADMIN_HEALTH_TABLE_HEAD_DESCRIPTION"></th>
+              <th translate="ADMIN_HEALTH_TABLE_HEAD_VALUE"></th>
             </tr>
           </thead>
           <tbody>
             <tr ng-if="!info">
-              <td colspan="3">not found any result</td>
+              <td colspan="3" translate="NOT_FOUND_ANT_RESULT"></td>
             <tr>
             <tr>
-              <td>Aggregation interval</td>
+              <td translate="ADMIN_HEALTH_ITEM_AGGREGATION_INTERVAL"></td>
               <td><kbd>{{ info.aggregationInterval }}</kbd> s</td>
             </tr>
             <tr>
-              <td>Number of metric indexes total</td>
+              <td translate="ADMIN_HEALTH_ITEM_NUM_INDEX_TOTAL"></td>
               <td><kbd>{{ info.numIndexTotal }}</kbd></td>
             </tr>
             <tr>
-              <td>Number of detector clients</td>
+              <td translate="ADMIN_HEALTH_ITEM_NUM_CLIENTS"></td>
               <td><kbd>{{ info.numClients }}</kbd></td>
             </tr>
             <tr>
-              <td>Detection cost average in last {{ info.aggregationInterval }}s</td>
+              <td translate="ADMIN_HEALTH_ITEM_DETECTION_COST"></td>
               <td><kbd>{{ info.detectionCost }}</kbd> ms</td>
             </tr>
             <tr>
-              <td>Number of incomed datapoints in last {{ info.aggregationInterval }}s</td>
+              <td translate="ADMIN_HEALTH_ITEM_NUM_METRIC_INCOMED"></td>
               <td><kbd>{{ info.numMetricIncomed }}</kbd></td>
             </tr>
             <tr>
-              <td>Number of detected datapoints in last {{ info.aggregationInterval }}s</td>
+              <td translate="ADMIN_HEALTH_ITEM_NUM_METRIC_DETECTED"></td>
               <td><kbd>{{ info.numMetricDetected }}</kbd></td>
             </tr>
             <tr>
-              <td>Number of Alerting events in last {{ info.aggregationInterval }}s</td>
+              <td translate="ADMIN_HEALTH_ITEM_NUM_ALERTING_EVENTS"></td>
               <td><kbd>{{ info.numAlertingEvents }}</kbd></td>
             </tr>
           </tbody>

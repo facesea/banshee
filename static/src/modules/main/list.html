@@ -4,9 +4,19 @@
     <div class="panel-container">
       <md-toolbar>
         <div class="md-toolbar-tools">
-          <h3 ng-bind="title"></h3>
+          <h3 ng-if="filter.project && project">
+            <span translate>MAIN_CONTAINER_BAR_TITLE_PROJECT</span>:
+            <span ng-bind="project.name"></span>
+          </h3>
+          <h3 ng-if="filter.pattern && !(project && filter.project)">
+            <span translate>MAIN_CONTAINER_BAR_TITLE_PATTERN</span>:
+            <span ng-bind="filter.pattern"></span>
+          </h3>
+          <h3 ng-if="!filter.pattern && !filtr.project && !project">
+            <span translate>MAIN_CONTAINER_BAR_TITLE_PATTERN</span>: *
+          </h3>
           <span flex></span>
-          <md-button class="md-icon-button md-ink-ripple" aria-label="link" ui-sref="banshee.admin.project.detail({id: projectId})" ng-if="showLink">
+          <md-button class="md-icon-button md-ink-ripple" aria-label="link" ui-sref="banshee.admin.project.detail({id: projectId})" ng-if="filter.project && project">
             <md-icon class="fa fa-cog"></md-icon>
           </md-button>
         </div>
@@ -16,23 +26,23 @@
           <div layout-gt-xs="row">
             <form name="form" ng-submit="searchPattern()" flex="45" novalidate>
               <md-input-container class="md-block search-pattern">
-                <label>Pattern</label>
+              <label translate>MAIN_SEARCH_PATTERN_LABEL_TEXT</label>
                 <input ng-model="filter.pattern">
               </md-input-container>
             </form>
             <md-autocomplete class="search-project" md-selected-item="autoComplete.selectedItem" md-search-text="autoComplete.searchText" md-selected-item-change="searchProject(project)" md-items="project in projects | filter: {name: autoComplete.searchText}" md-item-text="project.name"
-            md-min-length="0" md-floating-label="Project Name" flex="45">
+            md-min-length="0" md-floating-label="{{ 'MAIN_SEARCH_PROJECT_LABEL_TEXT' | translate }}" flex="45">
               <md-item-template>
                 <span md-highlight-text="autoComplete.searchText" md-highlight-flags="^i">{{project.name}}</span>
               </md-item-template>
               <md-not-found>
-                No items matching "{{autoComplete.searchText}}" were found.
+                {{ 'NOT_FOUND_ANT_RESULT' | translate }}
               </md-not-found>
             </md-autocomplete>
           </div>
           <div ng-style="{'color': 'saddlebrown'}" ng-if="!(notice | isEmpty)">
             <ul>
-              Notice:
+              <span translate>MAIN_NOTICE_TEXT</span>:
               <li ng-repeat="(name, url) in notice" ng-style="{'display': 'inline', 'margin': '10px'}">
                 <a href="{{ url }}">{{ name }}</a>
               </li>
