@@ -9,6 +9,8 @@ angular.module('banshee', [
   'ui.bootstrap',
   'ngMaterial',
 
+  'pascalprecht.translate',
+
   'toastr',
 
   'banshee.tpl',
