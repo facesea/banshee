@@ -250,7 +250,7 @@ module.exports = function($scope, $rootScope, $timeout, $stateParams, $translate
 
       for (var i = 0; i < currentEl.matchedRules.length; i++) {
         var rule = currentEl.matchedRules[i];
-        _box.push('<li><a href="#/admin/project/' + rule.projectID + '">' + rule.pattern + '</a></li>');
+        _box.push('<li><a href="#/admin/project/' + rule.projectID + '?rule=' + rule.id + '">' + rule.pattern + '</a></li>');
       }
       _box.push('</ul></div>');
 
