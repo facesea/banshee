@@ -127,9 +127,69 @@ func BenchmarkGet(b *testing.B) {
 	// Bench
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		// Get 30 metrics for 5 times
-		for j := 0; j < 5; j++ {
+		// Get 30 metrics for 7 times
+		for j := 0; j < 7; j++ {
 			db.Get(name, horizon, horizon+30*10)
+		}
+	}
+}
+
+func BenchmarkGetAsyncNoBufferChannel(b *testing.B) {
+	// Open db.
+	fileName := "db-bench"
+	db, _ := Open(fileName)
+	defer os.RemoveAll(fileName)
+	defer db.Close()
+	// Put
+	horizon := Horizon()
+	name := "foo"
+	n := 3600 * 24 * 7 / 10 // 7 days count
+	for i := 0; i < n; i++ {
+		db.Put(&models.Metric{Name: name, Stamp: horizon + uint32(10*i)})
+	}
+	// Bench
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		// Get 30 metrics for 7 times
+		ch := make(chan bool)
+		for j := 0; j < 7; j++ {
+			go func() {
+				db.Get(name, horizon, horizon+30*10)
+				ch <- true
+			}()
+		}
+		for j := 0; j < 7; j++ {
+			<-ch
+		}
+	}
+}
+
+func BenchmarkGetAsyncBufferedChannel(b *testing.B) {
+	// Open db.
+	fileName := "db-bench"
+	db, _ := Open(fileName)
+	defer os.RemoveAll(fileName)
+	defer db.Close()
+	// Put
+	horizon := Horizon()
+	name := "foo"
+	n := 3600 * 24 * 7 / 10 // 7 days count
+	for i := 0; i < n; i++ {
+		db.Put(&models.Metric{Name: name, Stamp: horizon + uint32(10*i)})
+	}
+	// Bench
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		// Get 30 metrics for 7 times
+		ch := make(chan bool, 7)
+		for j := 0; j < 7; j++ {
+			go func() {
+				db.Get(name, horizon, horizon+30*10)
+				ch <- true
+			}()
+		}
+		for j := 0; j < 7; j++ {
+			<-ch
 		}
 	}
 }
