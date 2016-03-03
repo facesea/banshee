@@ -25,7 +25,7 @@ func IsFileExist(fileName string) bool {
 	return true
 }
 
-// Time is a minimal timer util.
+// Timer is a minimal timer util.
 type Timer struct {
 	startAt time.Time
 }
