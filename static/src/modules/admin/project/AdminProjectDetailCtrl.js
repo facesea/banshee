@@ -1,5 +1,5 @@
 /*@ngInject*/
-module.exports = function ($scope, $mdDialog, $state, $stateParams, $translate, toastr, Project, Rule, User, Config, Util) {
+module.exports = function ($scope, $location, $mdDialog, $state, $stateParams, $translate, toastr, Project, Rule, User, Config, Util) {
   var projectId = $scope.projectId = $stateParams.id;
   var allUsers = [];
 
@@ -19,6 +19,16 @@ module.exports = function ($scope, $mdDialog, $state, $stateParams, $translate, 
       }).$promise
       .then(function (res) {
         $scope.rules = res;
+        // Open modal to edit rule if 'rule' is in url query strings
+        var queryStringRuleID = $location.search().rule;
+        if (queryStringRuleID) {
+          for (var i = 0; i < $scope.rules.length; i++) {
+            if ($scope.rules[i].id === +queryStringRuleID) {
+              $scope.editRule (null, $scope.rules[i]);
+              break;
+            }
+          }
+        }
       });
 
     // get users of project
