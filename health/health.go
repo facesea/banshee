@@ -4,6 +4,7 @@ package health
 
 import (
 	"github.com/eleme/banshee/storage"
+	"github.com/eleme/banshee/util/mathutil"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -15,6 +16,9 @@ const AggregationInterval int = 5 * 60
 // max length for detectionCosts.
 const maxDetectionCostsLen = 100 * 1024
 
+// max length for filterCosets.
+const maxFilterCostsLen = 100 * 1024
+
 // Info is the stats container.
 type Info struct {
 	lock sync.RWMutex
@@ -24,6 +28,7 @@ type Info struct {
 	NumClients          int64 `json:"numClients"`
 	// Aggregation
 	DetectionCost     float64 `json:"detectionCost"` // ms
+	FilterCost        float64 `json:"filterCost"`    // ms
 	NumMetricIncomed  int64   `json:"numMetricIncomed"`
 	NumMetricDetected int64   `json:"numMetricDetected"`
 	NumAlertingEvents int64   `json:"numAlertingEvents"`
@@ -38,6 +43,7 @@ func (info *Info) copy() *Info {
 		NumIndexTotal:       info.NumIndexTotal,
 		NumClients:          info.NumClients,
 		DetectionCost:       info.DetectionCost,
+		FilterCost:          info.FilterCost,
 		NumMetricIncomed:    info.NumMetricIncomed,
 		NumMetricDetected:   info.NumMetricDetected,
 		NumAlertingEvents:   info.NumAlertingEvents,
@@ -55,6 +61,8 @@ type hub struct {
 	// Aggregation
 	detectionCosts     []float64
 	detectionCostsLock sync.Mutex
+	filterCosts        []float64
+	filterCostsLock    sync.Mutex
 	numMetricIncomed   int64
 	numMetricDetected  int64
 	numAlertingEvents  int64
@@ -89,6 +97,15 @@ func AddDetectionCost(n float64) {
 	defer h.detectionCostsLock.Unlock()
 	if len(h.detectionCosts) < maxDetectionCostsLen {
 		h.detectionCosts = append(h.detectionCosts, n)
+	}
+}
+
+// AddFilterCost appends cost to FilterCosts.
+func AddFilterCost(n float64) {
+	h.filterCostsLock.Lock()
+	defer h.filterCostsLock.Unlock()
+	if len(h.filterCosts) < maxFilterCostsLen {
+		h.filterCosts = append(h.filterCosts, n)
 	}
 }
 
@@ -127,12 +144,18 @@ func aggregateDetectionCost() {
 	defer h.info.lock.Unlock()
 	h.detectionCostsLock.Lock()
 	defer h.detectionCostsLock.Unlock()
-	var sum float64
-	for i := 0; i < len(h.detectionCosts); i++ {
-		sum += h.detectionCosts[i]
-	}
-	h.info.DetectionCost = sum / float64(len(h.detectionCosts))
+	h.info.DetectionCost = mathutil.Average(h.detectionCosts)
 	h.detectionCosts = h.detectionCosts[:0]
+}
+
+// Aggregate FilterCost.
+func aggregationFilterCost() {
+	h.info.lock.Lock()
+	defer h.info.lock.Unlock()
+	h.filterCostsLock.Lock()
+	defer h.filterCostsLock.Unlock()
+	h.info.FilterCost = mathutil.Average(h.filterCosts)
+	h.filterCosts = h.filterCosts[:0]
 }
 
 // Aggregate NumMetricIncomed.
@@ -171,5 +194,6 @@ func Start() {
 		aggregateNumMetricIncomed()
 		aggregateNumMetricDetected()
 		aggregateNumAlertingEvents()
+		aggregationFilterCost()
 	}
 }
