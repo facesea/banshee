@@ -58,6 +58,7 @@
   "ADMIN_HEALTH_ITEM_NUM_INDEX_TOTAL": "Number of metric indexes total",
   "ADMIN_HEALTH_ITEM_NUM_CLIENTS": "Number of detector clients",
   "ADMIN_HEALTH_ITEM_DETECTION_COST": "Detection cost average",
+  "ADMIN_HEALTH_ITEM_FILTER_COST": "Filter cost average",
   "ADMIN_HEALTH_ITEM_NUM_METRIC_INCOMED": "Number of incomed datapoints in last interval",
   "ADMIN_HEALTH_ITEM_NUM_METRIC_DETECTED": "Number of detected datapoints in last interval",
   "ADMIN_HEALTH_ITEM_NUM_ALERTING_EVENTS": "Number of alerting events in last interval",

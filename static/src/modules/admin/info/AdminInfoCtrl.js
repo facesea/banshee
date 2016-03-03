@@ -10,6 +10,7 @@ module.exports = function ($scope, Info) {
         } else {
           // Tofixed with cost
           res.detectionCost = res.detectionCost.toFixed(3);
+          res.filterCost = res.filterCost.toFixed(3);
           $scope.info = res;
         }
       });
