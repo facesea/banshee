@@ -149,7 +149,6 @@
   }
 
   .horizon {
-    overflow: hidden;
     position: relative;
   }
 
@@ -169,7 +168,7 @@
   .horizon .title,
   .horizon .value {
     bottom: 0;
-    line-height: 32px;
+    line-height: 30px;
     margin: 0 6px;
     position: absolute;
     text-shadow: 0 1px 0 rgba(255,255,255,.5);
@@ -193,5 +192,47 @@
   .line {
     background: black;
     z-index: 1000;
+  }
+
+  .box {
+    margin-left: 10px;
+    position: relative;
+    display: inline-block;
+    float: right;
+
+    >span {
+      color: #333;
+      border-bottom: 1px solid #000;
+    }
+    .icon-tr:after {
+      margin-left: 2px;
+      content: '\25BC';
+      display: inline-block;
+      speak: none;
+      -webkit-transform: scaleY(.6) scaleX(1);
+      transform: scaleY(.6) scaleX(1);
+    }
+    >ul {
+      padding: 5px 10px;
+      display: none;
+      position: absolute;
+      top: 15px;
+      left: 0;
+      z-index: 9999;
+      background-color: #fff;
+      box-shadow: 0 1px 3px 0 rgba(0,0,0,.2),0 1px 1px 0 rgba(0,0,0,.14),0 2px 1px -1px rgba(0,0,0,.12);
+
+      li {
+        a {
+          color: #333;
+        }
+      }
+    }
+
+    &:hover {
+      >ul {
+        display: block;
+      }
+    }
   }
 }
