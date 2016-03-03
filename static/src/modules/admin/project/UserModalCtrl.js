@@ -1,7 +1,7 @@
 /*@ngInject*/
-module.exports = function ($scope, $mdDialog, $stateParams, toastr, Project, params) {
+module.exports = function ($scope, $mdDialog, $stateParams, $translate, toastr, Project, params) {
   $scope.titles = {
-    addUserToProject: 'Add User'
+    addUserToProject: $translate.instant('ADMIN_USER_ADD_TEXT')
   };
   $scope.opt = params.opt;
 

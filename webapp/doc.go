@@ -275,5 +275,23 @@ Baisc auth required.
 		"version": "0.1.1"
 	}
 
+25. Get webapp notice.
+
+	GET /api/notice
+
+	200
+	{
+		"name": "url"
+	}
+
+26. Get webapp language.
+
+	GET /api/language
+
+	200
+	{
+		"language": "zh"
+	}
+
 */
 package webapp

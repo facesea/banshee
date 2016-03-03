@@ -8,6 +8,10 @@ module.exports = function ($resource) {
     getNotice: {
       method: 'GET',
       url: '/api/notice'
+    },
+    getLanguage: {
+      method: 'GET',
+      url: '/api/language'
     }
   });
 };

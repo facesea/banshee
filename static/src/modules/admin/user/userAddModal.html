@@ -2,7 +2,7 @@
   <form name="form" class="form-horizontal" ng-submit="submit()" onvalidate>
     <md-toolbar>
       <div class="md-toolbar-tools">
-        <h2>Create Receiver</h2>
+        <h2 translate="ADMIN_USER_CREATE_MODAL_TITLE"></h2>
         <span flex></span>
         <md-button class="md-icon-button" ng-click="cancel()">
           <md-icon class="fa fa-times-circle" aria-label="Close dialog"></md-icon>
@@ -12,40 +12,46 @@
     <md-dialog-content>
       <md-content layout-padding>
         <md-input-container class="md-block" flex-gt-sm>
-          <label>Name</label>
+          <label translate="ADMIN_USER_NAME"></label>
           <input type="text" name="userName" ng-model="user.name" required>
           <div ng-messages="form.userName.$error" ng-if="form.userName.$dirty">
-            <div ng-message="required">This field is required.</div>
+            <div ng-message="required" translate="FIELD_IS_REQUIRED"></div>
           </div>
         </md-input-container>
         <md-input-container class="md-block" flex-gt-sm>
-          <label>Email</label>
+          <label translate="ADMIN_USER_EMAIL"></label>
           <input type="text" name="email" ng-model="user.email" required>
           <div ng-messages="form.email.$error" ng-if="form.email.$dirty">
-            <div ng-message="required">This field is required.</div>
+            <div ng-message="required" translate="FIELD_IS_REQUIRED"></div>
           </div>
         </md-input-container>
         <md-input-container class="md-block" flex-gt-sm>
-          <label>Phone</label>
+          <label translate="ADMIN_USER_PHONE"></label>
           <input type="text" name="phone" ng-model="user.phone" required>
           <div ng-messages="form.phone.$error" ng-if="form.phone.$dirty">
-            <div ng-message="required">This field is required.</div>
+            <div ng-message="required" translate="FIELD_IS_REQUIRED"></div>
           </div>
         </md-input-container>
         <md-input-container class="md-block" flex-gt-sm>
-          <md-checkbox ng-model="user.enableEmail" ng-init="user.enableEmail=true" aria-label="checked checkbox"> Enable email</md-checkbox>
+          <md-checkbox ng-model="user.enableEmail" ng-init="user.enableEmail=true" aria-label="checked checkbox">
+            {{ 'ADMIN_USER_ENABLE_EMAIL' | translate }}
+          </md-checkbox>
         </md-input-container>
         <md-input-container class="md-block" flex-gt-sm>
-          <md-checkbox ng-model="user.enablePhone" ng-init="user.enablePhone=true" aria-label="checked checkbox"> Enable phone</md-checkbox>
+          <md-checkbox ng-model="user.enablePhone" ng-init="user.enablePhone=true" aria-label="checked checkbox">
+            {{ 'ADMIN_USER_ENABLE_PHONE' | translate }}
+          </md-checkbox>
         </md-input-container>
         <md-input-container class="md-block" flex-gt-sm>
-          <md-checkbox ng-model="user.universal"> universal</md-checkbox>
+          <md-checkbox ng-model="user.universal">
+            {{ 'ADMIN_USER_UNIVERSAL' | translate }}
+          </md-checkbox>
         </md-input-container>
       </md-content>
     </md-dialog-content>
     <md-dialog-actions layout="row">
-      <md-button ng-click="cancel()">Cancel</md-button>
-      <md-button md-no-ink class="md-primary" ng-disabled="form.$invalid" type="submit">Submit</md-button>
+      <md-button ng-click="cancel()" translate="CANCEL"></md-button>
+      <md-button md-no-ink class="md-primary" ng-disabled="form.$invalid" type="submit" translate="SUBMIT"></md-button>
     </md-dialog-actions>
   </form>
 </md-dialog>

@@ -20,7 +20,8 @@
     "port": 2016,
     "auth": ["admin", "admin"],
     "static": "static/dist",
-    "notice": {}
+    "notice": {},
+    "webapp": "en"
   },
   "alerter": {
     "command": "",

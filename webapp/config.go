@@ -28,3 +28,12 @@ func getInterval(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 func getNotice(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	ResponseJSONOK(w, cfg.Webapp.Notice)
 }
+
+// getLanguage returns config.webapp.language.
+type languageResponse struct {
+	Language string `json:"language"`
+}
+
+func getLanguage(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	ResponseJSONOK(w, &languageResponse{cfg.Webapp.Language})
+}

@@ -14,12 +14,12 @@
         <!-- tabs -->
         <md-tabs md-dynamic-height md-border-bottom>
           <!-- Rules -->
-          <md-tab label="Rules">
+          <md-tab label="{{ 'ADMIN_PROJECT_RULES_TEXT' | translate }}">
             <md-content class="md-padding">
             <div ng-style="{'text-align': 'right'}" layout-padding>
-                <md-button class="md-raised md-mini" aria-label="Add Rule" ng-click="openModal($event, 'addRule')">
+              <md-button class="md-raised md-mini" aria-label="{{ 'ADMIN_RULE_ADD_TEXT' | translate }}" ng-click="openModal($event, 'addRule')">
                   <md-icon class="fa fa-plus-circle" ng-style="{'font-size': '21px'}"></md-icon>
-                  <md-tooltip md-autohide>Add Rule</md-tooltip>
+                  <md-tooltip md-autohide>{{ 'ADMIN_RULE_ADD_TEXT' | translate }}</md-tooltip>
                 </md-button>
               </div>
               <!-- Table -->
@@ -28,15 +28,15 @@
                   <thead>
                     <tr>
                       <th> # </th>
-                      <th> Pattern </th>
-                      <th> Comment </th>
-                      <th> Condition </th>
-                      <th> NumMetrics </th>
+                      <th> {{ 'ADMIN_RULE_PATTERN' | translate }} </th>
+                      <th> {{ 'ADMIN_RULE_COMMENT' | translate }} </th>
+                      <th> {{ 'ADMIN_RULE_CONDITION' | translate }} </th>
+                      <th> {{ 'ADMIN_RULE_NUMMETRICS' | translate }} </th>
                       <th class="th100"></th>
                     </tr>
                   <tbody>
                     <tr ng-if="!rules || !rules.length">
-                      <td colspan="3">not found any result</td>
+                      <td colspan="3">{{ 'NOT_FOUND_ANY_RESULT' | translate }}</td>
                     </tr>
                     <tr ng-repeat="rule in rules">
                       <td class="padding-left-16" ng-bind="$index+1"></td>
@@ -57,10 +57,10 @@
                         </a>
                       </td>
                       <td class="text-right">
-                        <md-button class="md-raised md-mini" aria-label="Edit Rule" ng-click="editRule($event, rule)">
+                        <md-button class="md-raised md-mini" aria-label="{{ 'ADMIN_RULE_EDIT_TEXT' | translate }}" ng-click="editRule($event, rule)">
                           <i class="fa fa-pencil-square-o"></i>
                         </md-button>
-                        <md-button class="md-raised md-warn md-mini" aria-label="delete rule" ng-click="deleteRule($event, rule.id, $index)">
+                        <md-button class="md-raised md-warn md-mini" aria-label="{{ 'ADMIN_RULE_DELETE_TEXT' | translate }}" ng-click="deleteRule($event, rule.id, $index)">
                           <i class="fa fa-trash-o"></i>
                         </md-button>
                       </td>
@@ -72,12 +72,12 @@
             </md-content>
           </md-tab> <!-- ./Rules -->
           <!-- Users -->
-          <md-tab label="Receivers">
+          <md-tab label="{{ 'ADMIN_PROJECT_USERS_TEXT' | translate }}">
             <md-content class="md-padding">
               <div ng-style="{'text-align': 'right'}" layout-padding>
-                <md-button class="md-raised md-mini" aria-label="Add User" ng-click="openModal($event, 'addUserToProject')">
+                <md-button class="md-raised md-mini" aria-label="{{ 'ADMIN_USER_ADD_TEXT' | translate }}" ng-click="openModal($event, 'addUserToProject')">
                   <md-icon class="fa fa-plus-circle" ng-style="{'font-size': '21px'}"></md-icon>
-                  <md-tooltip md-autohide>Add User</md-tooltip>
+                  <md-tooltip md-autohide>{{ 'ADMIN_USER_ADD_TEXT' | translate }}</md-tooltip>
                 </md-button>
               </div>
               <!-- Table -->
@@ -85,7 +85,7 @@
                 <table class="table">
                   <tbody>
                     <tr ng-if="!users || !users.length">
-                      <td colspan="3">not found any result</td>
+                      <td colspan="3"> {{ 'NOT_FOUND_ANY_RESULT' | translate }}</td>
                     </tr>
                     <tr ng-repeat="user in users">
                       <td ng-bind="$index+1" class="th50"></td>
@@ -93,10 +93,10 @@
                         <a ng-bind="user.name" ui-sref='banshee.admin.user.detail({id: user.id})' class="md-body-2"></a>
                       </td>
                       <td class="text-right">
-                        <label class="label label-success" ng-if="user.universal">universal</label>
+                        <label class="label label-success" ng-if="user.universal">{{ 'ADMIN_PROJECT_USER_UNIVERSAL' | translate }}</label>
                         <md-button class="md-raised md-warn md-mini" aria-label="Remove User" ng-click="deleteUser($event, user.id, $index)" ng-if="!user.universal">
                           <md-icon class="fa fa-trash-o" ng-style="{'font-size': '21px'}"></md-icon>
-                          <md-tooltip md-autohide>Remove User From Project</md-tooltip>
+                          <md-tooltip md-autohide>{{ 'ADMIN_USER_REMOVE_TEXT' | translate }}</md-tooltip>
                         </md-button>
                       </td>
                     </tr>
@@ -106,44 +106,45 @@
             </md-content>
           </md-tab> <!-- ./Users -->
           <!-- Edit -->
-          <md-tab label="Edit">
+          <md-tab label="{{ 'ADMIN_PROJECT_EDIT_TEXT' | translate }}">
             <md-content class="md-padding">
               <!-- Form -->
               <form name="form" ng-submit="edit()" onvalidate>
                 <md-content layout-padding>
                   <md-input-container class="md-block" flex-gt-sm>
-                    <label>Name</label>
+                  <label>{{ 'ADMIN_PROJECT_NAME' | translate }}</label>
                     <input type="text" name="projectName" ng-model="project.name" required>
                     <div ng-messages="form.projectName.$error" ng-if="form.projectName.$dirty">
-                      <div ng-message="required">This field is required.</div>
+                      <div ng-message="required">{{ 'FIELD_IS_REQUIRED' | translate }}</div>
                     </div>
                   </md-input-container>
                   <md-input-container class="md-block" flex-gt-sm>
-                    <label> Silent time start (number 0 ~ 24) </label>
+                  <label> {{ 'ADMIN_PROJEC_SILENT_START' | translate }} </label>
                     <input type="number" name="silentTimeStart" ng-model="project.silentTimeStart">
                     <div ng-messages="form.silentTimeStart.$error" ng-if="form.silentTimeStart.$dirty">
                     </div>
                   </md-input-container>
                   <md-input-container class="md-block" flex-gt-sm>
-                    <label> Silent time end (number 0 ~ 24) </label>
+                  <label> {{ 'ADMIN_PROJEC_SILENT_END' | translate }} </label>
                     <input type="number" name="silentTimeEnd" ng-model="project.silentTimeEnd">
                   </md-input-container>
                   <md-input-container class="md-block" flex-gt-sm>
-                    <md-checkbox ng-model="project.enableSilent" aria-label="checked checkbox" class="md-align-top-left"> Enable silent
+                    <md-checkbox ng-model="project.enableSilent" aria-label="checked checkbox" class="md-align-top-left">
+                      {{ 'ADMIN_PROJEC_SILENT_RANGE_ENABLE_TEXT' | translate }}
                     <br/>
                     <span ng-style="{'color': 'saddlebrown'}" ng-if="!project.enableSilent">
-                      Default silent range is:
+                      {{ 'ADMIN_PROJEC_SILENT_RANGE_DEFAULT' | translate }}:
                       {{ config.alerter.defaultSilentTimeRange[0] }} ~
                       {{ config.alerter.defaultSilentTimeRange[1] }}
                     </span>
                     </md-checkbox>
                   </md-input-container>
                   <md-input-container>
-                    <md-button class="md-raised" aria-label="Save Project" type="submit" ng-disabled="form.$invalid">
-                      Save
+                  <md-button class="md-raised" aria-label="{{ 'ADMIN_PROJECT_SAVE_TEXT' | translate }}" type="submit" ng-disabled="form.$invalid">
+                      {{ 'SAVE' | translate }}
                     </md-button>
-                    <md-button class="md-raised md-warn" aria-label="Delete Project" type="button" ng-click="deleteProject()">
-                      Delete
+                    <md-button class="md-raised md-warn" aria-label="{{ 'ADMIN_PROJECT_DELETE_TEXT' | translate }}" type="button" ng-click="deleteProject()">
+                      {{ 'DELETE' | translate }}
                     </md-button>
                   </md-input-container>
                 </md-content>
