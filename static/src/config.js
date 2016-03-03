@@ -16,9 +16,7 @@ module.exports = function ($locationProvider, $mdThemingProvider, $translateProv
     .useStaticFilesLoader({
       prefix: './languages/locale-',
       suffix: '.json'
-    })
-    .preferredLanguage('en');
-
+    });
   // Toastr
   angular.extend(toastrConfig, {
     preventDuplicates: true
