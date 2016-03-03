@@ -44,6 +44,8 @@ const (
 	// Default alerting silent time range.
 	DefaultSilentTimeStart int = 0
 	DefaultSilentTimeEnd   int = 6
+	// Default language for webapp.
+	DefaultWebappLanguage string = "en"
 )
 
 // Limitations
@@ -59,6 +61,9 @@ const (
 	// Min value for the cleaner threshold to period.
 	MinCleanerThresholdNumToPeriod uint32 = 2
 )
+
+// Webapp supported languages.
+var WebappSupportedLanguages = []string{"en", "zh"}
 
 // Config is the configuration container.
 type Config struct {
@@ -89,10 +94,11 @@ type configDetector struct {
 }
 
 type configWebapp struct {
-	Port   int               `json:"port"`
-	Auth   [2]string         `json:"auth"`
-	Static string            `json:"static"`
-	Notice map[string]string `json:"notice"`
+	Port     int               `json:"port"`
+	Auth     [2]string         `json:"auth"`
+	Static   string            `json:"static"`
+	Notice   map[string]string `json:"notice"`
+	Language string            `json:"language"`
 }
 
 type configAlerter struct {
@@ -128,6 +134,7 @@ func New() *Config {
 	config.Webapp.Auth = [2]string{"admin", "admin"}
 	config.Webapp.Static = "static/dist"
 	config.Webapp.Notice = make(map[string]string, 0)
+	config.Webapp.Language = DefaultWebappLanguage
 	config.Alerter.Command = ""
 	config.Alerter.Workers = 4
 	config.Alerter.Interval = DefaultAlerterInterval
@@ -172,6 +179,7 @@ func (config *Config) Copy() *Config {
 	c.Webapp.Auth = config.Webapp.Auth
 	c.Webapp.Static = config.Webapp.Static
 	c.Webapp.Notice = config.Webapp.Notice
+	c.Webapp.Language = config.Webapp.Language
 	c.Alerter.Command = config.Alerter.Command
 	c.Alerter.Workers = config.Alerter.Workers
 	c.Alerter.Interval = config.Alerter.Interval
@@ -226,6 +234,16 @@ func (config *Config) Validate() error {
 	// Webapp
 	if config.Webapp.Port < 1 || config.Webapp.Port > 65535 {
 		return ErrWebappPort
+	}
+	langFound := false
+	for _, lang := range WebappSupportedLanguages {
+		if lang == config.Webapp.Language {
+			langFound = true
+			break
+		}
+	}
+	if !langFound {
+		return ErrWebappLanguage
 	}
 	// Alerter
 	if len(config.Alerter.Command) == 0 {

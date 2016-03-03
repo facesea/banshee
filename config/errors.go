@@ -17,6 +17,7 @@ var (
 	ErrDetectorDefaultThresholdMinZero = errors.New("detector.defaultThresholdMins should not contain zeros")
 	ErrDetectorFillBlankZerosLen       = errors.New("detector.fillBlankZeros should have up to 8 items")
 	ErrWebappPort                      = errors.New("invalid webapp.port")
+	ErrWebappLanguage                  = errors.New("invalid webapp language")
 	ErrAlerterInterval                 = errors.New("alerter.interval should be greater than 0")
 	ErrAlerterOneDayLimit              = errors.New("alerter.oneDayLimit should be greater than 0")
 	ErrAlerterDefaultSilentTimeRange   = errors.New("alerter.defaultTimeRange should be 2 numbers between 0~24 and start should be smaller than end")
