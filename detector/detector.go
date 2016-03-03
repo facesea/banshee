@@ -306,7 +306,7 @@ func (d *Detector) values(m *models.Metric, fz bool) ([]float64, error) {
 	period := d.cfg.Period
 	// Get values with the same phase.
 	n := 0
-	ch := make(chan metricGetResult)
+	ch := make(chan metricGetResult, int(expiration/period))
 	for stamp := m.Stamp; stamp+expiration > m.Stamp; stamp -= period {
 		start := stamp - offset
 		stop := stamp + offset
