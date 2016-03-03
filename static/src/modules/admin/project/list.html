@@ -18,6 +18,7 @@
       <div class="panel-content">
         <!-- START table-responsive-->
         <div class="table-title">
+          <form>
           <md-autocomplete
             class="search-project"
             md-selected-item="autoComplete.selectedItem"
@@ -35,6 +36,7 @@
               {{ 'NOT_FOUND_ANY_RESULT' | translate }}
             </md-not-found>
           </md-autocomplete>
+          </form>
         </div>
         <div class="table-responsive">
           <table class="table">
@@ -42,6 +44,7 @@
               <tr>
                 <th>#</th>
                 <th translate="ADMIN_PROJECT_NAME"></th>
+                <th></th>
               </tr>
             </thead>
             <tbody>

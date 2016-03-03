@@ -11,20 +11,22 @@
     </md-toolbar>
     <md-dialog-content>
       <md-content layout-padding>
-        <md-autocomplete
-          md-selected-item="autoComplete.selectedItem"
-          md-search-text="autoComplete.searchText"
-          md-items="user in users | filter: {name: autoComplete.searchText}"
-          md-item-text="user.name"
-          md-min-length="0"
-          placeholder="{{ 'ADMIN_PROJECT_USER_ADD_HINT_TEXT' | translate }}">
-          <md-item-template>
-            <span md-highlight-text="autoComplete.searchText" md-highlight-flags="^i">{{user.name}}</span>
-          </md-item-template>
-          <md-not-found>
-            {{ 'NOT_FOUND_ANY_RESULT' | translate }}
-          </md-not-found>
-        </md-autocomplete>
+        <div>
+          <md-autocomplete
+            md-selected-item="autoComplete.selectedItem"
+            md-search-text="autoComplete.searchText"
+            md-items="user in users | filter: {name: autoComplete.searchText}"
+            md-item-text="user.name"
+            md-min-length="0"
+            placeholder="{{ 'ADMIN_PROJECT_USER_ADD_HINT_TEXT' | translate }}">
+            <md-item-template>
+              <span md-highlight-text="autoComplete.searchText" md-highlight-flags="^i">{{user.name}}</span>
+            </md-item-template>
+            <md-not-found>
+              {{ 'NOT_FOUND_ANY_RESULT' | translate }}
+            </md-not-found>
+          </md-autocomplete>
+        </div>
       </md-content>
     </md-dialog-content>
     <md-dialog-actions layout="row">
