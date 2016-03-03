@@ -15,7 +15,6 @@ angular.module('banshee', [
 
   'banshee.tpl',
 
-  require('./constants'),
   require('./services'),
   require('./filters'),
   require('./directives'),
