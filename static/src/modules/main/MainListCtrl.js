@@ -1,47 +1,90 @@
 /*@ngInject*/
-module.exports = function($scope, $rootScope, $timeout, $stateParams, Metric, Config, Project, DateTimes) {
+module.exports = function($scope, $rootScope, $timeout, $stateParams, $translate, Metric, Config, Project) {
   var chart = require('./chart');
   var cubism;
   var initOpt;
   var isInit = false;
+
   $rootScope.currentMain = true;
-  $scope.dateTimes = DateTimes;
   $scope.projectId = $stateParams.project;
   $scope.notice = null;
 
+  $scope.dateTimes = [
+    {
+      label: 'MAIN_PAST_NOW',
+      seconds: 0
+    },
+    {
+      label: 'MAIN_PAST_3HOURS_AGO',
+      seconds: 3 * 3600
+    },
+    {
+      label: 'MAIN_PAST_6HOURS_AGO',
+      seconds: 6 * 3600
+    },
+    {
+      label: 'MAIN_PAST_1DAY_AGO',
+      seconds: 24 * 3600
+    },
+    {
+      label: 'MAIN_PAST_2DAYS_AGO',
+      seconds: 48 * 3600
+    },
+    {
+      label: 'MAIN_PAST_3DAYS_AGO',
+      seconds: 3 * 24 * 3600
+    },
+    {
+      label: 'MAIN_PAST_4DAYS_AGO',
+      seconds: 4 * 24 * 3600
+    },
+    {
+      label: 'MAIN_PAST_5DAYS_AGO',
+      seconds: 5 * 24 * 3600
+    },
+    {
+      label: 'MAIN_PAST_6DAYS_AGO',
+      seconds: 6 * 24 * 3600
+    },
+    {
+      label: 'MAIN_PAST_7DAYS_AGO',
+      seconds: 7 * 24 * 3600
+    }
+  ];
+
   $scope.limitList = [{
-    label: 'Limit 1',
+    label: 'MAIN_LIMIT_1',
     val: 1
   }, {
-    label: 'Limit 30',
+    label: 'MAIN_LIMIT_30',
     val: 30
   }, {
-    label: 'Limit 50',
+    label: 'MAIN_LIMIT_50',
     val: 50
   }, {
-    label: 'Limit 100',
+    label: 'MAIN_LIMIT_100',
     val: 100
   }, {
-    label: 'Limit 500',
+    label: 'MAIN_LIMIT_500',
     val: 500
   }, {
-    label: 'Limit 1000',
+    label: 'MAIN_LIMIT_1000',
     val: 1000
   }];
 
   $scope.sortList = [{
-    label: 'Trend ↑',
+    label: 'MAIN_TREND_UP',
     val: 'up'
   }, {
-    label: 'Trend ↓',
+    label: 'MAIN_TREND_DOWN',
     val: 'down'
   }];
 
   $scope.typeList = [{
-    label: 'Value',
+    label: 'MAIN_TYPE_VALUE',
     val: 'v'
   }, {
-    label: 'Score',
+    label: 'MAIN_TYPE_SCORE',
     val: 'm'
   }];
 
@@ -52,7 +95,7 @@ module.exports = function($scope, $rootScope, $timeout, $stateParams, Metric, Co
   initOpt = {
     project: $stateParams.project,
     pattern: $stateParams.pattern,
-    datetime: DateTimes[0].seconds,
+    datetime: $scope.dateTimes[0].seconds,
     limit: $scope.limitList[2].val,
     sort: $scope.sortList[0].val,
     type: $scope.typeList[0].val,
@@ -203,8 +246,8 @@ module.exports = function($scope, $rootScope, $timeout, $stateParams, Metric, Co
       var currentEl = data[index];
       var className = getClassNameByTrend(currentEl.score);
       var str;
-      var _box = ['<div class="box"><span>rules <span class="icon-tr"></span></span><ul>'];
-      
+      var _box = ['<div class="box"><span>' + $translate.instant('MAIN_METRIC_RULES_TEXT') + '<span class="icon-tr"></span></span><ul>'];
+
       for (var i = 0; i < currentEl.matchedRules.length; i++) {
         var rule = currentEl.matchedRules[i];
         _box.push('<li><a href="#/admin/project/' + rule.projectID + '">' + rule.pattern + '</a></li>');

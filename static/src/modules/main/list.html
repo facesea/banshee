@@ -51,38 +51,41 @@
           <md-input-container>
             <md-select ng-model="filter.datetime" aria-label="datetime">
               <md-option ng-repeat="time in dateTimes" ng-value="time.seconds" ng-selected="$index === 0">
-                {{time.label}}
+                {{ time.label | translate }}
               </md-option>
             </md-select>
           </md-input-container>
           <md-input-container>
             <md-select ng-model="filter.limit" aria-label="limit">
               <md-option ng-repeat="limit in limitList" ng-value="limit.val" ng-selected="$index === 2">
-                {{limit.label}}
+                {{limit.label | translate}}
               </md-option>
             </md-select>
           </md-input-container>
           <md-input-container>
             <md-select ng-model="filter.sort" aria-label="sort">
               <md-option ng-repeat="sort in sortList" ng-value="sort.val" ng-selected="$index === 0">
-                {{sort.label}}
+                {{sort.label | translate}}
               </md-option>
             </md-select>
           </md-input-container>
           <md-input-container>
             <md-select ng-model="filter.type" aria-label="sort">
               <md-option ng-repeat="type in typeList" ng-value="type.val" ng-selected="$index === 0">
-                {{type.label}}
+                {{type.label | translate}}
               </md-option>
             </md-select>
           </md-input-container>
           <md-input-container class="pull-right">
             <md-button class="md-icon-button md-primary" aria-label="pause" ng-click="restart()">
+            <md-tooltip md-direction="bottom"> {{ 'MAIN_REFRESH_TOOLTIP_TEXT' | translate }} </md-tooltip>
               <md-icon class="fa fa-refresh" ng-class="{spinner: spinner}"></md-icon>
             </md-button>
           </md-input-container>
           <md-input-container class="pull-right">
             <md-button class="md-icon-button md-primary" aria-label="pause" ng-click="toggleCubism()">
+              <md-tooltip md-direction="bottom" ng-if="!filter.status"> {{ 'MAIN_PAUSE_TOOLTIP_TEXT' | translate }} </md-tooltip>
+              <md-tooltip md-direction="bottom" ng-if="filter.status"> {{ 'MAIN_RESUME_TOOLTIP_TEXT' | translate }} </md-tooltip>
               <md-icon class="fa" ng-class="{'fa-pause': !filter.status, 'fa-play': filter.status}"></md-icon>
             </md-button>
           </md-input-container>
