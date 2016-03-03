@@ -62,7 +62,7 @@ const (
 	MinCleanerThresholdNumToPeriod uint32 = 2
 )
 
-// Webapp supported languages.
+// WebappSupportedLanguages lists webapp supported languages.
 var WebappSupportedLanguages = []string{"en", "zh"}
 
 // Config is the configuration container.
