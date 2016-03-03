@@ -4,14 +4,13 @@
     <div class="panel-container">
       <md-toolbar>
         <div class="md-toolbar-tools">
-          <h3>Project</h3>
+          <h3 translate="ADMIN_PROJECT_LIST_TITLE"></h3>
           <span flex></span>
-
           <md-button
             class="md-icon-button"
-            aria-label="Create Project"
+            aria-label="{{ 'ADMIN_PROJECT_CREATE_TEXT' | translate }}"
             ng-click="openModal($event)">
-              <md-tooltip md-autohide>Create Project</md-tooltip>
+              <md-tooltip md-autohide>{{ 'ADMIN_PROJECT_CREATE_TEXT' | translate }}</md-tooltip>
               <md-icon class="fa fa-plus-circle" ng-style="{'font-size': '20px'}"></md-icon>
           </md-button>
         </div>
@@ -27,13 +26,13 @@
             md-items="project in projects | filter: {name: autoComplete.searchText}"
             md-item-text="project.name"
             md-min-length="0"
-            md-floating-label="Search Project"
+            md-floating-label="{{ 'ADMIN_PROJECT_SEARCH_TEXT' | translate }}"
             flex="45">
             <md-item-template>
               <span md-highlight-text="autoComplete.searchText" md-highlight-flags="^i">{{project.name}}</span>
             </md-item-template>
             <md-not-found>
-              No items matching "{{autoComplete.searchText}}" were found.
+              {{ 'NOT_FOUND_ANY_RESULT' | translate }}
             </md-not-found>
           </md-autocomplete>
         </div>
@@ -42,12 +41,14 @@
             <thead>
               <tr>
                 <th>#</th>
-                <th>Name</th>
+                <th translate="ADMIN_PROJECT_NAME"></th>
               </tr>
             </thead>
             <tbody>
               <tr ng-if="!projects || !projects.length">
-                <td colspan="3">not found any result</td>
+                <td colspan="3">
+                {{ 'NOT_FOUND_ANY_RESULT' | translate }}
+                </td>
               <tr>
               <tr ng-repeat="project in projects">
                 <td ng-bind="project.id"></td>

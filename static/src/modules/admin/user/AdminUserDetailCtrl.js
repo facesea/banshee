@@ -35,10 +35,10 @@ module.exports = function ($scope, $state, $stateParams, $translate, toastr, $md
     var confirm = $mdDialog.confirm()
       .title($translate.instant('ADMIN_USER_DELETE_TITLE'))
       .textContent($translate.instant('ADMIN_USER_DELETE_WARN'))
-      .ariaLabel('Remove User')
+      .ariaLabel($translate.instant('ADMIN_USER_DELETE_TEXT'))
       .targetEvent(event)
-      .ok('Yes')
-      .cancel('No');
+      .ok($translate.instant('YES'))
+      .cancel($translate.instant('NO'));
     $mdDialog.show(confirm).then(function () {
       User.delete({id: $scope.user.id}).$promise
         .then(function () {

@@ -1,5 +1,5 @@
 /*@ngInject*/
-module.exports = function ($scope, $mdDialog, $state, $stateParams, toastr, Project, Rule, User, Config, Util) {
+module.exports = function ($scope, $mdDialog, $state, $stateParams, $translate, toastr, Project, Rule, User, Config, Util) {
   var projectId = $scope.projectId = $stateParams.id;
   var allUsers = [];
 
@@ -45,7 +45,7 @@ module.exports = function ($scope, $mdDialog, $state, $stateParams, toastr, Proj
   $scope.edit = function() {
     Project.edit($scope.project).$promise
       .then(function() {
-        toastr.success('Save Success');
+        toastr.success($translate.instant('SAVE_SUCCESS'));
       })
       .catch(function(err) {
         toastr.error(err.msg);
@@ -54,19 +54,19 @@ module.exports = function ($scope, $mdDialog, $state, $stateParams, toastr, Proj
 
   $scope.deleteRule = function (event, ruleId, index) {
     var confirm = $mdDialog.confirm()
-      .title('Delete Rule')
-      .textContent('Would you like to delete this rule? Id: ' + ruleId)
-      .ariaLabel('Delete Rule')
+      .title($translate.instant('ADMIN_RULE_DELETE_TEXT'))
+      .textContent($translate.instant('ADMIN_RULE_DELETE_WARN'))
+      .ariaLabel($translate.instant('ADMIN_RULE_DELETE_TEXT'))
       .targetEvent(event)
-      .ok('Yes')
-      .cancel('No');
+      .ok($translate.instant('YES'))
+      .cancel($translate.instant('NO'));
     $mdDialog.show(confirm).then(function () {
       Rule.delete({
           id: ruleId
         }).$promise
         .then(function () {
           $scope.rules.splice(index, 1);
-          toastr.success('Rule Deleted!');
+          toastr.success($translate.instant('DELETE_SUCCESS'));
         })
         .catch(function (err) {
           toastr.error(err.msg);
@@ -76,12 +76,12 @@ module.exports = function ($scope, $mdDialog, $state, $stateParams, toastr, Proj
 
   $scope.deleteUser = function (event, userId, index) {
     var confirm = $mdDialog.confirm()
-      .title('Remove User')
-      .textContent('Would you like to remove this user from project?')
-      .ariaLabel('Remove User')
+      .title($translate.instant('ADMIN_USER_REMOVE_TEXT'))
+      .textContent($translate.instant('ADMIN_USER_REMOVE_WARN'))
+      .ariaLabel($translate.instant('ADMIN_USER_REMOVE_TEXT'))
       .targetEvent(event)
-      .ok('Yes')
-      .cancel('No');
+      .ok($translate.instant('YES'))
+      .cancel($translate.instant('NO'));
     $mdDialog.show(confirm).then(function () {
       Project.deleteUserFromProject({
           id: projectId,
@@ -89,7 +89,7 @@ module.exports = function ($scope, $mdDialog, $state, $stateParams, toastr, Proj
         }).$promise
         .then(function () {
           $scope.users.splice(index, 1);
-          toastr.success('User Deleted!');
+          toastr.success($translate.instant('DELETE_SUCCESS'));
         })
         .catch(function (err) {
           toastr.error(err.msg);
@@ -99,17 +99,17 @@ module.exports = function ($scope, $mdDialog, $state, $stateParams, toastr, Proj
 
   $scope.deleteProject = function (event) {
     var confirm = $mdDialog.confirm()
-      .title('Delete Project')
-      .textContent('This will delete this project with all its rules, do you want to proceed?')
-      .ariaLabel('Remove Project')
+      .title($translate.instant('ADMIN_PROJECT_DELETE_TEXT'))
+      .textContent($translate.instant('ADMIN_PROJECT_DELETE_WARN'))
+      .ariaLabel($translate.instant('ADMIN_PROJECT_DELETE_TEXT'))
       .targetEvent(event)
-      .ok('Yes')
-      .cancel('No');
+      .ok($translate.instant('YES'))
+      .cancel($translate.instant('NO'));
 
     $mdDialog.show(confirm).then(function () {
       Project.delete({id: $scope.project.id}).$promise
         .then(function () {
-          toastr.success('Project Deleted!');
+          toastr.success($translate.instant('DELETE_SUCCESS'));
           $state.go('banshee.admin.project');
         })
         .catch(function (err) {

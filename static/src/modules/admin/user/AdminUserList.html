@@ -32,7 +32,7 @@
               <span md-highlight-text="autoComplete.searchText" md-highlight-flags="^i">{{user.name}}</span>
             </md-item-template>
             <md-not-found>
-              {{ 'NOT_FOUND_ANT_RESULT' | translate }}
+              {{ 'NOT_FOUND_ANY_RESULT' | translate }}
             </md-not-found>
           </md-autocomplete>
         </div>
@@ -50,7 +50,7 @@
             <tbody>
               <tr ng-if="!users || !users.length">
                 <td colspan="3">
-                  {{ 'NOT_FOUND_ANT_RESULT' | translate }}
+                  {{ 'NOT_FOUND_ANY_RESULT' | translate }}
                 </td>
               <tr>
               <tr ng-repeat="user in users">

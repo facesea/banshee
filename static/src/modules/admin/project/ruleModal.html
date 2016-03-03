@@ -3,8 +3,8 @@
   <form name="form" class="form-horizontal" ng-submit="submit()" novalidate>
     <md-toolbar>
       <div class="md-toolbar-tools">
-        <h2 ng-if="!isEdit">Add Rule</h2>
-        <h2 ng-if="isEdit">Edit Rule</h2>
+        <h2 ng-if="!isEdit">{{ 'ADMIN_RULE_ADD_TEXT' | translate }}</h2>
+        <h2 ng-if="isEdit">{{ 'ADMIN_RULE_EDIT_TEXT' | translate }}</h2>
         <span flex></span>
         <md-button class="md-icon-button" ng-click="cancel()">
           <md-icon class="fa fa-times-circle" aria-label="Close dialog"></md-icon>
@@ -15,19 +15,19 @@
     <md-dialog-content>
       <md-content layout-padding>
         <md-input-container class="md-block" flex-gt-sm>
-          <label>Pattern</label>
+          <label>{{ 'ADMIN_RULE_PATTERN' | translate }}</label>
           <input type="text" name="pattern" ng-model="rule.pattern" required>
           <div ng-messages="form.pattern.$error" ng-if="form.pattern.$dirty">
-            <div ng-message="required">This field is required.</div>
+            <div ng-message="required">{{ 'FIELD_IS_REQUIRED' | translate }}</div>
           </div>
         </md-input-container>
         <md-input-container class="md-block" flex-gt-sm>
-          <label>Comment</label>
+          <label>{{ 'ADMIN_RULE_COMMENT' | translate }}</label>
           <input type="text" name="comment" ng-model="rule.comment">
         </md-input-container>
         <div layout="row" flex="100">
           <md-input-container flex="20" class="md-block">
-            <label>Preview</label>
+            <label>{{ 'ADMIN_RULE_PREVIEW' | translate }}</label>
           </md-input-container>
           <md-input-container flex="80" class="md-block">
             <code ng-bind="buildRepr(rule)"></code>
@@ -36,42 +36,42 @@
         <div layout="row" flex="100">
           <md-input-container flex="40" class="md-block">
             <md-checkbox ng-if="!isEdit" ng-init='rule.trendUp=true' ng-model="rule.trendUp">
-              On trend up
-              <span ng-style="{'color': '#777'}"> (optional) </span>
+              {{ 'ADMIN_RULE_ON_TREND_UP' | translate}}
+              <span ng-style="{'color': '#777'}"> ({{ 'OPTIONAL' | translate }}) </span>
             </md-checkbox>
             <md-checkbox ng-if="isEdit" ng-model="rule.trendUp">
-              On trend up
-              <span ng-style="{'color': '#777'}"> (optional) </span>
+              {{ 'ADMIN_RULE_ON_TREND_UP' | translate}}
+              <span ng-style="{'color': '#777'}"> ({{ 'OPTIONAL' | translate }}) </span>
             </md-checkbox>
           </md-input-container>
           <md-input-container flex="20" class="md-block">
-            <label> and </label>
+          <label> {{ 'AND' | translate }} </label>
           </md-input-container>
           <md-input-container class="md-block" flex="40">
-            <label> Value &gt;= (optional) </label>
+            <label> {{ 'ADMIN_RULE_VALUE' | translate }} &gt;= {{ 'OPTIONAL' | translate }} </label>
             <input type="number" step="any" name="thresholdMax" ng-model="rule.thresholdMax">
           </md-input-container>
         </div>
         <div layout="row" flex="100">
           <md-input-container flex="40" class="md-block">
           <md-checkbox ng-model="rule.trendDown" ng-if='!isEdit && rule.pattern.indexOf("timer.count_ps")==0' ng-init='rule.trendDown=true'>
-              On trend down
-              <span ng-style="{'color': '#777'}"> (optional) </span>
+              {{ 'ADMIN_RULE_ON_TREND_DOWN' | translate}}
+              <span ng-style="{'color': '#777'}"> ({{ 'OPTIONAL' | translate }}) </span>
           </md-checkbox>
           <md-checkbox ng-model="rule.trendDown" ng-if='!isEdit && rule.pattern.indexOf("timer.count_ps")!=0' ng-init='rule.trendDown=false'>
-              On trend down
-              <span ng-style="{'color': '#777'}"> (optional) </span>
+              {{ 'ADMIN_RULE_ON_TREND_DOWN' | translate}}
+              <span ng-style="{'color': '#777'}"> ({{ 'OPTIONAL' | translate }}) </span>
           </md-checkbox>
           <md-checkbox ng-model="rule.trendDown" ng-if='isEdit'>
-              On trend down
-              <span ng-style="{'color': '#777'}"> (optional) </span>
+              {{ 'ADMIN_RULE_ON_TREND_DOWN' | translate}}
+              <span ng-style="{'color': '#777'}"> ({{ 'OPTIONAL' | translate }}) </span>
           </md-checkbox>
           </md-input-container>
           <md-input-container flex="20" class="md-block">
-            <label> and </label>
+          <label> {{ 'AND' | translate }} </label>
           </md-input-container>
           <md-input-container class="md-block" flex="40">
-            <label> Value &lt;= (optional) </label>
+            <label> {{ 'ADMIN_RULE_VALUE' | translate }} &lt;= {{ 'OPTIONAL' | translate }} </label>
             <input type="number" step="any" name="thresholdMin" ng-model="rule.thresholdMin">
           </md-input-container>
         </div>
@@ -79,8 +79,8 @@
     </md-dialog-content> <!-- Dialog Content -->
     <!-- Dialog Buttons -->
     <md-dialog-actions layout="row">
-      <md-button ng-click="cancel()">Cancel</md-button>
-      <md-button md-no-ink class="md-primary" ng-disabled="form.$invalid" type="submit">Submit</md-button>
+    <md-button ng-click="cancel()"> {{ 'CANCEL' | translate}} </md-button>
+    <md-button md-no-ink class="md-primary" ng-disabled="form.$invalid" type="submit"> {{ 'SUBMIT' | translate }} </md-button>
     </md-dialog-actions> <!-- ./Dialog Buttons-->
   </form> <!-- ./Add Rule Form -->
 </md-dialog>
