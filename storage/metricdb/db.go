@@ -5,8 +5,35 @@ package metricdb
 import (
 	"github.com/eleme/banshee/models"
 	"github.com/syndtr/goleveldb/leveldb"
+	leveldbFilter "github.com/syndtr/goleveldb/leveldb/filter"
+	leveldbOpt "github.com/syndtr/goleveldb/leveldb/opt"
 	"github.com/syndtr/goleveldb/leveldb/util"
 )
+
+const (
+	// LevelDBBloomFilterBitsPerKey is the leveldb builtin bloom filter
+	// bitsPerKey.
+	//
+	// Filter name will be persisted to disk on a per sstable basis, during
+	// reads leveldb will try to find matching filter. And the filter can be
+	// replaced after a DB has been created, or say that the filter can be
+	// changed between db opens. But if this is done, note that old sstables
+	// will continue using the old filter and every new created sstable will
+	// use the new filter. For this reason, I make the parameter `bitsPerKey`
+	// a constant, there is no need to replace it.
+	//
+	// Also, this means that no big performance penalty will be experienced
+	// when changing the parameter, and the goleveldb docs points this as well.
+	//
+	// About the probability of false positives, the following link may help:
+	// http://pages.cs.wisc.edu/~cao/papers/summary-cache/node8.html
+	//
+	LevelDBBloomFilterBitsPerKey = 10
+)
+
+// Options is db opening options.
+type Options struct {
+}
 
 // DB handles metrics storage.
 type DB struct {
@@ -16,7 +43,10 @@ type DB struct {
 
 // Open a DB by fileName.
 func Open(fileName string) (*DB, error) {
-	db, err := leveldb.OpenFile(fileName, nil)
+	opts := &leveldbOpt.Options{
+		Filter: leveldbFilter.NewBloomFilter(LevelDBBloomFilterBitsPerKey),
+	}
+	db, err := leveldb.OpenFile(fileName, opts)
 	if err != nil {
 		return nil, err
 	}
