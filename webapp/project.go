@@ -168,8 +168,29 @@ func deleteProject(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
 		ResponseError(w, ErrProjectID)
 		return
 	}
+	proj := &models.Project{ID: id}
+	// Delete Its Rules
+	var rules []models.Rule
+	if err := db.Admin.DB().Model(proj).Related(&rules).Error; err != nil {
+		ResponseError(w, NewUnexceptedWebError(err))
+		return
+	}
+	for i := 0; i < len(rules); i++ {
+		db.Admin.DB().Delete(&rules[i])
+		db.Admin.RulesCache.Delete(rules[i].ID)
+	}
+	// Delete Its user relationships.
+	var users []models.User
+	if err := db.Admin.DB().Model(proj).Association("Users").Find(&users).Error; err != nil {
+		ResponseError(w, NewUnexceptedWebError(err))
+		return
+	}
+	if err := db.Admin.DB().Model(proj).Association("Users").Delete(users).Error; err != nil {
+		ResponseError(w, NewUnexceptedWebError(err))
+		return
+	}
 	// Delete.
-	if err := db.Admin.DB().Delete(&models.Project{ID: id}).Error; err != nil {
+	if err := db.Admin.DB().Delete(proj).Error; err != nil {
 		switch err {
 		case gorm.RecordNotFound:
 			ResponseError(w, ErrProjectNotFound)
