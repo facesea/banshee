@@ -26,6 +26,7 @@ type Info struct {
 	AggregationInterval int   `json:"aggregationInterval"`
 	NumIndexTotal       int   `json:"numIndexTotal"`
 	NumClients          int64 `json:"numClients"`
+	NumRules            int   `json:"numRules"`
 	// Aggregation
 	DetectionCost     float64 `json:"detectionCost"` // ms
 	FilterCost        float64 `json:"filterCost"`    // ms
@@ -42,6 +43,7 @@ func (info *Info) copy() *Info {
 		AggregationInterval: AggregationInterval,
 		NumIndexTotal:       info.NumIndexTotal,
 		NumClients:          info.NumClients,
+		NumRules:            info.NumRules,
 		DetectionCost:       info.DetectionCost,
 		FilterCost:          info.FilterCost,
 		NumMetricIncomed:    info.NumMetricIncomed,
@@ -138,6 +140,13 @@ func refreshNumClients() {
 	h.info.NumClients = atomic.LoadInt64(&h.numClients)
 }
 
+// Refresh NumRules.
+func refreshNumRules() {
+	h.info.lock.Lock()
+	defer h.info.lock.Unlock()
+	h.info.NumRules = h.db.Admin.RulesCache.Len()
+}
+
 // Aggregate DetectionCost.
 func aggregateDetectionCost() {
 	h.info.lock.Lock()
@@ -190,6 +199,7 @@ func Start() {
 		<-ticker.C
 		refreshNumIndexTotal()
 		refreshNumClients()
+		refreshNumRules()
 		aggregateDetectionCost()
 		aggregateNumMetricIncomed()
 		aggregateNumMetricDetected()
