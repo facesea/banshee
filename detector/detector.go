@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"net"
 	"path/filepath"
-	"time"
 
 	"github.com/eleme/banshee/config"
 	"github.com/eleme/banshee/filter"
@@ -15,7 +14,9 @@ import (
 	"github.com/eleme/banshee/models"
 	"github.com/eleme/banshee/storage"
 	"github.com/eleme/banshee/storage/indexdb"
+	"github.com/eleme/banshee/util"
 	"github.com/eleme/banshee/util/log"
+	"github.com/eleme/banshee/util/mathutil"
 )
 
 // Timeout in milliseconds.
@@ -125,8 +126,7 @@ func (d *Detector) handle(conn net.Conn) {
 //
 func (d *Detector) process(m *models.Metric) {
 	health.IncrNumMetricIncomed(1)
-	// Time it.
-	startAt := time.Now()
+	timer := util.NewTimer()
 	// Match
 	ok, rules := d.match(m)
 	if !ok {
@@ -146,7 +146,7 @@ func (d *Detector) process(m *models.Metric) {
 		d.output(m)
 	}
 	// Time end.
-	elapsed := float64(time.Since(startAt).Nanoseconds()) / float64(1000*1000)
+	elapsed := timer.Elapsed()
 	if elapsed > timeout {
 		log.Warn("detection is slow: %.2fms", elapsed)
 	}
@@ -161,7 +161,10 @@ func (d *Detector) process(m *models.Metric) {
 //
 func (d *Detector) match(m *models.Metric) (bool, []*models.Rule) {
 	// Check rules.
+	timer := util.NewTimer()
 	rules := d.flt.MatchedRules(m)
+	elapsed := timer.Elapsed()
+	health.AddFilterCost(elapsed)
 	if len(rules) == 0 {
 		// Hit no rules.
 		return false, rules
@@ -382,8 +385,8 @@ func (d *Detector) div3Sigma(m *models.Metric, vals []float64) {
 		return
 	}
 	// Values average and standard deviation.
-	avg := average(vals)
-	std := stdDev(vals, avg)
+	avg := mathutil.Average(vals)
+	std := mathutil.StdDev(vals, avg)
 	// Set metric average
 	m.Average = avg
 	// Set metric score

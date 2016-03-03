@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // ToFixed truncates float64 type to a particular percision in string.
@@ -22,4 +23,19 @@ func IsFileExist(fileName string) bool {
 		return false
 	}
 	return true
+}
+
+// Timer is a minimal timer util.
+type Timer struct {
+	startAt time.Time
+}
+
+// NewTimer creates a minimal timer.
+func NewTimer() *Timer {
+	return &Timer{time.Now()}
+}
+
+// Elapsed returns milliseconds elapsed.
+func (t *Timer) Elapsed() float64 {
+	return float64(time.Since(t.startAt).Nanoseconds()) / float64(1000*1000)
 }
